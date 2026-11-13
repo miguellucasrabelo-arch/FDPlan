@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#082f59">
   <title>Well Design Inputs</title>
+  <link rel="stylesheet" href="./vendor/leaflet-1.9.4.css">
   <style>
     :root {
       color-scheme: light;
@@ -494,6 +495,464 @@
 
     .additional-panel .panel-heading { margin-bottom: 18px; }
 
+    .spreadsheet-toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px 18px;
+      margin-bottom: 12px;
+    }
+
+    .spreadsheet-toolbar .control {
+      width: auto;
+      min-height: 38px;
+      margin: 0;
+    }
+
+    .spreadsheet-toolbar .control select {
+      max-width: none;
+      min-width: 142px;
+      padding-inline: 10px;
+      border-left: 0;
+      background: #fff;
+    }
+
+    .target-toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .target-toolbar .control { width: auto; min-height: 38px; margin: 0; }
+    .target-toolbar .control select {
+      max-width: none;
+      min-width: 120px;
+      padding-inline: 10px;
+      border-left: 0;
+      background: #fff;
+    }
+
+    .target-toolbar-spacer { flex: 1 1 auto; }
+    .target-zone-controls { display: flex; gap: 8px; }
+    .target-zone-controls[hidden] { display: none; }
+    .target-coordinate-hint { flex: 1 1 100%; margin: 0; }
+
+    .sheet-hint, .sheet-status {
+      margin: 10px 0 0;
+      color: var(--muted);
+      font-size: .82rem;
+      line-height: 1.5;
+    }
+
+    .sheet-status:empty { display: none; }
+    .sheet-status[data-error="true"] { color: var(--red); }
+    .sheet-status[data-success="true"] { color: var(--green); }
+
+    .spreadsheet-wrap {
+      max-height: 58vh;
+      overflow: auto;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: #fff;
+    }
+
+    .spreadsheet {
+      width: 100%;
+      min-width: 850px;
+      border-collapse: separate;
+      border-spacing: 0;
+    }
+
+    .spreadsheet th {
+      position: sticky;
+      z-index: 1;
+      top: 0;
+      padding: 10px;
+      border-bottom: 1px solid var(--line);
+      background: #f5f8fb;
+      color: var(--muted);
+      font-size: .76rem;
+      font-weight: 700;
+      text-align: left;
+      white-space: nowrap;
+    }
+
+    .spreadsheet td {
+      padding: 4px 6px;
+      border-bottom: 1px solid #e8eef4;
+      vertical-align: middle;
+    }
+
+    .spreadsheet tr:last-child td { border-bottom: 0; }
+    .spreadsheet tbody tr:focus-within { background: #f7fbff; }
+
+    .spreadsheet input, .spreadsheet select {
+      width: 100%;
+      min-width: 84px;
+      min-height: 36px;
+      padding: 7px 8px;
+      border: 1px solid transparent;
+      border-radius: 6px;
+      background: transparent;
+      color: var(--ink);
+      font-size: .84rem;
+    }
+
+    .spreadsheet input:hover, .spreadsheet select:hover { border-color: var(--line); }
+    .spreadsheet input:focus, .spreadsheet select:focus {
+      border-color: var(--blue);
+      background: #fff;
+      box-shadow: 0 0 0 2px rgb(17 104 180 / 10%);
+    }
+
+    .spreadsheet td:first-child input { min-width: 120px; }
+
+    .spreadsheet .sheet-remove {
+      display: inline-grid;
+      width: 30px;
+      height: 30px;
+      place-items: center;
+      padding: 0;
+      border: 0;
+      border-radius: 6px;
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+    }
+
+    .spreadsheet .sheet-remove:hover { background: #fff3f2; color: var(--red); }
+
+    .sheet-footer {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .sheet-footer .actions {
+      margin: 0;
+      padding: 0;
+      border: 0;
+    }
+
+    .target-summary {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .target-metric {
+      min-width: 0;
+      padding: 14px 15px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: #fff;
+    }
+
+    .target-metric-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--muted);
+      font-size: .75rem;
+      font-weight: 700;
+    }
+
+    .target-metric-value {
+      display: block;
+      margin-top: 7px;
+      color: var(--ink);
+      font-size: 1.35rem;
+      font-variant-numeric: tabular-nums;
+      font-weight: 750;
+      line-height: 1;
+    }
+
+    .target-fluid-dot {
+      width: 9px;
+      height: 9px;
+      flex: 0 0 auto;
+      border-radius: 50%;
+      background: var(--target-color);
+    }
+
+    .target-map-panel {
+      margin-top: 18px;
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: #fff;
+    }
+
+    .target-map-heading {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .target-map-heading h3 { margin: 0; font-size: 1rem; }
+    .target-map-heading p { margin: 4px 0 0; color: var(--muted); font-size: .78rem; }
+    .target-map-controls { display: flex; gap: 6px; }
+    .target-map-controls button {
+      display: inline-grid;
+      width: 34px;
+      height: 34px;
+      place-items: center;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      color: var(--ink);
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: 750;
+    }
+    .target-map-controls button:hover { border-color: var(--blue); color: var(--blue-dark); }
+
+    .target-map {
+      display: block;
+      width: 100%;
+      height: clamp(300px, 42vw, 460px);
+      border: 1px solid #e4ebf2;
+      border-radius: 10px;
+      background: #eff5f9;
+    }
+    .target-map .leaflet-control-attribution { font-size: .65rem; }
+    .target-map .leaflet-control-layers { border: 1px solid var(--line); border-radius: 8px; }
+    .target-map .leaflet-tooltip { border: 1px solid #d5e0e9; border-radius: 5px; box-shadow: 0 2px 8px rgb(23 40 59 / 12%); }
+    .target-map .basin-label { padding: 2px 5px; border: 0; background: rgb(255 255 255 / 78%); box-shadow: none; color: #35556c; font-size: 10px; font-weight: 700; }
+    .target-map .basin-label::before { display: none; }
+    .target-map .well-label { padding: 1px 3px; border: 0; background: rgb(255 255 255 / 82%); box-shadow: none; color: #172b42; font-size: 9px; font-weight: 700; text-shadow: 0 1px 2px #fff, 1px 0 2px #fff, -1px 0 2px #fff; }
+    .target-map .well-label::before { display: none; }
+    .target-map .bathymetry-handle { background: transparent; border: 0; }
+    .bathymetry-resize-handle {
+      display: block;
+      width: 12px;
+      height: 12px;
+      border: 2px solid #fff;
+      border-radius: 50%;
+      background: #0f766e;
+      box-shadow: 0 1px 5px rgb(15 23 42 / 40%);
+      cursor: nwse-resize;
+    }
+    .bathymetry-handle-n .bathymetry-resize-handle,
+    .bathymetry-handle-s .bathymetry-resize-handle { cursor: ns-resize; }
+    .bathymetry-handle-e .bathymetry-resize-handle,
+    .bathymetry-handle-w .bathymetry-resize-handle { cursor: ew-resize; }
+    .bathymetry-handle-ne .bathymetry-resize-handle,
+    .bathymetry-handle-sw .bathymetry-resize-handle { cursor: nesw-resize; }
+    .bathymetry-move-handle {
+      display: grid;
+      width: 28px;
+      height: 28px;
+      place-items: center;
+      border: 2px solid #fff;
+      border-radius: 50%;
+      background: #0f766e;
+      box-shadow: 0 1px 6px rgb(15 23 42 / 45%);
+      color: #fff;
+      cursor: move;
+      font-size: 15px;
+      font-weight: 800;
+      line-height: 1;
+    }
+
+    .target-field-results {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-start;
+      gap: 8px 18px;
+      margin: 12px 0 16px;
+    }
+    .target-field-results:empty { display: none; }
+    .boundary-tag-group {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 5px;
+    }
+    .boundary-tag-label {
+      margin-right: 2px;
+      color: var(--muted);
+      font-size: .68rem;
+      font-weight: 700;
+    }
+    .boundary-tag {
+      padding: 4px 8px;
+      border-radius: 999px;
+      background: #edf3f8;
+      color: #35556c;
+      font-size: .7rem;
+      font-weight: 650;
+      line-height: 1.2;
+    }
+    .boundary-tag-group[data-kind="field"] .boundary-tag {
+      background: #fff4e5;
+      color: #965b0b;
+    }
+    .boundary-tag-group[data-kind="contract"] .boundary-tag {
+      background: #eaf2ff;
+      color: #245c9a;
+    }
+    .bathymetry-tools {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px 16px;
+      margin: 0 0 10px;
+      padding: 10px 12px;
+      border: 1px solid #cfe3e1;
+      border-radius: 10px;
+      background: #f3faf9;
+    }
+    .bathymetry-tools-copy { min-width: 180px; flex: 1 1 300px; }
+    .bathymetry-tools-copy strong { display: block; color: #155e59; font-size: .78rem; }
+    .bathymetry-tools-copy p { margin: 3px 0 0; color: var(--muted); font-size: .7rem; }
+    .bathymetry-tools-actions { display: flex; flex-wrap: wrap; gap: 6px; }
+    .bathymetry-tools-actions .btn { padding: 7px 10px; font-size: .72rem; }
+    .bathymetry-generation-controls {
+      display: flex;
+      flex: 1 1 100%;
+      flex-wrap: wrap;
+      align-items: end;
+      gap: 8px;
+    }
+    .bathymetry-generation-controls label { display: grid; gap: 4px; color: var(--muted); font-size: .68rem; }
+    .bathymetry-generation-controls input {
+      width: 130px;
+      min-height: 34px;
+      padding: 6px 8px;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      color: var(--ink);
+      font: inherit;
+      font-variant-numeric: tabular-nums;
+    }
+    .bathymetry-generation-controls .btn { padding: 7px 10px; font-size: .72rem; }
+    .bathymetry-generation-status,
+    .bathymetry-result-status { flex: 1 1 100%; margin: 0; color: var(--muted); font-size: .72rem; }
+    .bathymetry-generation-status[data-error="true"],
+    .bathymetry-result-status[data-stale="true"] { color: var(--red); }
+    .bathymetry-generation-status[data-success="true"] { color: var(--green); }
+    .bathymetry-result {
+      margin-top: 16px;
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: #fff;
+    }
+    .bathymetry-result[hidden] { display: none; }
+    .bathymetry-result-heading {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px 14px;
+      margin-bottom: 8px;
+    }
+    .bathymetry-result-heading h3 { margin: 0; font-size: .94rem; }
+    .bathymetry-result-meta { color: var(--muted); font-size: .7rem; }
+    .bathymetry-view-controls {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px 14px;
+      padding: 8px 0;
+    }
+    .bathymetry-view-presets,
+    .bathymetry-layer-toggles {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 6px;
+    }
+    .bathymetry-view-presets .btn { padding: 6px 9px; font-size: .7rem; }
+    .bathymetry-layer-toggles label {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      color: var(--muted);
+      font-size: .68rem;
+      white-space: nowrap;
+    }
+    .bathymetry-layer-toggles input { accent-color: #0f766e; }
+    .bathymetry-3d-plot { width: 100%; height: clamp(380px, 55vw, 600px); }
+    .bathymetry-model-legend {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px 16px;
+      margin: 0;
+      padding: 8px 0 0;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: .7rem;
+      list-style: none;
+    }
+    .bathymetry-model-legend li { display: inline-flex; align-items: center; gap: 6px; }
+    .bathymetry-model-legend[hidden] { display: none; }
+    .bathymetry-legend-symbol { display: inline-block; width: 10px; height: 10px; border-radius: 2px; background: var(--legend-color); }
+    .bathymetry-result-note { margin: 6px 0 0; color: var(--muted); font-size: .68rem; }
+    .bathymetry-coordinates {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(100px, 1fr));
+      gap: 6px;
+      flex: 1 1 100%;
+    }
+    .bathymetry-coordinate {
+      padding: 6px 8px;
+      border: 1px solid #dce9e8;
+      border-radius: 7px;
+      background: #fff;
+    }
+    .bathymetry-coordinate span { display: block; color: var(--muted); font-size: .62rem; }
+    .bathymetry-coordinate output { color: #174e4a; font-size: .72rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+    .target-map-attribution { margin: 8px 0 0; color: var(--muted); font-size: .7rem; }
+    .target-map-status { margin-top: 8px; color: var(--muted); font-size: .76rem; }
+
+    .target-map-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 18px;
+      margin: 11px 0 0;
+      padding: 0;
+      color: var(--muted);
+      font-size: .76rem;
+      font-weight: 650;
+      list-style: none;
+    }
+    .target-map-legend li { display: inline-flex; align-items: center; gap: 7px; }
+
+    @media (max-width: 760px) {
+      .target-summary { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    }
+
+    @media (max-width: 520px) {
+      .target-summary { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+      .target-metric { padding: 12px; }
+      .target-metric-value { font-size: 1.2rem; }
+      .target-toolbar { align-items: stretch; }
+      .target-toolbar .control { flex: 1 1 140px; }
+      .target-toolbar .control select { width: 100%; }
+      .target-toolbar .btn { flex: 1 1 140px; }
+      .target-toolbar-spacer { display: none; }
+      .target-map-panel { padding: 12px; }
+      .target-map { height: 320px; }
+      .bathymetry-coordinates { grid-template-columns: repeat(2, minmax(100px, 1fr)); }
+      .bathymetry-generation-controls label { flex: 1 1 100%; }
+      .bathymetry-generation-controls input { width: 100%; }
+      .bathymetry-3d-plot { height: 430px; }
+    }
+
     details {
       overflow: hidden;
       border: 1px solid var(--line);
@@ -607,13 +1066,13 @@
           <img
             class="schematic schematic-image"
             id="directionalSchematic"
-            src="horizontal_well.png"
+            src="./assets/horizontal_well.png"
             alt="Directional horizontal well diagram showing the seabed, kickoff point, dogleg severity, horizontal step-out, and target."
           >
           <img
             class="schematic schematic-image"
             id="verticalSchematic"
-            src="vertical_well.jpeg"
+            src="./assets/vertical_well.jpeg"
             alt="Vertical well diagram showing the seabed, a straight wellbore, and tubing outside diameter."
             style="display:none"
           >
@@ -783,6 +1242,173 @@
       </div>
     </div>
   </section>
+  <section class="json-panel additional-panel" aria-labelledby="targets-heading">
+    <div class="panel-heading">
+      <h2 id="targets-heading">Reservoir target table</h2>
+      <p>Paste or edit targets, review their distribution, then generate the reservoir targets JSON.</p>
+    </div>
+    <div class="target-toolbar" aria-label="Reservoir target table settings">
+      <label class="control">
+        <select id="targetCoordinateMode" aria-label="Coordinate format">
+          <option value="utm">UTM coordinates</option>
+          <option value="geographic">Latitude / longitude</option>
+        </select>
+      </label>
+      <label class="control" for="targetUnitSelect">
+        <select id="targetUnitSelect" aria-label="Coordinate units">
+          <option value="m">Coordinates: m</option>
+          <option value="ft">Coordinates: ft</option>
+        </select>
+      </label>
+      <div class="target-zone-controls" id="targetZoneControls">
+        <label class="control">
+          <select id="targetUtmZoneSelect" aria-label="UTM zone">
+            <option value="">Zone</option>
+          </select>
+        </label>
+        <label class="control">
+          <select id="targetUtmHemisphereSelect" aria-label="UTM hemisphere">
+            <option value="">Hemisphere</option>
+            <option value="N">North</option>
+            <option value="S">South</option>
+          </select>
+        </label>
+      </div>
+      <span class="target-toolbar-spacer"></span>
+      <button class="btn secondary" id="addTargetRowBtn" type="button">Add row</button>
+      <button class="btn secondary" id="copyTargetsTableBtn" type="button">Copy table for Excel</button>
+      <p class="sheet-hint target-coordinate-hint" id="targetCoordinateHint"></p>
+    </div>
+    <p class="sheet-hint">A simulated Búzios development example is prefilled; its coordinates are illustrative, not actual well locations. Replace it with project data or paste from Excel. Column order: Well name, Type, Fluid, X / latitude, Y / longitude, Z start. The interval is fixed at 200 m.</p>
+    <div class="spreadsheet-wrap" role="region" aria-label="Editable reservoir target table" tabindex="0">
+      <table class="spreadsheet" id="targetsTable">
+        <thead>
+          <tr>
+            <th scope="col">Well name</th>
+            <th scope="col">Type</th>
+            <th scope="col">Fluid</th>
+            <th scope="col">Target X (<span id="targetXUnitLabel">m</span>)</th>
+            <th scope="col">Target Y (<span id="targetYUnitLabel">m</span>)</th>
+            <th scope="col">Target Z start (<span class="target-unit-label">m</span>)</th>
+            <th scope="col" aria-label="Row action"></th>
+          </tr>
+        </thead>
+        <tbody id="targetsTableBody"></tbody>
+      </table>
+    </div>
+    <p class="sheet-status" id="targetsStatus" role="status" aria-live="polite"></p>
+    <div class="target-summary" aria-label="Target summary" aria-live="polite">
+      <div class="target-metric">
+        <span class="target-metric-label">Total targets</span>
+        <strong class="target-metric-value" id="targetTotalCount">0</strong>
+      </div>
+      <div class="target-metric">
+        <span class="target-metric-label"><span class="target-fluid-dot" style="--target-color:#16a34a"></span>Oil</span>
+        <strong class="target-metric-value" id="targetOilCount">0</strong>
+      </div>
+      <div class="target-metric">
+        <span class="target-metric-label"><span class="target-fluid-dot" style="--target-color:#2563eb"></span>Water</span>
+        <strong class="target-metric-value" id="targetWaterCount">0</strong>
+      </div>
+      <div class="target-metric">
+        <span class="target-metric-label"><span class="target-fluid-dot" style="--target-color:#dc2626"></span>Gas</span>
+        <strong class="target-metric-value" id="targetGasCount">0</strong>
+      </div>
+      <div class="target-metric">
+        <span class="target-metric-label"><span class="target-fluid-dot" style="--target-color:#6b7280"></span>WAG</span>
+        <strong class="target-metric-value" id="targetWagCount">0</strong>
+      </div>
+    </div>
+    <div class="target-field-results" id="targetFieldResults" aria-label="Identified basins, fields and contract blocks"></div>
+    <section class="target-map-panel" aria-labelledby="targetMapHeading">
+      <div class="target-map-heading">
+        <div>
+          <h3 id="targetMapHeading">Target map</h3>
+          <p id="targetMapSubtitle">UTM coordinate plane · WGS84 conversion for geographic input</p>
+        </div>
+        <div class="target-map-controls" aria-label="Map controls">
+          <button id="targetMapZoomIn" type="button" aria-label="Zoom in" title="Zoom in">+</button>
+          <button id="targetMapZoomOut" type="button" aria-label="Zoom out" title="Zoom out">−</button>
+          <button id="targetMapFit" type="button" aria-label="Fit all targets" title="Fit all targets">↗</button>
+        </div>
+      </div>
+      <div class="target-map" id="targetsMap" role="application" aria-label="Interactive offline map of reservoir targets and ANP boundaries"></div>
+      <ul class="target-map-legend" aria-label="Fluid color legend">
+        <li><span class="target-fluid-dot" style="--target-color:#16a34a"></span>Oil</li>
+        <li><span class="target-fluid-dot" style="--target-color:#2563eb"></span>Water</li>
+        <li><span class="target-fluid-dot" style="--target-color:#dc2626"></span>Gas</li>
+        <li><span class="target-fluid-dot" style="--target-color:#6b7280"></span>WAG</li>
+      </ul>
+      <p class="target-map-attribution">Boundaries: ANP GeoANP WFS snapshot (13 Nov 2026). World outline: Natural Earth. All layers are local; target coordinates are not sent to ANP.</p>
+    </section>
+    <p class="target-map-status" id="targetMapDataStatus" role="status" aria-live="polite">Loading ANP boundary snapshot…</p>
+    <div class="bathymetry-tools" aria-label="GEBCO bathymetry extraction area">
+      <div class="bathymetry-tools-copy">
+        <strong>GEBCO reference area</strong>
+        <p>Drag the center to move the area; drag its corner or edge handles to resize. Targets stay inside the area. Generation sends this WGS84 rectangle to the ODB GEBCO API; target names and rows are not sent.</p>
+      </div>
+      <div class="bathymetry-tools-actions">
+        <button class="btn secondary" id="resetBathymetryBoundsBtn" type="button">Fit to targets</button>
+        <button class="btn secondary" id="copyBathymetryBoundsBtn" type="button">Copy bounds JSON</button>
+      </div>
+      <div class="bathymetry-coordinates" aria-live="polite">
+        <div class="bathymetry-coordinate"><span>South</span><output id="bathymetrySouth">—</output></div>
+        <div class="bathymetry-coordinate"><span>North</span><output id="bathymetryNorth">—</output></div>
+        <div class="bathymetry-coordinate"><span>West</span><output id="bathymetryWest">—</output></div>
+        <div class="bathymetry-coordinate"><span>East</span><output id="bathymetryEast">—</output></div>
+      </div>
+      <div class="bathymetry-generation-controls">
+        <label for="bathymetryGridSpacing">Grid spacing (m)
+          <input id="bathymetryGridSpacing" type="number" min="100" max="2000" step="50" value="200">
+        </label>
+        <button class="btn" id="generateBathymetryBtn" type="button">Generate &amp; download bathymetry</button>
+        <button class="btn secondary" id="downloadBathymetryBtn" type="button" hidden>Download grid again</button>
+        <p class="bathymetry-generation-status" id="bathymetryGenerationStatus" role="status" aria-live="polite"></p>
+      </div>
+    </div>
+    <section class="bathymetry-result" id="bathymetryResult" aria-labelledby="bathymetryResultHeading" hidden>
+      <div class="bathymetry-result-heading">
+        <h3 id="bathymetryResultHeading">Bathymetry and reservoir targets · 3D</h3>
+        <span class="bathymetry-result-meta" id="bathymetryResultMeta"></span>
+      </div>
+      <p class="bathymetry-result-status" id="bathymetryResultStatus" role="status" aria-live="polite"></p>
+      <div class="bathymetry-view-controls" aria-label="Bathymetry 3D view controls">
+        <div class="bathymetry-view-presets" role="group" aria-label="Camera view">
+          <button class="btn secondary" data-bathymetry-camera="3d" type="button">3D view</button>
+          <button class="btn secondary" data-bathymetry-camera="top" type="button">Top view</button>
+          <button class="btn secondary" data-bathymetry-camera="contour" type="button">Contour map</button>
+          <button class="btn secondary" data-bathymetry-camera="level" type="button">Surface-level view</button>
+        </div>
+        <div class="bathymetry-layer-toggles" aria-label="Visible model layers">
+          <label><input type="checkbox" data-bathymetry-layer="seabed" checked> Bathymetry</label>
+          <label><input type="checkbox" data-bathymetry-layer="targets" checked> Subsurface targets</label>
+          <label><input type="checkbox" data-bathymetry-layer="trees" checked> XTrees</label>
+          <label><input type="checkbox" data-bathymetry-layer="water" checked> Water</label>
+          <label><input type="checkbox" id="bathymetryFlatSurface"> Level seabed</label>
+          <label><input type="checkbox" id="bathymetryShowAxes" checked> Axes</label>
+          <label><input type="checkbox" id="bathymetryShowElevationScale" checked> Elevation scale</label>
+        </div>
+      </div>
+      <div class="bathymetry-3d-plot" id="bathymetry3dPlot" role="img" aria-label="Interactive GEBCO bathymetry visualization with reservoir targets"></div>
+      <ul class="bathymetry-model-legend" id="bathymetryModelLegend" aria-label="Target fluid legend">
+        <li><span class="bathymetry-legend-symbol" style="--legend-color:#16a34a"></span>Oil targets &amp; XTrees</li>
+        <li><span class="bathymetry-legend-symbol" style="--legend-color:#2563eb"></span>Water targets &amp; XTrees</li>
+        <li><span class="bathymetry-legend-symbol" style="--legend-color:#dc2626"></span>Gas targets &amp; XTrees</li>
+        <li><span class="bathymetry-legend-symbol" style="--legend-color:#6b7280"></span>WAG targets &amp; XTrees</li>
+        <li><span class="bathymetry-legend-symbol" style="--legend-color:#58b9d1"></span>Transparent water layer</li>
+      </ul>
+      <p class="bathymetry-result-note">Source: <a href="https://www.gebco.net/data_and_products/gridded_bathymetry_data/" target="_blank" rel="noopener noreferrer">GEBCO 2023 Grid</a> via the <a href="https://api.odb.ntu.edu.tw/gebco" target="_blank" rel="noopener noreferrer">Ocean Data Bank API</a>. Small colored cubes mark schematic wet XTrees above the seabed; smaller colored points and intervals show targets at their original subsurface Z positions. Hover for seabed depth, target Z and interval end. Vertical relief and XTree symbols are not to scale; elevations and target Z are in meters relative to sea level.</p>
+    </section>
+    <div class="sheet-footer">
+      <div class="actions">
+        <button class="btn" id="downloadTargetsBtn" type="button">Generate &amp; download JSON</button>
+      </div>
+    </div>
+    <details style="margin-top:16px">
+      <summary>Reservoir targets JSON preview</summary>
+      <pre id="targetsJsonPreview" aria-live="polite"></pre>
+    </details>
+  </section>
   <section class="json-panel" aria-label="Engineering references">
     <details>
       <summary>Parameter notes &amp; engineering references</summary>
@@ -795,6 +1421,34 @@
     </details>
   </section>
 
+  <template id="targetRowTemplate">
+    <tr>
+      <td><input type="text" placeholder="e.g. P1" aria-label="Well name"></td>
+      <td>
+        <select aria-label="Well type">
+          <option value="">Select type</option>
+          <option value="producer">producer</option>
+          <option value="injector">injector</option>
+        </select>
+      </td>
+      <td>
+        <select aria-label="Fluid type">
+          <option value="">Select fluid</option>
+          <option value="oil">oil</option>
+          <option value="gas">gas</option>
+          <option value="water">water</option>
+          <option value="wag">wag</option>
+        </select>
+      </td>
+      <td><input type="text" inputmode="decimal" placeholder="Easting" aria-label="Target X"></td>
+      <td><input type="text" inputmode="decimal" placeholder="Northing" aria-label="Target Y"></td>
+      <td><input type="text" inputmode="decimal" placeholder="Negative depth" aria-label="Target Z start"></td>
+      <td><button class="sheet-remove" type="button" aria-label="Remove target row" title="Remove row">×</button></td>
+    </tr>
+  </template>
+
+  <script src="./vendor/leaflet-1.9.4.js"></script>
+  <script src="./data/anp-boundaries.js"></script>
   <script>
     "use strict";
 
@@ -863,6 +1517,92 @@
       dls: document.getElementById("dlsUnitSelect"),
       measuredDepth: document.getElementById("measuredDepthUnitSelect")
     };
+    const TARGET_UOM_IDS = {
+      m: "qa-weu-des-prod-testing-eu:reference-data--UnitOfMeasure:m:1",
+      ft: "qa-weu-des-prod-testing-eu:reference-data--UnitOfMeasure:ft:1"
+    };
+    const TARGET_INTERVAL_METERS = 200;
+    const DEFAULT_TARGET_EXAMPLE = [
+      ["BZ-PRD-01", "producer", "oil", -24.8444, -42.53794, -2500],
+      ["BZ-PRD-02", "producer", "oil", -24.5186, -42.4099, -2550],
+      ["BZ-PRD-03", "producer", "oil", -24.59462, -42.6815, -2600],
+      ["BZ-PRD-04", "producer", "oil", -24.73942, -42.3323, -2650],
+      ["BZ-PRD-05", "producer", "oil", -24.66702, -42.51078, -2700],
+      ["BZ-PRD-06", "producer", "oil", -24.5186, -42.55734, -2750],
+      ["BZ-PRD-07", "producer", "oil", -24.76838, -42.4487, -2800],
+      ["BZ-PRD-08", "producer", "oil", -24.63444, -42.39826, -2850],
+      ["BZ-PRD-09", "producer", "gas", -24.68512, -42.61942, -2500],
+      ["BZ-PRD-10", "producer", "gas", -24.57652, -42.48362, -2550],
+      ["BZ-PRD-11", "producer", "gas", -24.7539, -42.53794, -2600],
+      ["BZ-PRD-12", "producer", "gas", -24.60548, -42.57674, -2650],
+      ["BZ-INJ-01", "injector", "water", -24.52946, -42.63494, -2700],
+      ["BZ-INJ-02", "injector", "water", -24.8444, -42.46034, -2750],
+      ["BZ-INJ-03", "injector", "water", -24.71046, -42.40214, -2800],
+      ["BZ-INJ-04", "injector", "water", -24.7901, -42.3711, -2850],
+      ["BZ-INJ-05", "injector", "wag", -24.67064, -42.4487, -2500],
+      ["BZ-INJ-06", "injector", "wag", -24.58014, -42.42154, -2550],
+      ["BZ-INJ-07", "injector", "wag", -24.72132, -42.4875, -2600],
+      ["BZ-INJ-08", "injector", "wag", -24.5186, -42.49526, -2650]
+    ];
+    const TARGET_FLUID_COLORS = {
+      oil: "#16a34a",
+      water: "#2563eb",
+      gas: "#dc2626",
+      wag: "#6b7280"
+    };
+    const WGS84 = { a: 6378137, eccentricitySquared: 0.00669437999014, scale: 0.9996 };
+    const targetsBody = document.getElementById("targetsTableBody");
+    const targetRowTemplate = document.getElementById("targetRowTemplate");
+    const targetPreview = document.getElementById("targetsJsonPreview");
+    const targetStatus = document.getElementById("targetsStatus");
+    const targetUnitSelect = document.getElementById("targetUnitSelect");
+    const targetCoordinateMode = document.getElementById("targetCoordinateMode");
+    const targetZoneSelect = document.getElementById("targetUtmZoneSelect");
+    const targetHemisphereSelect = document.getElementById("targetUtmHemisphereSelect");
+    const targetZoneControls = document.getElementById("targetZoneControls");
+    const targetsMap = document.getElementById("targetsMap");
+    const targetBoundaryData = window.FDPlanBoundaryData;
+    const targetMap = L.map(targetsMap, {
+      crs: L.CRS.Simple,
+      minZoom: -2,
+      maxZoom: 12,
+      zoomSnap: 0.25,
+      zoomDelta: 0.5,
+      preferCanvas: true,
+      maxBounds: [[-90, -180], [90, 180]],
+      maxBoundsViscosity: 0.8,
+      zoomControl: false,
+      attributionControl: true
+    });
+    const worldMapBounds = [[-90, -180], [90, 180]];
+    const targetMarkerLayer = L.layerGroup().addTo(targetMap);
+    const targetWellMarkers = [];
+    const matchedBoundaryLayer = L.layerGroup().addTo(targetMap);
+    const bathymetryAreaLayer = L.layerGroup();
+    const bathymetryHandleLayer = L.layerGroup();
+    const bathymetryToolsLayer = L.layerGroup([bathymetryAreaLayer, bathymetryHandleLayer]).addTo(targetMap);
+    const boundaryFeatureIndexes = {
+      basin: [],
+      field: [],
+      block: []
+    };
+    let bathymetryBounds = null;
+    let bathymetryRectangle = null;
+    let bathymetryBoundsEdited = false;
+    let bathymetryGenerationSignature = null;
+    let generatedBathymetry = null;
+    let plotlyLoadPromise = null;
+    let bathymetryViewControlsBound = false;
+    let activeBathymetryPlot = null;
+    let activeBathymetryGrid = null;
+    let activeBathymetryTargets = [];
+    let activeBathymetryView = "3d";
+    let targetCurrentUnit = targetUnitSelect.value;
+    let targetCurrentCoordinateMode = targetCoordinateMode.value;
+    let targetMapUserAdjusted = false;
+    let targetMapFitting = false;
+    let targetWellLabelCount = 0;
+
     function rounded(value, digits) {
       if (!Number.isFinite(value)) return null;
       const factor = 10 ** digits;
@@ -1035,6 +1775,2096 @@
       renderPreview();
     }
 
+    function parseTargetNumber(raw) {
+      let value = String(raw ?? "").trim().replace(/\s/g, "");
+      if (!value) return null;
+      if (value.includes(",") && value.includes(".")) {
+        if (value.lastIndexOf(",") > value.lastIndexOf(".")) {
+          value = value.replace(/\./g, "").replace(",", ".");
+        } else {
+          value = value.replace(/,/g, "");
+        }
+      } else if (value.includes(",")) {
+        value = value.replace(",", ".");
+      }
+      if (!/^[+-]?(?:\d+\.?\d*|\.\d+)(?:e[+-]?\d+)?$/i.test(value)) return null;
+      const number = Number(value);
+      return Number.isFinite(number) ? number : null;
+    }
+
+    function parseGeographicCoordinate(raw, axis) {
+      const text = String(raw ?? "").trim();
+      if (!text) return null;
+      const limit = axis === "latitude" ? 90 : 180;
+      const decimal = parseTargetNumber(text);
+      if (decimal !== null) return Math.abs(decimal) <= limit ? decimal : null;
+      const compactDecimal = text.match(/^\s*([+-]?\d+(?:[.,]\d+)?)\s*([NSEW])\s*$/i);
+      if (compactDecimal) {
+        const value = parseTargetNumber(compactDecimal[1]);
+        const direction = compactDecimal[2].toUpperCase();
+        if (value === null || Math.abs(value) > limit
+          || (axis === "latitude" && ["E", "W"].includes(direction))
+          || (axis === "longitude" && ["N", "S"].includes(direction))) return null;
+        const magnitude = Math.abs(value);
+        return ["S", "W"].includes(direction) ? -magnitude : magnitude;
+      }
+      const match = text.match(
+        /^\s*([+-]?\d+(?:[.,]\d+)?)(?:\s*(?:°|º|d|deg)\s*|\s+)(?:(\d+(?:[.,]\d+)?)(?:\s*(?:['′]|m(?:in)?)\s*|\s+))?(?:(\d+(?:[.,]\d+)?)(?:\s*(?:["″]|s(?:ec)?)\s*)?)?\s*([NSEW])?\s*$/i
+      );
+      if (!match) return null;
+      const degrees = parseTargetNumber(match[1]);
+      const minutes = match[2] ? parseTargetNumber(match[2]) : 0;
+      const seconds = match[3] ? parseTargetNumber(match[3]) : 0;
+      const direction = (match[4] ?? "").toUpperCase();
+      if (degrees === null || minutes === null || seconds === null
+        || minutes >= 60 || seconds >= 60 || minutes < 0 || seconds < 0) return null;
+      if (axis === "latitude" && ["E", "W"].includes(direction)) return null;
+      if (axis === "longitude" && ["N", "S"].includes(direction)) return null;
+      const magnitude = Math.abs(degrees) + minutes / 60 + seconds / 3600;
+      if (magnitude > limit || (magnitude === limit && (minutes > 0 || seconds > 0))) return null;
+      const negative = direction ? ["S", "W"].includes(direction) : degrees < 0;
+      return negative ? -magnitude : magnitude;
+    }
+
+    function formatGeographicCoordinate(value) {
+      const roundedValue = Math.round(value * 1e7) / 1e7;
+      return (Object.is(roundedValue, -0) ? 0 : roundedValue).toFixed(7);
+    }
+
+    function utmZoneFor(longitude, latitude) {
+      if (longitude === 180) return 60;
+      let zone = Math.floor((longitude + 180) / 6) + 1;
+      if (latitude >= 56 && latitude < 64 && longitude >= 3 && longitude < 12) zone = 32;
+      if (latitude >= 72 && latitude <= 84) {
+        if (longitude >= 0 && longitude < 9) zone = 31;
+        else if (longitude >= 9 && longitude < 21) zone = 33;
+        else if (longitude >= 21 && longitude < 33) zone = 35;
+        else if (longitude >= 33 && longitude < 42) zone = 37;
+      }
+      return Math.max(1, Math.min(60, zone));
+    }
+
+    function utmHemisphereFor(latitude) {
+      return latitude < 0 || Object.is(latitude, -0) ? "S" : "N";
+    }
+
+    function geographicToUtm(latitude, longitude, zone, hemisphere) {
+      const { a, eccentricitySquared: e2, scale: k0 } = WGS84;
+      const eccentricityPrimeSquared = e2 / (1 - e2);
+      const lat = latitude * Math.PI / 180;
+      const lon = longitude * Math.PI / 180;
+      const lonOrigin = (zone - 1) * 6 - 180 + 3;
+      const lonOriginRadians = lonOrigin * Math.PI / 180;
+      const sinLat = Math.sin(lat);
+      const cosLat = Math.cos(lat);
+      const tanLat = Math.tan(lat);
+      const n = a / Math.sqrt(1 - e2 * sinLat * sinLat);
+      const t = tanLat * tanLat;
+      const c = eccentricityPrimeSquared * cosLat * cosLat;
+      const aa = cosLat * (lon - lonOriginRadians);
+      const e4 = e2 * e2;
+      const e6 = e4 * e2;
+      const meridian = a * (
+        (1 - e2 / 4 - 3 * e4 / 64 - 5 * e6 / 256) * lat
+        - (3 * e2 / 8 + 3 * e4 / 32 + 45 * e6 / 1024) * Math.sin(2 * lat)
+        + (15 * e4 / 256 + 45 * e6 / 1024) * Math.sin(4 * lat)
+        - (35 * e6 / 3072) * Math.sin(6 * lat)
+      );
+      const easting = 500000 + k0 * n * (
+        aa + (1 - t + c) * aa ** 3 / 6
+        + (5 - 18 * t + t ** 2 + 72 * c - 58 * eccentricityPrimeSquared) * aa ** 5 / 120
+      );
+      let northing = k0 * (
+        meridian + n * tanLat * (
+          aa ** 2 / 2
+          + (5 - t + 9 * c + 4 * c ** 2) * aa ** 4 / 24
+          + (61 - 58 * t + t ** 2 + 600 * c - 330 * eccentricityPrimeSquared) * aa ** 6 / 720
+        )
+      );
+      if (hemisphere === "S") northing += 10000000;
+      return { x: easting, y: northing };
+    }
+
+    function utmToGeographic(easting, northing, zone, hemisphere) {
+      const { a, eccentricitySquared: e2, scale: k0 } = WGS84;
+      const eccentricityPrimeSquared = e2 / (1 - e2);
+      const e1 = (1 - Math.sqrt(1 - e2)) / (1 + Math.sqrt(1 - e2));
+      const x = easting - 500000;
+      const y = northing - (hemisphere === "S" ? 10000000 : 0);
+      const meridian = y / k0;
+      const mu = meridian / (a * (1 - e2 / 4 - 3 * e2 ** 2 / 64 - 5 * e2 ** 3 / 256));
+      const j1 = 3 * e1 / 2 - 27 * e1 ** 3 / 32;
+      const j2 = 21 * e1 ** 2 / 16 - 55 * e1 ** 4 / 32;
+      const j3 = 151 * e1 ** 3 / 96;
+      const j4 = 1097 * e1 ** 4 / 512;
+      const footprintLatitude = mu + j1 * Math.sin(2 * mu) + j2 * Math.sin(4 * mu)
+        + j3 * Math.sin(6 * mu) + j4 * Math.sin(8 * mu);
+      const sinFootprint = Math.sin(footprintLatitude);
+      const cosFootprint = Math.cos(footprintLatitude);
+      const tanFootprint = Math.tan(footprintLatitude);
+      const c1 = eccentricityPrimeSquared * cosFootprint ** 2;
+      const t1 = tanFootprint ** 2;
+      const n1 = a / Math.sqrt(1 - e2 * sinFootprint ** 2);
+      const r1 = a * (1 - e2) / (1 - e2 * sinFootprint ** 2) ** 1.5;
+      const d = x / (n1 * k0);
+      const latitude = footprintLatitude - (n1 * tanFootprint / r1) * (
+        d ** 2 / 2
+        - (5 + 3 * t1 + 10 * c1 - 4 * c1 ** 2 - 9 * eccentricityPrimeSquared) * d ** 4 / 24
+        + (61 + 90 * t1 + 298 * c1 + 45 * t1 ** 2 - 252 * eccentricityPrimeSquared - 3 * c1 ** 2) * d ** 6 / 720
+      );
+      const longitudeOrigin = (zone - 1) * 6 - 180 + 3;
+      const longitude = (d - (1 + 2 * t1 + c1) * d ** 3 / 6
+        + (5 - 2 * c1 + 28 * t1 - 3 * c1 ** 2 + 8 * eccentricityPrimeSquared + 24 * t1 ** 2) * d ** 5 / 120)
+        / cosFootprint;
+      return { latitude: latitude * 180 / Math.PI, longitude: longitudeOrigin + longitude * 180 / Math.PI };
+    }
+
+    function normalizeTargetType(value) {
+      const type = String(value ?? "").trim().toLowerCase();
+      if (type === "producer" || type === "p" || type.startsWith("prod")) return "producer";
+      if (type === "injector" || type === "i" || type.startsWith("inj")) return "injector";
+      return "";
+    }
+
+    function normalizeTargetFluid(value) {
+      const fluid = String(value ?? "").trim().toLowerCase();
+      if (fluid === "wag" || fluid.startsWith("wag")) return "wag";
+      if (fluid === "oil" || fluid.startsWith("o")) return "oil";
+      if (fluid === "gas" || fluid.startsWith("g")) return "gas";
+      if (fluid === "water" || fluid === "w" || fluid.startsWith("wat")) return "water";
+      return "";
+    }
+
+    function addTargetRow() {
+      targetsBody.appendChild(targetRowTemplate.content.firstElementChild.cloneNode(true));
+      syncTargetCoordinateLabels();
+    }
+
+    function loadDefaultTargetExample() {
+      targetCoordinateMode.value = "geographic";
+      targetCurrentCoordinateMode = "geographic";
+      syncTargetCoordinateLabels();
+
+      DEFAULT_TARGET_EXAMPLE.forEach((values, index) => {
+        if (targetsBody.rows.length <= index) addTargetRow();
+        const row = targetsBody.rows[index];
+        const [name, type, fluid, latitude, longitude, depth] = values;
+        const [nameInput, typeSelect, fluidSelect, latitudeInput, longitudeInput, depthInput] =
+          targetRowCells(row);
+        nameInput.value = name;
+        typeSelect.value = type;
+        fluidSelect.value = fluid;
+        latitudeInput.value = String(latitude);
+        longitudeInput.value = String(longitude);
+        depthInput.value = String(depth);
+        row.dataset.touched = "true";
+      });
+    }
+
+    function targetRowCells(row) {
+      return [...row.querySelectorAll("input, select")];
+    }
+
+    function parseTargetClipboard(text) {
+      const delimiter = text.includes("\t") ? "\t" : ",";
+      const rows = [];
+      let row = [];
+      let cell = "";
+      let quoted = false;
+      for (let index = 0; index < text.length; index += 1) {
+        const character = text[index];
+        if (character === '"') {
+          if (quoted && text[index + 1] === '"') {
+            cell += '"';
+            index += 1;
+          } else if (quoted || cell.length === 0) {
+            quoted = !quoted;
+          } else {
+            cell += character;
+          }
+        } else if (!quoted && character === delimiter) {
+          row.push(cell);
+          cell = "";
+        } else if (!quoted && (character === "\n" || character === "\r")) {
+          if (character === "\r" && text[index + 1] === "\n") index += 1;
+          row.push(cell);
+          rows.push(row);
+          row = [];
+          cell = "";
+        } else {
+          cell += character;
+        }
+      }
+      if (cell.length > 0 || row.length > 0) {
+        row.push(cell);
+        rows.push(row);
+      }
+      while (rows.length && rows[rows.length - 1].every((value) => value.trim() === "")) rows.pop();
+      return rows;
+    }
+
+    function isTargetHeaderRow(row) {
+      const headers = row.map((value) => value.trim().toLowerCase());
+      return (headers[0] === "well name" || headers[0] === "name")
+        && headers[1]?.includes("type")
+        && headers[2]?.includes("fluid")
+        && (headers[3]?.includes("x") || headers[3]?.includes("latitude"));
+    }
+
+    function setTargetCell(row, column, raw) {
+      const cell = targetRowCells(row)[column];
+      if (!cell) return;
+      const value = String(raw ?? "").trim();
+      if (column === 0) {
+        cell.value = value;
+      } else if (column === 1) {
+        cell.value = normalizeTargetType(value);
+      } else if (column === 2) {
+        cell.value = normalizeTargetFluid(value);
+      } else if (column === 3 || column === 4) {
+        const number = parseTargetNumber(value);
+        cell.value = targetCoordinateMode.value === "geographic" || number === null
+          ? value
+          : String(number);
+      } else {
+        const number = parseTargetNumber(value);
+        cell.value = number === null
+          ? value
+          : String(column === 5 ? -Math.abs(number) : number);
+      }
+      if (value) row.dataset.touched = "true";
+    }
+
+    function pasteTargetMatrix(target, matrix) {
+      const startRow = target.closest("tr");
+      if (!startRow) return;
+      const startRowIndex = [...targetsBody.rows].indexOf(startRow);
+      const startColumn = targetRowCells(startRow).indexOf(target);
+      if (startRowIndex < 0 || startColumn < 0) return;
+      const cells = isTargetHeaderRow(matrix[0] ?? []) ? matrix.slice(1) : matrix;
+      if (cells.length === 0) {
+        setTargetStatus("The pasted range contains headers but no target rows.", "error");
+        return;
+      }
+      const requiredRowCount = startRowIndex + cells.length;
+      while (targetsBody.rows.length < requiredRowCount) addTargetRow();
+      cells.forEach((values, rowOffset) => {
+        const row = targetsBody.rows[startRowIndex + rowOffset];
+        values.slice(0, 6 - startColumn).forEach((value, columnOffset) => {
+          setTargetCell(row, startColumn + columnOffset, value);
+        });
+        row.dataset.touched = "true";
+      });
+      renderTargetData();
+      if (collectTargetRows().errors.length === 0) {
+        setTargetStatus(`Pasted ${cells.length} row(s). Review the table, then generate the JSON.`, "success");
+      }
+    }
+
+    function collectTargetRows() {
+      const targets = [];
+      const errors = [];
+      const mapTargets = [];
+      const seenNames = new Set();
+      const coordinateMode = targetCoordinateMode.value;
+      const rows = [...targetsBody.rows];
+      let projectionZone = coordinateMode === "utm" ? Number(targetZoneSelect.value) || null : null;
+      let projectionHemisphere = coordinateMode === "utm" ? targetHemisphereSelect.value : "N";
+
+      if (coordinateMode === "geographic") {
+        for (const row of rows) {
+          const cells = targetRowCells(row);
+          const latitude = parseGeographicCoordinate(cells[3].value, "latitude");
+          const longitude = parseGeographicCoordinate(cells[4].value, "longitude");
+          if (latitude !== null && latitude >= -80 && latitude <= 84 && longitude !== null) {
+            projectionZone = utmZoneFor(longitude, latitude);
+            projectionHemisphere = utmHemisphereFor(latitude);
+            break;
+          }
+        }
+      }
+
+      rows.forEach((row, index) => {
+        const [nameInput, typeSelect, fluidSelect, xInput, yInput, zInput] = targetRowCells(row);
+        const name = nameInput.value.trim();
+        const rawValues = [name, typeSelect.value, fluidSelect.value, xInput.value, yInput.value, zInput.value];
+        if (row.dataset.touched !== "true" && rawValues.every((value) => value.trim() === "")) return;
+        if (rawValues.every((value) => value.trim() === "")) return;
+
+        const rowNumber = index + 1;
+        const rowErrors = [];
+        const xLabel = coordinateMode === "geographic" ? "Latitude" : "Target X";
+        const yLabel = coordinateMode === "geographic" ? "Longitude" : "Target Y";
+        if (!name) rowErrors.push("Well name");
+        if (!typeSelect.value) rowErrors.push("Type");
+        if (!fluidSelect.value) rowErrors.push("Fluid");
+        const x = coordinateMode === "geographic"
+          ? parseGeographicCoordinate(xInput.value, "latitude")
+          : parseTargetNumber(xInput.value);
+        const y = coordinateMode === "geographic"
+          ? parseGeographicCoordinate(yInput.value, "longitude")
+          : parseTargetNumber(yInput.value);
+        const z = parseTargetNumber(zInput.value);
+        if (x === null) rowErrors.push(xLabel);
+        if (y === null) rowErrors.push(yLabel);
+        if (z === null) rowErrors.push("Target Z start");
+        if (name) {
+          const normalizedName = name.toLowerCase();
+          if (seenNames.has(normalizedName)) rowErrors.push("Duplicate well name");
+          seenNames.add(normalizedName);
+        }
+        if (rowErrors.length > 0) {
+          errors.push(`Row ${rowNumber}: ${rowErrors.join(", ")}`);
+          return;
+        }
+
+        let targetX = x;
+        let targetY = y;
+        if (coordinateMode === "geographic") {
+          if (x < -80 || x > 84) {
+            errors.push(`Row ${rowNumber}: Latitude must be between 80°S and 84°N for UTM.`);
+            return;
+          }
+          const rowZone = utmZoneFor(y, x);
+          const rowHemisphere = utmHemisphereFor(x);
+          if (rowZone !== projectionZone || (x !== 0 && rowHemisphere !== projectionHemisphere)) {
+            errors.push(
+              `Row ${rowNumber}: Coordinates resolve to UTM ${rowZone}${rowHemisphere}; all targets must share UTM ${projectionZone}${projectionHemisphere}.`
+            );
+            return;
+          }
+          const utm = geographicToUtm(x, y, projectionZone, projectionHemisphere);
+          const unitFactor = targetUnitSelect.value === "ft" ? 3.28084 : 1;
+          targetX = utm.x * unitFactor;
+          targetY = utm.y * unitFactor;
+        }
+
+        const zStart = -Math.abs(z);
+        const interval = targetUnitSelect.value === "m"
+          ? TARGET_INTERVAL_METERS
+          : TARGET_INTERVAL_METERS * 3.28084;
+        const start = { x: targetX, y: targetY, z: zStart };
+        const end = { x: targetX, y: targetY, z: zStart - interval };
+        targets.push({
+          name,
+          type: typeSelect.value,
+          completion_intervals: [{ start, end }],
+          reservoir_trajectory: [start, end],
+          fluid_type: fluidSelect.value
+        });
+        let latitude;
+        let longitude;
+        if (coordinateMode === "geographic") {
+          latitude = x;
+          longitude = y;
+        } else if (projectionZone && projectionHemisphere) {
+          const unitFactor = targetUnitSelect.value === "ft" ? METERS_PER_FOOT : 1;
+          const geographic = utmToGeographic(targetX * unitFactor, targetY * unitFactor, projectionZone, projectionHemisphere);
+          latitude = geographic.latitude;
+          longitude = geographic.longitude;
+        }
+        if (Number.isFinite(latitude) && Number.isFinite(longitude)
+          && latitude >= -90 && latitude <= 90 && longitude >= -180 && longitude <= 180) {
+          mapTargets.push({
+            name,
+            fluid: fluidSelect.value,
+            latitude,
+            longitude,
+            eastingMeters: targetX * (targetUnitSelect.value === "ft" ? METERS_PER_FOOT : 1),
+            northingMeters: targetY * (targetUnitSelect.value === "ft" ? METERS_PER_FOOT : 1),
+            zStartMeters: start.z * (targetUnitSelect.value === "ft" ? METERS_PER_FOOT : 1),
+            zEndMeters: end.z * (targetUnitSelect.value === "ft" ? METERS_PER_FOOT : 1)
+          });
+        }
+      });
+      return { targets, errors, mapTargets, projectionZone, projectionHemisphere };
+    }
+
+    function buildTargetsPayload(targets) {
+      const unitId = TARGET_UOM_IDS[targetUnitSelect.value];
+      return {
+        crs_information: {
+          XUnitOfMeasureID: unitId,
+          YUnitOfMeasureID: unitId,
+          ZUnitOfMeasureID: unitId
+        },
+        reservoir_targets: targets
+      };
+    }
+
+    function setTargetStatus(message, kind = "") {
+      targetStatus.textContent = message;
+      targetStatus.dataset.error = String(kind === "error");
+      targetStatus.dataset.success = String(kind === "success");
+    }
+
+    function geometryBounds(geometry) {
+      const bounds = { minX: Infinity, maxX: -Infinity, minY: Infinity, maxY: -Infinity };
+      const visit = (coordinates) => {
+        if (!Array.isArray(coordinates)) return;
+        if (coordinates.length >= 2 && Number.isFinite(coordinates[0]) && Number.isFinite(coordinates[1])) {
+          bounds.minX = Math.min(bounds.minX, coordinates[0]);
+          bounds.maxX = Math.max(bounds.maxX, coordinates[0]);
+          bounds.minY = Math.min(bounds.minY, coordinates[1]);
+          bounds.maxY = Math.max(bounds.maxY, coordinates[1]);
+          return;
+        }
+        coordinates.forEach(visit);
+      };
+      visit(geometry.coordinates);
+      return bounds;
+    }
+
+    function indexBoundaryFeatures(collection, kind) {
+      return collection.features.map((feature) => ({
+        ...feature,
+        properties: { ...feature.properties, _boundaryKind: kind },
+        bounds: geometryBounds(feature.geometry)
+      }));
+    }
+
+    function pointInRing(x, y, ring) {
+      let inside = false;
+      for (let index = 0, previous = ring.length - 1; index < ring.length; previous = index, index += 1) {
+        const [xi, yi] = ring[index];
+        const [xj, yj] = ring[previous];
+        const cross = (x - xi) * (yj - yi) - (y - yi) * (xj - xi);
+        const withinSegment = x >= Math.min(xi, xj) - 1e-10 && x <= Math.max(xi, xj) + 1e-10
+          && y >= Math.min(yi, yj) - 1e-10 && y <= Math.max(yi, yj) + 1e-10;
+        if (Math.abs(cross) < 1e-10 && withinSegment) return true;
+        if ((yi > y) !== (yj > y) && x < (xj - xi) * (y - yi) / (yj - yi) + xi) inside = !inside;
+      }
+      return inside;
+    }
+
+    function pointInBoundaryFeature(x, y, feature) {
+      const { minX, maxX, minY, maxY } = feature.bounds;
+      if (x < minX || x > maxX || y < minY || y > maxY) return false;
+      const polygons = feature.geometry.type === "Polygon"
+        ? [feature.geometry.coordinates]
+        : feature.geometry.type === "MultiPolygon"
+          ? feature.geometry.coordinates
+          : [];
+      return polygons.some((rings) => rings.length > 0
+        && pointInRing(x, y, rings[0])
+        && !rings.slice(1).some((ring) => pointInRing(x, y, ring)));
+    }
+
+    function boundaryMatches(point, kind) {
+      return boundaryFeatureIndexes[kind]
+        .filter((feature) => pointInBoundaryFeature(point.longitude, point.latitude, feature));
+    }
+
+    function identifyTargetBoundaries(points) {
+      return points.map((point) => ({
+        ...point,
+        basinMatches: boundaryMatches(point, "basin"),
+        fieldMatches: boundaryMatches(point, "field"),
+        blockMatches: boundaryMatches(point, "block")
+      }));
+    }
+
+    function renderBoundaryResults(points) {
+      const container = document.getElementById("targetFieldResults");
+      container.replaceChildren();
+      if (points.length === 0) return;
+
+      const categories = [
+        {
+          kind: "basin",
+          label: "Basin",
+          getNames: (point) => point.basinMatches.map((feature) => feature.properties.name)
+        },
+        {
+          kind: "field",
+          label: "Field",
+          getNames: (point) => point.fieldMatches.map((feature) => feature.properties.name)
+        },
+        {
+          kind: "contract",
+          label: "Contract",
+          getNames: (point) => point.blockMatches.map(
+            (feature) => feature.properties.alternateName || feature.properties.name
+          )
+        }
+      ];
+      const namesByCategory = new Map(categories.map(({ kind }) => [kind, new Set()]));
+      points.forEach((point) => {
+        categories.forEach(({ kind, getNames }) => {
+          const names = getNames(point).filter(Boolean);
+          const exactNames = new Set(names);
+          names.forEach((name) => {
+            const duplicateEconomicArea = kind === "field"
+              && /_ECO$/i.test(name)
+              && exactNames.has(name.replace(/_ECO$/i, ""));
+            if (!duplicateEconomicArea) namesByCategory.get(kind).add(name);
+          });
+        });
+      });
+
+      categories.forEach(({ kind, label }) => {
+        const names = [...namesByCategory.get(kind)].sort((left, right) => left.localeCompare(right));
+        if (names.length === 0) return;
+
+        const group = document.createElement("div");
+        group.className = "boundary-tag-group";
+        group.dataset.kind = kind;
+        const heading = document.createElement("span");
+        heading.className = "boundary-tag-label";
+        heading.textContent = `${label}${names.length === 1 ? "" : "s"}`;
+        group.append(heading);
+        names.forEach((name) => {
+          const tag = document.createElement("span");
+          tag.className = "boundary-tag";
+          tag.textContent = name;
+          group.append(tag);
+        });
+        container.append(group);
+      });
+    }
+
+    function targetExtent(points) {
+      if (points.length === 0) return null;
+      const latitudes = points.map((point) => point.latitude);
+      const longitudes = points.map((point) => point.longitude);
+      return {
+        south: Math.min(...latitudes),
+        north: Math.max(...latitudes),
+        west: Math.min(...longitudes),
+        east: Math.max(...longitudes)
+      };
+    }
+
+    function paddedBathymetryBounds(points) {
+      const extent = targetExtent(points);
+      if (!extent) return null;
+      const latitudePadding = Math.max((extent.north - extent.south) * 0.1, 0.025);
+      const longitudePadding = Math.max((extent.east - extent.west) * 0.1, 0.025);
+      return L.latLngBounds(
+        [Math.max(-90, extent.south - latitudePadding), Math.max(-180, extent.west - longitudePadding)],
+        [Math.min(90, extent.north + latitudePadding), Math.min(180, extent.east + longitudePadding)]
+      );
+    }
+
+    function bathymetryBoundsObject(bounds = bathymetryBounds) {
+      if (!bounds?.isValid()) return null;
+      const southWest = bounds.getSouthWest();
+      const northEast = bounds.getNorthEast();
+      const round = (value) => Math.round(value * 1e6) / 1e6;
+      return {
+        south: round(southWest.lat),
+        north: round(northEast.lat),
+        west: round(southWest.lng),
+        east: round(northEast.lng)
+      };
+    }
+
+    function syncBathymetryBoundsReadout() {
+      const values = bathymetryBoundsObject();
+      for (const [key, id] of Object.entries({
+        south: "bathymetrySouth",
+        north: "bathymetryNorth",
+        west: "bathymetryWest",
+        east: "bathymetryEast"
+      })) {
+        document.getElementById(id).textContent = values ? String(values[key]) : "—";
+      }
+      updateBathymetryResultFreshness();
+    }
+
+    function currentBathymetrySignature() {
+      return JSON.stringify({
+        bounds: bathymetryBoundsObject(),
+        spacing: document.getElementById("bathymetryGridSpacing").value,
+        coordinateMode: targetCoordinateMode.value,
+        unit: targetUnitSelect.value,
+        zone: targetZoneSelect.value,
+        hemisphere: targetHemisphereSelect.value,
+        targets: [...targetsBody.rows].map((row) => targetRowCells(row).map((cell) => cell.value))
+      });
+    }
+
+    function updateBathymetryResultFreshness() {
+      if (!generatedBathymetry || !bathymetryGenerationSignature) return;
+      const status = document.getElementById("bathymetryResultStatus");
+      const isStale = currentBathymetrySignature() !== bathymetryGenerationSignature;
+      status.dataset.stale = String(isStale);
+      status.textContent = isStale
+        ? "The area or target inputs changed after this grid was generated. Generate again to update the file and 3D view."
+        : `${generatedBathymetry.sampleCount.toLocaleString()} GEBCO samples · ${generatedBathymetry.columns} × ${generatedBathymetry.rows} UTM grid cells.`;
+    }
+
+    function bathymetryHandleIcon(action) {
+      const isMove = action === "move";
+      const cursorClass = isMove ? "" : ` bathymetry-handle-${action}`;
+      const content = isMove
+        ? '<span class="bathymetry-move-handle" aria-label="Move GEBCO area">✥</span>'
+        : '<span class="bathymetry-resize-handle" aria-label="Resize GEBCO area"></span>';
+      return L.divIcon({
+        className: `bathymetry-handle${cursorClass}`,
+        html: content,
+        iconSize: isMove ? [32, 32] : [16, 16],
+        iconAnchor: isMove ? [16, 16] : [8, 8]
+      });
+    }
+
+    function resizeBathymetryBounds(action, point, startingBounds) {
+      const startSouthWest = startingBounds.getSouthWest();
+      const startNorthEast = startingBounds.getNorthEast();
+      const targetExtent = targetExtentFromTable();
+      let south = startSouthWest.lat;
+      let north = startNorthEast.lat;
+      let west = startSouthWest.lng;
+      let east = startNorthEast.lng;
+      const minimumSpan = 0.002;
+
+      if (action.includes("n")) north = point.lat;
+      if (action.includes("s")) south = point.lat;
+      if (action.includes("w")) west = point.lng;
+      if (action.includes("e")) east = point.lng;
+
+      if (north - south < minimumSpan) {
+        if (action.includes("s")) south = north - minimumSpan;
+        else north = south + minimumSpan;
+      }
+      if (east - west < minimumSpan) {
+        if (action.includes("w")) west = east - minimumSpan;
+        else west = east - minimumSpan;
+      }
+      if (targetExtent) {
+        south = Math.min(south, targetExtent.south);
+        north = Math.max(north, targetExtent.north);
+        west = Math.min(west, targetExtent.west);
+        east = Math.max(east, targetExtent.east);
+      }
+      south = Math.max(-90, south);
+      north = Math.min(90, north);
+      west = Math.max(-180, west);
+      east = Math.min(180, east);
+      return L.latLngBounds([south, west], [north, east]);
+    }
+
+    function targetExtentFromTable() {
+      return targetExtent(collectTargetRows().mapTargets);
+    }
+
+    function addBathymetryHandle(action, position) {
+      const marker = L.marker(position, {
+        draggable: true,
+        keyboard: true,
+        title: action === "move" ? "Move GEBCO area" : "Resize GEBCO area",
+        icon: bathymetryHandleIcon(action),
+        zIndexOffset: 1000,
+        autoPan: true
+      }).addTo(bathymetryHandleLayer);
+      let startingBounds;
+      let startingPosition;
+      marker.on("dragstart", () => {
+        startingBounds = bathymetryBounds;
+        startingPosition = marker.getLatLng();
+        targetMapUserAdjusted = true;
+      });
+      marker.on("drag", () => {
+        if (!startingBounds || !startingPosition) return;
+        const nextPoint = marker.getLatLng();
+        if (action === "move") {
+          const southWest = startingBounds.getSouthWest();
+          const northEast = startingBounds.getNorthEast();
+          const targetExtent = targetExtentFromTable();
+          const minLatitudeDelta = targetExtent ? targetExtent.north - northEast.lat : -90 - southWest.lat;
+          const maxLatitudeDelta = targetExtent ? targetExtent.south - southWest.lat : 90 - northEast.lat;
+          const minLongitudeDelta = targetExtent ? targetExtent.east - northEast.lng : -180 - southWest.lng;
+          const maxLongitudeDelta = targetExtent ? targetExtent.west - southWest.lng : 180 - northEast.lng;
+          const latitudeDelta = Math.max(
+            minLatitudeDelta,
+            Math.min(maxLatitudeDelta, nextPoint.lat - startingPosition.lat)
+          );
+          const longitudeDelta = Math.max(
+            minLongitudeDelta,
+            Math.min(maxLongitudeDelta, nextPoint.lng - startingPosition.lng)
+          );
+          bathymetryBounds = L.latLngBounds(
+            [southWest.lat + latitudeDelta, southWest.lng + longitudeDelta],
+            [northEast.lat + latitudeDelta, northEast.lng + longitudeDelta]
+          );
+        } else {
+          bathymetryBounds = resizeBathymetryBounds(action, nextPoint, startingBounds);
+        }
+        bathymetryBoundsEdited = true;
+        bathymetryRectangle?.setBounds(bathymetryBounds);
+        syncBathymetryBoundsReadout();
+      });
+      marker.on("dragend", () => {
+        if (bathymetryBounds) renderBathymetryHandles();
+      });
+    }
+
+    function renderBathymetryHandles() {
+      bathymetryHandleLayer.clearLayers();
+      if (!bathymetryBounds?.isValid()) return;
+      const southWest = bathymetryBounds.getSouthWest();
+      const northEast = bathymetryBounds.getNorthEast();
+      const middleLatitude = (southWest.lat + northEast.lat) / 2;
+      const middleLongitude = (southWest.lng + northEast.lng) / 2;
+      [
+        ["move", [middleLatitude, middleLongitude]],
+        ["nw", [northEast.lat, southWest.lng]],
+        ["n", [northEast.lat, middleLongitude]],
+        ["ne", [northEast.lat, northEast.lng]],
+        ["e", [middleLatitude, northEast.lng]],
+        ["se", [southWest.lat, northEast.lng]],
+        ["s", [southWest.lat, middleLongitude]],
+        ["sw", [southWest.lat, southWest.lng]],
+        ["w", [middleLatitude, southWest.lng]]
+      ].forEach(([action, position]) => addBathymetryHandle(action, position));
+    }
+
+    function updateBathymetryArea(points, forceFit = false) {
+      const targetBounds = paddedBathymetryBounds(points);
+      if (!targetBounds) {
+        bathymetryBounds = null;
+        bathymetryBoundsEdited = false;
+        bathymetryAreaLayer.clearLayers();
+        bathymetryHandleLayer.clearLayers();
+        bathymetryRectangle = null;
+        syncBathymetryBoundsReadout();
+        return;
+      }
+
+      if (forceFit || !bathymetryBounds || !bathymetryBoundsEdited) {
+        bathymetryBounds = targetBounds;
+        bathymetryBoundsEdited = false;
+      } else {
+        const targetExtentBounds = L.latLngBounds(
+          [targetBounds.getSouthWest(), targetBounds.getNorthEast()]
+        );
+        bathymetryBounds.extend(targetExtentBounds);
+      }
+
+      if (!bathymetryRectangle) {
+        bathymetryRectangle = L.rectangle(bathymetryBounds, {
+          color: "#0f766e",
+          weight: 2,
+          opacity: 0.9,
+          dashArray: "6 4",
+          fillColor: "#2dd4bf",
+          fillOpacity: 0.1,
+          interactive: false
+        }).addTo(bathymetryAreaLayer);
+      } else {
+        bathymetryRectangle.setBounds(bathymetryBounds);
+      }
+      renderBathymetryHandles();
+      syncBathymetryBoundsReadout();
+    }
+
+    function bathymetryUtmEnvelope(bounds, zone, hemisphere) {
+      const { south, north, west, east } = bounds;
+      const samplesPerEdge = 64;
+      const envelope = { minX: Infinity, maxX: -Infinity, minY: Infinity, maxY: -Infinity };
+      for (let index = 0; index <= samplesPerEdge; index += 1) {
+        const fraction = index / samplesPerEdge;
+        const longitude = west + (east - west) * fraction;
+        const latitude = south + (north - south) * fraction;
+        const edgeCoordinates = [
+          [south, longitude],
+          [north, longitude],
+          [latitude, west],
+          [latitude, east]
+        ];
+        edgeCoordinates.forEach(([edgeLatitude, edgeLongitude]) => {
+          const point = geographicToUtm(edgeLatitude, edgeLongitude, zone, hemisphere);
+          envelope.minX = Math.min(envelope.minX, point.x);
+          envelope.maxX = Math.max(envelope.maxX, point.x);
+          envelope.minY = Math.min(envelope.minY, point.y);
+          envelope.maxY = Math.max(envelope.maxY, point.y);
+        });
+      }
+      return envelope;
+    }
+
+    function makeBathymetryAxis(minimum, maximum, spacing) {
+      const count = Math.floor((maximum - minimum) / spacing);
+      if (count < 2) return [];
+      return Array.from({ length: count }, (_, index) => minimum + spacing * (index + 0.5));
+    }
+
+    function normalizeGebcoSamples(data) {
+      if (data && Array.isArray(data.longitude) && Array.isArray(data.latitude) && Array.isArray(data.z)) {
+        const sampleCount = Math.min(data.longitude.length, data.latitude.length, data.z.length);
+        if (sampleCount > 500000) throw new Error("GEBCO returned more than 500,000 samples; reduce the area or request fewer samples.");
+        const samples = [];
+        for (let index = 0; index < sampleCount; index += 1) {
+          const longitude = Number(data.longitude[index]);
+          const latitude = Number(data.latitude[index]);
+          const elevation = Number(data.z[index]);
+          if (Number.isFinite(longitude) && Number.isFinite(latitude) && Number.isFinite(elevation)) {
+            samples.push({ longitude, latitude, elevation });
+          }
+        }
+        if (samples.length >= 3) return samples;
+      }
+      const detail = data && typeof data === "object" && (data.message || data.error);
+      throw new Error(detail ? `GEBCO API: ${String(detail)}` : "GEBCO returned no usable longitude, latitude and elevation samples.");
+    }
+
+    function buildBathymetrySpatialIndex(points, cellSize) {
+      const envelope = { minimumX: Infinity, maximumX: -Infinity, minimumY: Infinity, maximumY: -Infinity };
+      points.forEach((point) => {
+        envelope.minimumX = Math.min(envelope.minimumX, point.x);
+        envelope.maximumX = Math.max(envelope.maximumX, point.x);
+        envelope.minimumY = Math.min(envelope.minimumY, point.y);
+        envelope.maximumY = Math.max(envelope.maximumY, point.y);
+      });
+      const { minimumX, maximumX, minimumY, maximumY } = envelope;
+      const columns = Math.max(1, Math.ceil((maximumX - minimumX) / cellSize) + 1);
+      const rows = Math.max(1, Math.ceil((maximumY - minimumY) / cellSize) + 1);
+      const buckets = new Array(columns * rows);
+      points.forEach((point, index) => {
+        const column = Math.min(columns - 1, Math.max(0, Math.floor((point.x - minimumX) / cellSize)));
+        const row = Math.min(rows - 1, Math.max(0, Math.floor((point.y - minimumY) / cellSize)));
+        const bucketIndex = row * columns + column;
+        if (!buckets[bucketIndex]) buckets[bucketIndex] = [];
+        buckets[bucketIndex].push(index);
+      });
+      return { minimumX, minimumY, columns, rows, cellSize, buckets };
+    }
+
+    function nearestBathymetrySamples(index, points, x, y, requestedCount = 12) {
+      const { minimumX, minimumY, columns, rows, cellSize, buckets } = index;
+      const centerColumn = Math.min(columns - 1, Math.max(0, Math.floor((x - minimumX) / cellSize)));
+      const centerRow = Math.min(rows - 1, Math.max(0, Math.floor((y - minimumY) / cellSize)));
+      const candidates = [];
+      const visitedBuckets = new Set();
+      const maxRadius = Math.max(columns, rows);
+      for (let radius = 0; radius <= maxRadius; radius += 1) {
+        const minColumn = Math.max(0, centerColumn - radius);
+        const maxColumn = Math.min(columns - 1, centerColumn + radius);
+        const minRow = Math.max(0, centerRow - radius);
+        const maxRow = Math.min(rows - 1, centerRow + radius);
+        for (let row = minRow; row <= maxRow; row += 1) {
+          for (let column = minColumn; column <= maxColumn; column += 1) {
+            if (radius > 0
+              && row !== minRow && row !== maxRow && column !== minColumn && column !== maxColumn) continue;
+            const bucketIndex = row * columns + column;
+            if (visitedBuckets.has(bucketIndex)) continue;
+            visitedBuckets.add(bucketIndex);
+            for (const pointIndex of buckets[bucketIndex] ?? []) {
+              const sample = points[pointIndex];
+              candidates.push([pointIndex, (sample.x - x) ** 2 + (sample.y - y) ** 2]);
+            }
+          }
+        }
+
+        if (candidates.length >= requestedCount) {
+          candidates.sort((left, right) => left[1] - right[1]);
+          const outsideDistances = [];
+          if (minColumn > 0) outsideDistances.push(Math.max(0, x - (minimumX + minColumn * cellSize)));
+          if (maxColumn < columns - 1) outsideDistances.push(Math.max(0, minimumX + (maxColumn + 1) * cellSize - x));
+          if (minRow > 0) outsideDistances.push(Math.max(0, y - (minimumY + minRow * cellSize)));
+          if (maxRow < rows - 1) outsideDistances.push(Math.max(0, minimumY + (maxRow + 1) * cellSize - y));
+          const nearestOutsideDistanceSquared = outsideDistances.length
+            ? Math.min(...outsideDistances) ** 2
+            : Infinity;
+          if (candidates[requestedCount - 1][1] <= nearestOutsideDistanceSquared) break;
+        }
+        if (minColumn === 0 && maxColumn === columns - 1 && minRow === 0 && maxRow === rows - 1) break;
+      }
+      candidates.sort((left, right) => left[1] - right[1]);
+      return candidates.slice(0, requestedCount);
+    }
+
+    function gaussianBathymetryKernel(sigma) {
+      const radius = Math.max(1, Math.floor(sigma * 3));
+      const values = [];
+      let total = 0;
+      for (let offset = -radius; offset <= radius; offset += 1) {
+        const value = Math.exp(-(offset ** 2) / (2 * sigma ** 2));
+        values.push(value);
+        total += value;
+      }
+      return values.map((value) => value / total);
+    }
+
+    async function smoothBathymetryGrid(values, columns, rows) {
+      const kernel = gaussianBathymetryKernel(5);
+      const radius = (kernel.length - 1) / 2;
+      const horizontal = new Float64Array(values.length);
+      const smoothed = new Float64Array(values.length);
+      for (let row = 0; row < rows; row += 1) {
+        for (let column = 0; column < columns; column += 1) {
+          let sum = 0;
+          for (let offset = -radius; offset <= radius; offset += 1) {
+            const sourceColumn = Math.max(0, Math.min(columns - 1, column + offset));
+            sum += kernel[offset + radius] * values[row * columns + sourceColumn];
+          }
+          horizontal[row * columns + column] = sum;
+        }
+        if (row % 8 === 0) await new Promise((resolve) => requestAnimationFrame(resolve));
+      }
+      for (let row = 0; row < rows; row += 1) {
+        for (let column = 0; column < columns; column += 1) {
+          let sum = 0;
+          for (let offset = -radius; offset <= radius; offset += 1) {
+            const sourceRow = Math.max(0, Math.min(rows - 1, row + offset));
+            sum += kernel[offset + radius] * horizontal[sourceRow * columns + column];
+          }
+          smoothed[row * columns + column] = sum;
+        }
+        if (row % 8 === 0) await new Promise((resolve) => requestAnimationFrame(resolve));
+      }
+      return smoothed;
+    }
+
+    async function createBathymetryGrid(apiData, envelope, zone, hemisphere, spacing) {
+      const sourceSamples = normalizeGebcoSamples(apiData);
+      const projectedSamples = sourceSamples.map((sample) => {
+        const point = geographicToUtm(sample.latitude, sample.longitude, zone, hemisphere);
+        return { x: point.x, y: point.y, elevation: sample.elevation };
+      });
+      const xValues = makeBathymetryAxis(envelope.minX, envelope.maxX, spacing);
+      const yValues = makeBathymetryAxis(envelope.minY, envelope.maxY, spacing);
+      const columns = xValues.length;
+      const rows = yValues.length;
+      if (columns < 2 || rows < 2) {
+        throw new Error("The selected area is too small for this spacing. Increase the area or reduce grid spacing.");
+      }
+      if (columns * rows > 250000) {
+        throw new Error("This grid would exceed 250,000 cells. Increase grid spacing or reduce the GEBCO area.");
+      }
+
+      const cellSize = Math.max(
+        spacing * 4,
+        Math.sqrt(((envelope.maxX - envelope.minX) * (envelope.maxY - envelope.minY))
+          / Math.max(1, projectedSamples.length / 16))
+      );
+      const spatialIndex = buildBathymetrySpatialIndex(projectedSamples, cellSize);
+      const values = new Float64Array(columns * rows);
+      for (let row = 0; row < rows; row += 1) {
+        const y = yValues[row];
+        for (let column = 0; column < columns; column += 1) {
+          const x = xValues[column];
+          const nearest = nearestBathymetrySamples(spatialIndex, projectedSamples, x, y);
+          let weightedElevation = 0;
+          let weightTotal = 0;
+          let exactElevation = null;
+          nearest.forEach(([sampleIndex, distanceSquared]) => {
+            const elevation = projectedSamples[sampleIndex].elevation;
+            if (distanceSquared < 1e-6) {
+              exactElevation = elevation;
+              return;
+            }
+            const weight = 1 / distanceSquared;
+            weightedElevation += weight * elevation;
+            weightTotal += weight;
+          });
+          const elevation = exactElevation ?? (weightTotal > 0 ? weightedElevation / weightTotal : NaN);
+          if (!Number.isFinite(elevation)) throw new Error("Interpolation failed for one or more grid cells.");
+          values[row * columns + column] = elevation;
+        }
+        if (row % 4 === 0) await new Promise((resolve) => requestAnimationFrame(resolve));
+      }
+      return {
+        xValues,
+        yValues,
+        values: await smoothBathymetryGrid(values, columns, rows),
+        columns,
+        rows,
+        sampleCount: projectedSamples.length,
+        spacing,
+        zone,
+        hemisphere
+      };
+    }
+
+    function buildBathymetryGridFile(grid) {
+      const xMin = grid.xValues[0];
+      const xMax = grid.xValues[grid.columns - 1];
+      const yMin = grid.yValues[0];
+      const yMax = grid.yValues[grid.rows - 1];
+      const header = [
+        "# Type: scattered data",
+        "# Version: 6",
+        "# Description: FDPlan GEBCO bathymetry grid",
+        "# Format: free",
+        "# Field: 1 x",
+        "# Field: 2 y",
+        "# Field: 3 z meters",
+        "# Field: 4 column",
+        "# Field: 5 row",
+        "# Projection: Local Rectangular",
+        "# Units: meters",
+        `# Coordinate_reference_system: UTM zone ${grid.zone}${grid.hemisphere} (WGS84)`,
+        "# Source: GEBCO 2023 via Ocean Data Bank API",
+        "# Processing: IDW 12 nearest samples, power 2; Gaussian smoothing sigma 5 cells",
+        "# End:",
+        "# Information from grid:",
+        `# Grid_size: ${grid.columns} x ${grid.rows}`,
+        `# Grid_space: ${xMin.toFixed(4)},${xMax.toFixed(4)},${yMin.toFixed(4)},${yMax.toFixed(4)}`,
+        "# Scattered data: Not_available",
+        "# Z_field: z",
+        "# Vertical_faults: Not_available",
+        "# History: No history",
+        "# Z_units: meters"
+      ].join("\n");
+      const lines = new Array(grid.columns * grid.rows);
+      for (let row = 0; row < grid.rows; row += 1) {
+        for (let column = 0; column < grid.columns; column += 1) {
+          const index = row * grid.columns + column;
+          lines[index] = [
+            grid.xValues[column].toFixed(4),
+            grid.yValues[row].toFixed(4),
+            grid.values[index].toFixed(3),
+            column + 1,
+            row + 1
+          ].join(" ");
+        }
+      }
+      return `${header}\n${lines.join("\n")}\n`;
+    }
+
+    function downloadBathymetryFile() {
+      if (!generatedBathymetry) return;
+      const blob = new Blob([generatedBathymetry.fileText], { type: "text/plain;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `FDPlan_GEBCO_UTM${generatedBathymetry.zone}${generatedBathymetry.hemisphere}_${generatedBathymetry.spacing}m.txt`;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+    }
+
+    function loadPlotly() {
+      if (window.Plotly) return Promise.resolve(window.Plotly);
+      if (!plotlyLoadPromise) {
+        plotlyLoadPromise = new Promise((resolve, reject) => {
+          const script = document.createElement("script");
+          script.src = "https://cdn.plot.ly/plotly-2.35.2.min.js";
+          script.onload = () => resolve(window.Plotly);
+          script.onerror = () => {
+            plotlyLoadPromise = null;
+            reject(new Error("Could not load the 3D chart library from the Plotly CDN."));
+          };
+          document.head.appendChild(script);
+        });
+      }
+      return plotlyLoadPromise;
+    }
+
+    function interpolateBathymetryAt(grid, x, y) {
+      const columnPosition = (x - grid.xValues[0]) / grid.spacing - 0.5;
+      const rowPosition = (y - grid.yValues[0]) / grid.spacing - 0.5;
+      const column0 = Math.max(0, Math.min(grid.columns - 1, Math.floor(columnPosition)));
+      const row0 = Math.max(0, Math.min(grid.rows - 1, Math.floor(rowPosition)));
+      const column1 = Math.min(grid.columns - 1, column0 + 1);
+      const row1 = Math.min(grid.rows - 1, row0 + 1);
+      const columnWeight = Math.max(0, Math.min(1, columnPosition - column0));
+      const rowWeight = Math.max(0, Math.min(1, rowPosition - row0));
+      const at = (row, column) => grid.values[row * grid.columns + column];
+      const south = at(row0, column0) * (1 - columnWeight) + at(row0, column1) * columnWeight;
+      const north = at(row1, column0) * (1 - columnWeight) + at(row1, column1) * columnWeight;
+      return south * (1 - rowWeight) + north * rowWeight;
+    }
+
+    function bathymetryCamera(view) {
+      const cameras = {
+        "3d": { eye: { x: 1.55, y: 1.55, z: 1.05 }, up: { x: 0, y: 0, z: 1 } },
+        top: { eye: { x: 0, y: 0, z: 2.5 }, up: { x: 0, y: 1, z: 0 } },
+        level: { eye: { x: 2.2, y: 0, z: 0.14 }, up: { x: 0, y: 0, z: 1 } }
+      };
+      return cameras[view] ?? cameras["3d"];
+    }
+
+    function applyBathymetryLayerVisibility(plot, layer, visible) {
+      if (!window.Plotly || !plot.data) return;
+      const traceIndices = plot.data.reduce((indices, trace, index) => {
+        if (trace.meta?.fdplanLayer === layer) indices.push(index);
+        return indices;
+      }, []);
+      if (traceIndices.length > 0) {
+        window.Plotly.restyle(plot, { visible }, traceIndices);
+      }
+    }
+
+    function setBathymetryViewButton(view) {
+      document.querySelectorAll("[data-bathymetry-camera]").forEach((button) => {
+        button.setAttribute("aria-pressed", String(button.dataset.bathymetryCamera === view));
+      });
+    }
+
+    function updateBathymetryViewControls(view) {
+      const isContourMap = view === "contour";
+      document.getElementById("bathymetryFlatSurface").disabled = isContourMap;
+    }
+
+    function bindBathymetryViewControls(plot, grid, view = "3d") {
+      activeBathymetryPlot = plot;
+      activeBathymetryGrid = grid;
+      activeBathymetryView = view;
+      const flatSurfaceToggle = document.getElementById("bathymetryFlatSurface");
+      const axesToggle = document.getElementById("bathymetryShowAxes");
+      const scaleToggle = document.getElementById("bathymetryShowElevationScale");
+      const currentSeabedTraceIndex = () => activeBathymetryPlot.data.findIndex(
+        (trace) => trace.meta?.fdplanLayer === "seabed"
+      );
+      const currentRelief = () => Array.from(
+        { length: activeBathymetryGrid.rows },
+        (_, row) => Array.from(activeBathymetryGrid.values.slice(
+          row * activeBathymetryGrid.columns,
+          (row + 1) * activeBathymetryGrid.columns
+        ))
+      );
+      const currentLevelSurface = () => {
+        const levelElevation = activeBathymetryGrid.values.reduce((sum, elevation) => sum + elevation, 0)
+          / activeBathymetryGrid.values.length;
+        return currentRelief().map((row) => row.map(() => levelElevation));
+      };
+      const syncAxes = () => {
+        const visible = axesToggle.checked;
+        const axes = activeBathymetryView === "contour"
+          ? { "xaxis.visible": visible, "yaxis.visible": visible }
+          : {
+            "scene.xaxis.visible": visible,
+            "scene.yaxis.visible": visible,
+            "scene.zaxis.visible": visible
+          };
+        window.Plotly.relayout(activeBathymetryPlot, axes);
+      };
+      const syncScale = () => {
+        const seabedTraceIndex = currentSeabedTraceIndex();
+        if (seabedTraceIndex >= 0) {
+          window.Plotly.restyle(activeBathymetryPlot, { showscale: [scaleToggle.checked] }, [seabedTraceIndex]);
+        }
+      };
+      if (!bathymetryViewControlsBound) {
+        document.querySelectorAll("[data-bathymetry-camera]").forEach((button) => {
+          button.addEventListener("click", async () => {
+            if (!activeBathymetryPlot?.data) return;
+            const view = button.dataset.bathymetryCamera;
+            try {
+              if (view === "contour") {
+                await renderBathymetryContourMap(activeBathymetryGrid, activeBathymetryTargets);
+              } else if (activeBathymetryView === "contour") {
+                await renderBathymetry3D(activeBathymetryGrid, activeBathymetryTargets, view);
+              } else {
+                await window.Plotly.relayout(activeBathymetryPlot, { "scene.camera": bathymetryCamera(view) });
+                activeBathymetryView = view;
+                updateBathymetryViewControls(view);
+              }
+              setBathymetryViewButton(view);
+            } catch (error) {
+              document.getElementById("bathymetryGenerationStatus").textContent =
+                `Could not change bathymetry view: ${error instanceof Error ? error.message : String(error)}`;
+              document.getElementById("bathymetryGenerationStatus").dataset.error = "true";
+            }
+          });
+        });
+        document.querySelectorAll("[data-bathymetry-layer]").forEach((toggle) => {
+          toggle.addEventListener("change", () => {
+            const layer = toggle.dataset.bathymetryLayer;
+            if (layer === "targets") {
+              applyBathymetryLayerVisibility(activeBathymetryPlot, "targets", toggle.checked);
+              applyBathymetryLayerVisibility(activeBathymetryPlot, "target-intervals", toggle.checked);
+            } else if (layer === "trees") {
+              applyBathymetryLayerVisibility(activeBathymetryPlot, "trees", toggle.checked);
+            } else {
+              applyBathymetryLayerVisibility(activeBathymetryPlot, layer, toggle.checked);
+            }
+          });
+        });
+        flatSurfaceToggle.addEventListener("change", () => {
+          const seabedTraceIndex = currentSeabedTraceIndex();
+          if (seabedTraceIndex < 0 || !activeBathymetryPlot?.data) return;
+          window.Plotly.restyle(
+            activeBathymetryPlot,
+            { z: [flatSurfaceToggle.checked ? currentLevelSurface() : currentRelief()] },
+            [seabedTraceIndex]
+          );
+        });
+        axesToggle.addEventListener("change", syncAxes);
+        scaleToggle.addEventListener("change", syncScale);
+        bathymetryViewControlsBound = true;
+      }
+
+      document.querySelectorAll("[data-bathymetry-layer]").forEach((toggle) => {
+        applyBathymetryLayerVisibility(activeBathymetryPlot, toggle.dataset.bathymetryLayer, toggle.checked);
+      });
+      applyBathymetryLayerVisibility(
+        activeBathymetryPlot,
+        "target-intervals",
+        document.querySelector('[data-bathymetry-layer="targets"]').checked
+      );
+      const seabedTraceIndex = currentSeabedTraceIndex();
+      if (view !== "contour" && flatSurfaceToggle.checked && seabedTraceIndex >= 0) {
+        window.Plotly.restyle(activeBathymetryPlot, { z: [currentLevelSurface()] }, [seabedTraceIndex]);
+      }
+      syncAxes();
+      syncScale();
+      updateBathymetryViewControls(view);
+      setBathymetryViewButton(view);
+    }
+
+    async function renderBathymetry3D(grid, targets, cameraView = "3d") {
+      const plotly = await loadPlotly();
+      activeBathymetryTargets = targets;
+      document.getElementById("bathymetryResultHeading").textContent = "Bathymetry and reservoir targets · 3D";
+      const fluidNames = { oil: "Oil", water: "Water", gas: "Gas", wag: "WAG" };
+      const colors = { ...TARGET_FLUID_COLORS };
+      const showWellLabels = targets.length <= 8;
+      const zMatrix = Array.from({ length: grid.rows }, (_, row) => (
+        Array.from(grid.values.slice(row * grid.columns, (row + 1) * grid.columns))
+      ));
+      const waterMatrix = Array.from({ length: grid.rows }, () => Array(grid.columns).fill(0));
+      const traces = [{
+        type: "surface",
+        name: "GEBCO bathymetry",
+        meta: { fdplanLayer: "seabed" },
+        x: grid.xValues,
+        y: grid.yValues,
+        z: zMatrix,
+        opacity: 0.78,
+        colorscale: [[0, "#073b5c"], [0.35, "#146c86"], [0.7, "#42a58d"], [1, "#e8d9a8"]],
+        colorbar: { title: { text: "Elevation (m)", font: { size: 11 } }, thickness: 14, tickfont: { size: 10 } },
+        hovertemplate: "Easting: %{x:.1f} m<br>Northing: %{y:.1f} m<br>Elevation: %{z:.1f} m<extra></extra>",
+        showscale: true
+      }, {
+        type: "surface",
+        name: "Water layer",
+        meta: { fdplanLayer: "water" },
+        x: grid.xValues,
+        y: grid.yValues,
+        z: waterMatrix,
+        surfacecolor: waterMatrix,
+        colorscale: [[0, "#58b9d1"], [1, "#58b9d1"]],
+        cmin: -1,
+        cmax: 1,
+        opacity: 0.16,
+        showscale: false,
+        hoverinfo: "skip",
+        lighting: { ambient: 1, diffuse: 0.1, specular: 0, roughness: 1 }
+      }];
+
+      Object.keys(fluidNames).forEach((fluid) => {
+        const matchingTargets = targets.filter((target) => target.fluid === fluid);
+        if (matchingTargets.length === 0) return;
+        const stemX = [];
+        const stemY = [];
+        const stemZ = [];
+        const intervalX = [];
+        const intervalY = [];
+        const intervalZ = [];
+        const seabedElevations = [];
+        const treeX = [];
+        const treeY = [];
+        const treeZ = [];
+        const treeI = [];
+        const treeJ = [];
+        const treeK = [];
+        const faceColors = [];
+        const cubeFaces = [
+          [0, 1, 2], [0, 2, 3], [4, 6, 5], [4, 7, 6],
+          [0, 4, 5], [0, 5, 1], [1, 5, 6], [1, 6, 2],
+          [2, 6, 7], [2, 7, 3], [3, 7, 4], [3, 4, 0]
+        ];
+        matchingTargets.forEach((target) => {
+          const seafloor = interpolateBathymetryAt(grid, target.eastingMeters, target.northingMeters);
+          seabedElevations.push(seafloor);
+          stemX.push(target.eastingMeters, target.eastingMeters, null);
+          stemY.push(target.northingMeters, target.northingMeters, null);
+          stemZ.push(seafloor, target.zStartMeters, null);
+          intervalX.push(target.eastingMeters, target.eastingMeters, null);
+          intervalY.push(target.northingMeters, target.northingMeters, null);
+          intervalZ.push(target.zStartMeters, target.zEndMeters, null);
+
+          const halfWidth = 60;
+          const baseElevation = seafloor + 60;
+          const topElevation = baseElevation + 90;
+          const vertices = [
+            [target.eastingMeters - halfWidth, target.northingMeters - halfWidth, baseElevation],
+            [target.eastingMeters + halfWidth, target.northingMeters - halfWidth, baseElevation],
+            [target.eastingMeters + halfWidth, target.northingMeters + halfWidth, baseElevation],
+            [target.eastingMeters - halfWidth, target.northingMeters + halfWidth, baseElevation],
+            [target.eastingMeters - halfWidth, target.northingMeters - halfWidth, topElevation],
+            [target.eastingMeters + halfWidth, target.northingMeters - halfWidth, topElevation],
+            [target.eastingMeters + halfWidth, target.northingMeters + halfWidth, topElevation],
+            [target.eastingMeters - halfWidth, target.northingMeters + halfWidth, topElevation]
+          ];
+          const firstVertex = treeX.length;
+          vertices.forEach(([x, y, z]) => {
+            treeX.push(x);
+            treeY.push(y);
+            treeZ.push(z);
+          });
+          cubeFaces.forEach(([a, b, c]) => {
+            treeI.push(firstVertex + a);
+            treeJ.push(firstVertex + b);
+            treeK.push(firstVertex + c);
+            faceColors.push(colors[fluid]);
+          });
+        });
+
+        traces.push({
+          type: "scatter3d",
+          name: `${fluidNames[fluid]} wells`,
+          meta: { fdplanLayer: "targets" },
+          mode: "lines",
+          x: stemX,
+          y: stemY,
+          z: stemZ,
+          line: { color: "#566b7a", width: 1.5 },
+          hoverinfo: "skip",
+          showlegend: false
+        }, {
+          type: "scatter3d",
+          name: `${fluidNames[fluid]} target intervals`,
+          meta: { fdplanLayer: "target-intervals" },
+          mode: "lines",
+          x: intervalX,
+          y: intervalY,
+          z: intervalZ,
+          line: { color: colors[fluid], width: 3 },
+          hoverinfo: "skip",
+          showlegend: false
+        }, {
+          type: "scatter3d",
+          name: `${fluidNames[fluid]} targets`,
+          meta: { fdplanLayer: "targets" },
+          mode: showWellLabels ? "markers+text" : "markers",
+          x: matchingTargets.map((target) => target.eastingMeters),
+          y: matchingTargets.map((target) => target.northingMeters),
+          z: matchingTargets.map((target) => target.zStartMeters),
+          text: matchingTargets.map((target) => target.name),
+          textposition: "top center",
+          textfont: { size: 8, color: "#17283b" },
+          marker: { size: 4, color: colors[fluid], line: { color: "#fff", width: 1 } },
+          customdata: matchingTargets.map((target, index) => [
+            target.fluid,
+            target.zStartMeters,
+            target.zEndMeters,
+            seabedElevations[index]
+          ]),
+          hovertemplate: "%{text}<br>%{customdata[0]}<br>Seabed: %{customdata[3]:.1f} m<br>Target Z: %{customdata[1]:.1f} m<br>Interval end: %{customdata[2]:.1f} m<extra></extra>"
+        }, {
+          type: "mesh3d",
+          name: `${fluidNames[fluid]} XTrees`,
+          meta: { fdplanLayer: "trees" },
+          x: treeX,
+          y: treeY,
+          z: treeZ,
+          i: treeI,
+          j: treeJ,
+          k: treeK,
+          facecolor: faceColors,
+          flatshading: true,
+          lighting: { ambient: 0.8, diffuse: 0.6, specular: 0.12, roughness: 0.7 },
+          hoverinfo: "skip",
+          showlegend: false
+        });
+      });
+
+      const plot = document.getElementById("bathymetry3dPlot");
+      await plotly.newPlot(plot, traces, {
+        margin: { l: 0, r: 0, t: 8, b: 8 },
+        paper_bgcolor: "#fff",
+        plot_bgcolor: "#fff",
+        showlegend: false,
+        scene: {
+          aspectmode: "manual",
+          aspectratio: { x: 1, y: 1, z: 0.32 },
+          xaxis: {
+            title: { text: "Easting (m)", font: { size: 11 } },
+            tickfont: { size: 9 },
+            backgroundcolor: "#f3f7fb",
+            gridcolor: "#d7e3ef"
+          },
+          yaxis: {
+            title: { text: "Northing (m)", font: { size: 11 } },
+            tickfont: { size: 9 },
+            backgroundcolor: "#f3f7fb",
+            gridcolor: "#d7e3ef"
+          },
+          zaxis: {
+            title: { text: "Z (m)", font: { size: 11 } },
+            tickfont: { size: 9 },
+            backgroundcolor: "#f3f7fb",
+            gridcolor: "#d7e3ef"
+          },
+          camera: bathymetryCamera(cameraView)
+        },
+        uirevision: "fdplan-bathymetry-grid"
+      }, { responsive: true, displaylogo: false, scrollZoom: true });
+      bindBathymetryViewControls(plot, grid, cameraView);
+    }
+
+    async function renderBathymetryContourMap(grid, targets) {
+      const plotly = await loadPlotly();
+      activeBathymetryTargets = targets;
+      document.getElementById("bathymetryResultHeading").textContent = "Bathymetry and reservoir targets · Contour map";
+      const fluidNames = { oil: "Oil", water: "Water", gas: "Gas", wag: "WAG" };
+      const zMatrix = Array.from({ length: grid.rows }, (_, row) => (
+        Array.from(grid.values.slice(row * grid.columns, (row + 1) * grid.columns))
+      ));
+      const minimumElevation = Math.min(...grid.values);
+      const maximumElevation = Math.max(...grid.values);
+      const contourStart = Math.floor(minimumElevation / 50) * 50;
+      const contourEnd = Math.ceil(maximumElevation / 50) * 50;
+      const traces = [{
+        type: "scatter",
+        name: "Water layer",
+        meta: { fdplanLayer: "water" },
+        x: [grid.xValues[0], grid.xValues.at(-1), grid.xValues.at(-1), grid.xValues[0], grid.xValues[0]],
+        y: [grid.yValues[0], grid.yValues[0], grid.yValues.at(-1), grid.yValues.at(-1), grid.yValues[0]],
+        mode: "lines",
+        fill: "toself",
+        fillcolor: "rgba(88,185,209,0.12)",
+        line: { color: "rgba(88,185,209,0.24)", width: 1 },
+        hoverinfo: "skip",
+        showlegend: false
+      }, {
+        type: "contour",
+        name: "GEBCO depth contours",
+        meta: { fdplanLayer: "seabed" },
+        x: grid.xValues,
+        y: grid.yValues,
+        z: zMatrix,
+        autocontour: false,
+        contours: {
+          start: contourStart,
+          end: contourEnd,
+          size: 50,
+          coloring: "heatmap",
+          showlines: true,
+          showlabels: true,
+          labelfont: { size: 9, color: "#163447" }
+        },
+        line: { color: "rgba(255,255,255,0.78)", width: 1 },
+        colorscale: [[0, "#073b5c"], [0.35, "#146c86"], [0.7, "#42a58d"], [1, "#e8d9a8"]],
+        colorbar: {
+          title: { text: "Elevation (m)", font: { size: 11 } },
+          thickness: 14,
+          tickfont: { size: 10 }
+        },
+        showscale: true,
+        hovertemplate: "Easting: %{x:.1f} m<br>Northing: %{y:.1f} m<br>Elevation: %{z:.1f} m<extra></extra>"
+      }];
+
+      Object.keys(fluidNames).forEach((fluid) => {
+        const matchingTargets = targets.filter((target) => target.fluid === fluid);
+        if (matchingTargets.length === 0) return;
+        const positions = matchingTargets.map((target) => ({
+          target,
+          elevation: interpolateBathymetryAt(grid, target.eastingMeters, target.northingMeters)
+        }));
+        traces.push({
+          type: "scatter",
+          name: `${fluidNames[fluid]} targets`,
+          meta: { fdplanLayer: "targets" },
+          mode: targets.length <= 8 ? "markers+text" : "markers",
+          x: positions.map(({ target }) => target.eastingMeters),
+          y: positions.map(({ target }) => target.northingMeters),
+          text: positions.map(({ target }) => target.name),
+          textposition: "top center",
+          textfont: { size: 9, color: "#17283b" },
+          marker: { size: 5, color: TARGET_FLUID_COLORS[fluid], line: { color: "#fff", width: 1 } },
+          customdata: positions.map(({ target, elevation }) => [
+            target.fluid,
+            elevation,
+            target.zStartMeters,
+            target.zEndMeters
+          ]),
+          hovertemplate: "%{text}<br>%{customdata[0]}<br>Seabed: %{customdata[1]:.1f} m<br>Target Z: %{customdata[2]:.1f} m<br>Interval end: %{customdata[3]:.1f} m<extra></extra>"
+        }, {
+          type: "scatter",
+          name: `${fluidNames[fluid]} XTrees`,
+          meta: { fdplanLayer: "trees" },
+          mode: "markers",
+          x: positions.map(({ target }) => target.eastingMeters),
+          y: positions.map(({ target }) => target.northingMeters),
+          marker: { size: 3, color: TARGET_FLUID_COLORS[fluid], symbol: "square", line: { color: "#fff", width: 0.7 } },
+          hoverinfo: "skip",
+          showlegend: false
+        });
+      });
+
+      const plot = document.getElementById("bathymetry3dPlot");
+      await plotly.newPlot(plot, traces, {
+        margin: { l: 75, r: 35, t: 15, b: 65 },
+        paper_bgcolor: "#fff",
+        plot_bgcolor: "#f6fbfd",
+        showlegend: false,
+        xaxis: {
+          title: { text: "Easting (m)", font: { size: 11 } },
+          tickfont: { size: 9 },
+          gridcolor: "#d7e3ef",
+          zeroline: false,
+          scaleanchor: "y",
+          scaleratio: 1
+        },
+        yaxis: {
+          title: { text: "Northing (m)", font: { size: 11 } },
+          tickfont: { size: 9 },
+          gridcolor: "#d7e3ef",
+          zeroline: false
+        },
+        uirevision: "fdplan-bathymetry-grid"
+      }, { responsive: true, displaylogo: false, scrollZoom: true });
+      bindBathymetryViewControls(plot, grid, "contour");
+    }
+
+    async function generateBathymetry() {
+      const button = document.getElementById("generateBathymetryBtn");
+      const status = document.getElementById("bathymetryGenerationStatus");
+      const spacing = Number(document.getElementById("bathymetryGridSpacing").value);
+      const { targets, errors, mapTargets, projectionZone, projectionHemisphere } = collectTargetRows();
+      const bounds = bathymetryBoundsObject();
+      status.dataset.error = "false";
+      status.dataset.success = "false";
+      if (!bounds) {
+        status.textContent = "Enter valid target coordinates to define the GEBCO area first.";
+        status.dataset.error = "true";
+        return;
+      }
+      if (errors.length > 0 || targets.length === 0 || mapTargets.length !== targets.length) {
+        status.textContent = "Complete and correct all target rows before generating bathymetry.";
+        status.dataset.error = "true";
+        return;
+      }
+      if (!projectionZone || !projectionHemisphere) {
+        status.textContent = "The targets need one consistent UTM zone and hemisphere.";
+        status.dataset.error = "true";
+        return;
+      }
+      if (!Number.isFinite(spacing) || spacing < 100 || spacing > 2000 || spacing % 50 !== 0) {
+        status.textContent = "Grid spacing must be between 100 and 2,000 m, in 50 m increments.";
+        status.dataset.error = "true";
+        return;
+      }
+
+      const envelope = bathymetryUtmEnvelope(bounds, projectionZone, projectionHemisphere);
+      const estimatedColumns = Math.floor((envelope.maxX - envelope.minX) / spacing);
+      const estimatedRows = Math.floor((envelope.maxY - envelope.minY) / spacing);
+      if (estimatedColumns < 2 || estimatedRows < 2) {
+        status.textContent = "The GEBCO area is too small for this grid spacing.";
+        status.dataset.error = "true";
+        return;
+      }
+      if (estimatedColumns * estimatedRows > 250000) {
+        status.textContent = "This grid would exceed 250,000 cells. Increase spacing or reduce the GEBCO area.";
+        status.dataset.error = "true";
+        return;
+      }
+
+      button.disabled = true;
+      document.getElementById("bathymetryResultStatus").textContent = "";
+      status.textContent = "Requesting GEBCO samples from Ocean Data Bank…";
+      try {
+        const ring = [
+          [bounds.west, bounds.south],
+          [bounds.east, bounds.south],
+          [bounds.east, bounds.north],
+          [bounds.west, bounds.north],
+          [bounds.west, bounds.south]
+        ];
+        const apiUrl = new URL("https://api.odb.ntu.edu.tw/gebco");
+        apiUrl.searchParams.set("mode", "Polygon");
+        apiUrl.searchParams.set("sample", "1");
+        apiUrl.searchParams.set("jsonsrc", JSON.stringify({ type: "Polygon", coordinates: [ring] }));
+        const response = await fetch(apiUrl, { headers: { Accept: "application/json" } });
+        if (!response.ok) throw new Error(`GEBCO API returned HTTP ${response.status} ${response.statusText}.`);
+        const apiData = await response.json();
+        status.textContent = "Projecting samples and interpolating the UTM grid…";
+        const grid = await createBathymetryGrid(
+          apiData,
+          envelope,
+          projectionZone,
+          projectionHemisphere,
+          spacing
+        );
+        grid.fileText = buildBathymetryGridFile(grid);
+        generatedBathymetry = grid;
+        bathymetryGenerationSignature = currentBathymetrySignature();
+        document.getElementById("bathymetryResult").hidden = false;
+        document.getElementById("bathymetryResultMeta").textContent =
+          `UTM ${grid.zone}${grid.hemisphere} · ${grid.spacing} m spacing · ${grid.sampleCount.toLocaleString()} source samples`;
+        document.getElementById("downloadBathymetryBtn").hidden = false;
+        updateBathymetryResultFreshness();
+        downloadBathymetryFile();
+        status.textContent = "Earth Vision Grid generated and downloaded. Loading the interactive 3D view…";
+        status.dataset.success = "true";
+        try {
+          await renderBathymetry3D(grid, mapTargets);
+          status.textContent = "Bathymetry file generated and downloaded; the 3D surface and targets are ready.";
+        } catch (error) {
+          status.textContent = `Bathymetry file generated and downloaded, but the 3D view could not be rendered: ${error instanceof Error ? error.message : String(error)}`;
+          status.dataset.error = "true";
+          status.dataset.success = "false";
+        }
+      } catch (error) {
+        status.textContent = `Bathymetry generation failed: ${error instanceof Error ? error.message : String(error)}`;
+        status.dataset.error = "true";
+      } finally {
+        button.disabled = false;
+      }
+    }
+
+    function renderTargetData() {
+      const { targets, errors, mapTargets, projectionZone, projectionHemisphere } = collectTargetRows();
+      const fluidCounts = { oil: 0, water: 0, gas: 0, wag: 0 };
+      targets.forEach((target) => { fluidCounts[target.fluid_type] += 1; });
+      document.getElementById("targetTotalCount").textContent = String(targets.length);
+      document.getElementById("targetOilCount").textContent = String(fluidCounts.oil);
+      document.getElementById("targetWaterCount").textContent = String(fluidCounts.water);
+      document.getElementById("targetGasCount").textContent = String(fluidCounts.gas);
+      document.getElementById("targetWagCount").textContent = String(fluidCounts.wag);
+      targetPreview.textContent = JSON.stringify(buildTargetsPayload(targets), null, 2);
+      const identifiedTargets = identifyTargetBoundaries(mapTargets);
+      renderBoundaryResults(identifiedTargets);
+      updateBathymetryArea(identifiedTargets);
+      renderTargetMap(identifiedTargets, projectionZone, projectionHemisphere, targets.length > mapTargets.length);
+      if (errors.length > 0) {
+        setTargetStatus(`${errors.length} row(s) need attention: ${errors.join("; ")}`, "error");
+      } else {
+        setTargetStatus("");
+      }
+    }
+
+    function safeMapLabel(text, className = "") {
+      const element = document.createElement("span");
+      element.className = className;
+      element.textContent = text;
+      return element;
+    }
+
+    function boundaryPopup(feature, kind) {
+      const properties = feature.properties;
+      const label = kind === "block"
+        ? properties.alternateName || properties.name
+        : properties.name;
+      const detail = kind === "block" ? properties.basin : properties.situation;
+      const element = document.createElement("div");
+      const title = document.createElement("strong");
+      title.textContent = label;
+      element.append(title);
+      if (detail) {
+        const note = document.createElement("div");
+        note.textContent = detail;
+        element.append(note);
+      }
+      return element;
+    }
+
+    function initializeTargetMapLayers() {
+      if (!targetBoundaryData?.collections) {
+        throw new Error("The local ANP boundary data could not be loaded.");
+      }
+      L.imageOverlay("./assets/world-land.svg", worldMapBounds, { opacity: 1, interactive: false })
+        .addTo(targetMap);
+
+      for (const kind of ["basin", "field", "block"]) {
+        const collection = targetBoundaryData.collections[`${kind}s`];
+        boundaryFeatureIndexes[kind] = indexBoundaryFeatures(collection, kind);
+      }
+
+      const basinLabels = new Map();
+      const basinsLayer = L.geoJSON(targetBoundaryData.collections.basins, {
+        style: { color: "#627b90", weight: 1.2, opacity: 0.8, fillOpacity: 0 },
+        onEachFeature(feature, layer) {
+          const name = feature.properties.name;
+          layer.bindPopup(boundaryPopup(feature, "basin"));
+          const existing = basinLabels.get(name);
+          const bounds = geometryBounds(feature.geometry);
+          const area = (bounds.maxX - bounds.minX) * (bounds.maxY - bounds.minY);
+          if (!existing || area > existing.area) basinLabels.set(name, { layer, area });
+        }
+      }).addTo(targetMap);
+      const fieldsLayer = L.geoJSON(targetBoundaryData.collections.fields, {
+        style: { color: "#d97706", weight: 1, opacity: 0.82, fillOpacity: 0.04 },
+        onEachFeature(feature, layer) { layer.bindPopup(boundaryPopup(feature, "field")); }
+      });
+      const blocksLayer = L.geoJSON(targetBoundaryData.collections.blocks, {
+        style: { color: "#2563eb", weight: 1, opacity: 0.82, fillOpacity: 0.04, dashArray: "4 3" },
+        onEachFeature(feature, layer) { layer.bindPopup(boundaryPopup(feature, "block")); }
+      });
+      L.control.layers(null, {
+        "Basin boundaries": basinsLayer,
+        "Oil and gas fields": fieldsLayer,
+        "Exploration blocks": blocksLayer,
+        "GEBCO reference area": bathymetryToolsLayer
+      }, { collapsed: true, position: "topright" }).addTo(targetMap);
+      targetMap.on("zoomend", () => {
+        const showLabels = targetMap.getZoom() >= 5;
+        basinLabels.forEach(({ layer }) => {
+          if (showLabels && targetMap.hasLayer(basinsLayer)) layer.openTooltip();
+          else layer.closeTooltip();
+        });
+        updateTargetWellLabelVisibility();
+      });
+      targetMap.on("dragstart", () => { targetMapUserAdjusted = true; });
+      targetMap.on("zoomstart", () => {
+        if (!targetMapFitting) targetMapUserAdjusted = true;
+      });
+      basinLabels.forEach(({ layer }) => {
+        layer.bindTooltip(safeMapLabel(layer.feature.properties.name), {
+          permanent: false,
+          direction: "center",
+          className: "basin-label",
+          interactive: false
+        });
+      });
+      fitMapToTargets([]);
+    }
+
+    function fitMapToTargets(points) {
+      targetMapFitting = true;
+      if (points.length === 0) {
+        targetMap.fitBounds(worldMapBounds, { padding: [6, 6], animate: false });
+      } else {
+        const matchingFeatures = points.flatMap((point) => (
+          point.blockMatches?.length ? point.blockMatches : point.fieldMatches ?? []
+        ));
+        const bounds = [
+          ...(bathymetryBounds ? [{
+            minLatitude: bathymetryBounds.getSouth(),
+            maxLatitude: bathymetryBounds.getNorth(),
+            minLongitude: bathymetryBounds.getWest(),
+            maxLongitude: bathymetryBounds.getEast()
+          }] : []),
+          ...points.map((point) => ({
+            minLatitude: point.latitude,
+            maxLatitude: point.latitude,
+            minLongitude: point.longitude,
+            maxLongitude: point.longitude
+          })),
+          ...matchingFeatures.map((feature) => ({
+            minLatitude: feature.bounds.minY,
+            maxLatitude: feature.bounds.maxY,
+            minLongitude: feature.bounds.minX,
+            maxLongitude: feature.bounds.maxX
+          }))
+        ];
+        const minLatitude = Math.min(...bounds.map((bound) => bound.minLatitude));
+        const maxLatitude = Math.max(...bounds.map((bound) => bound.maxLatitude));
+        const minLongitude = Math.min(...bounds.map((bound) => bound.minLongitude));
+        const maxLongitude = Math.max(...bounds.map((bound) => bound.maxLongitude));
+        const latitudePadding = Math.max((maxLatitude - minLatitude) * 0.1, 0.02);
+        const longitudePadding = Math.max((maxLongitude - minLongitude) * 0.1, 0.02);
+        targetMap.fitBounds([
+          [minLatitude - latitudePadding, minLongitude - longitudePadding],
+          [maxLatitude + latitudePadding, maxLongitude + longitudePadding]
+        ], { padding: [28, 28], maxZoom: 11, animate: false });
+      }
+      targetMapFitting = false;
+    }
+
+    function updateTargetWellLabelVisibility() {
+      const showLabels = targetWellLabelCount <= 8 && targetMap.getZoom() >= 9;
+      targetWellMarkers.forEach((marker) => {
+        if (showLabels) marker.openTooltip();
+        else marker.closeTooltip();
+      });
+    }
+
+    function renderTargetMap(points, zone, hemisphere, hasUnmappedTargets = false) {
+      targetMarkerLayer.clearLayers();
+      targetWellMarkers.length = 0;
+      targetWellLabelCount = points.length;
+      matchedBoundaryLayer.clearLayers();
+      const matches = ["basinMatches", "fieldMatches", "blockMatches"]
+        .flatMap((key) => points.flatMap((point) => point[key] ?? []));
+      const uniqueMatches = [...new Set(matches)];
+      const highlighted = L.geoJSON({
+        type: "FeatureCollection",
+        features: uniqueMatches
+      }, {
+        style(feature) {
+          if (feature.properties._boundaryKind === "basin") {
+            return { color: "#627b90", weight: 2.2, opacity: 1, fillColor: "#a9c1d2", fillOpacity: 0.08 };
+          }
+          if (feature.properties._boundaryKind === "field") {
+            return { color: "#d97706", weight: 2.6, opacity: 1, fillColor: "#f59e0b", fillOpacity: 0.12 };
+          }
+          if (feature.properties._boundaryKind === "block") {
+            return { color: "#155ca0", weight: 2.8, opacity: 1, fillColor: "#3b82f6", fillOpacity: 0.16 };
+          }
+          if (feature.properties.name && feature.properties.basin) {
+            return { color: "#155ca0", weight: 2.6, opacity: 1, fillColor: "#3b82f6", fillOpacity: 0.12 };
+          }
+          if (feature.properties.name && feature.properties.code) {
+            return { color: "#d97706", weight: 2.6, opacity: 1, fillColor: "#f59e0b", fillOpacity: 0.12 };
+          }
+          return { color: "#2563eb", weight: 2.8, opacity: 1, fillColor: "#60a5fa", fillOpacity: 0.18 };
+        }
+      });
+      matchedBoundaryLayer.addLayer(highlighted);
+
+      points.forEach((point) => {
+        const color = TARGET_FLUID_COLORS[point.fluid] ?? TARGET_FLUID_COLORS.wag;
+        const marker = L.circleMarker([point.latitude, point.longitude], {
+          radius: 4,
+          color: "#fff",
+          weight: 1.25,
+          fillColor: color,
+          fillOpacity: 1
+        });
+        const names = [
+          ...point.basinMatches.map((feature) => feature.properties.name),
+          ...point.fieldMatches.map((feature) => feature.properties.name),
+          ...point.blockMatches.map((feature) => feature.properties.alternateName || feature.properties.name)
+        ].filter(Boolean);
+        marker.bindTooltip(safeMapLabel(point.name), {
+          permanent: false,
+          direction: "right",
+          offset: [5, 0],
+          className: "well-label",
+          interactive: false
+        });
+        marker.bindPopup(safeMapLabel(
+          [point.name, point.fluid, ...new Set(names)].join(" · ")
+        ));
+        marker.addTo(targetMarkerLayer);
+        targetWellMarkers.push(marker);
+      });
+
+      if (!targetMapUserAdjusted) fitMapToTargets(points);
+      updateTargetWellLabelVisibility();
+      const zoneLabel = zone ? ` · UTM ${zone}${hemisphere ?? ""}` : "";
+      document.getElementById("targetMapSubtitle").textContent =
+        `Offline GIS · WGS84${zoneLabel} · ANP boundaries run locally in your browser${points.length > 8 ? " · Hover or select a well for its name" : ""}`;
+      const counts = targetBoundaryData.collections;
+      const basinCount = new Set(counts.basins.features.map((feature) => feature.properties.name)).size;
+      const status = document.getElementById("targetMapDataStatus");
+      status.textContent = [
+        `ANP layers ready: ${basinCount} sedimentary basins, ${counts.fields.features.length} fields, ${counts.blocks.features.length} exploration blocks.`,
+        points.length ? `${points.length} target(s) located.` : "Enter target coordinates to see their basin, field and block.",
+        hasUnmappedTargets ? "Some target rows need valid coordinates and the correct UTM zone / hemisphere." : ""
+      ].filter(Boolean).join(" ");
+    }
+
+    function updateTargetMapFromTable() {
+      const { targets, mapTargets, projectionZone, projectionHemisphere } = collectTargetRows();
+      const identifiedTargets = identifyTargetBoundaries(mapTargets);
+      renderBoundaryResults(identifiedTargets);
+      updateBathymetryArea(identifiedTargets);
+      renderTargetMap(identifiedTargets, projectionZone, projectionHemisphere, targets.length > mapTargets.length);
+    }
+
+    function zoomTargetMap(factor) {
+      targetMapUserAdjusted = true;
+      targetMap.setZoom(targetMap.getZoom() + (factor < 1 ? 0.5 : -0.5));
+    }
+
+    function fitTargetMap() {
+      targetMapUserAdjusted = false;
+      updateTargetMapFromTable();
+    }
+
+    function targetTableText() {
+      const coordinateUnit = targetCoordinateMode.value === "geographic" ? "°" : targetUnitSelect.value;
+      const headers = ["Well name", "Type", "Fluid",
+        `${targetCoordinateMode.value === "geographic" ? "Latitude" : "Target X"} (${coordinateUnit})`,
+        `${targetCoordinateMode.value === "geographic" ? "Longitude" : "Target Y"} (${coordinateUnit})`,
+        `Target Z start (${targetUnitSelect.value})`];
+      const rows = [...targetsBody.rows]
+        .filter((row) => row.dataset.touched === "true" || targetRowCells(row).some((cell) => cell.value.trim() !== ""))
+        .map((row) => targetRowCells(row).map((cell) => cell.value.trim()).slice(0, 6));
+      return [headers, ...rows].map((row) => row.join("\t")).join("\r\n");
+    }
+
+    async function copyTargetText(text, successMessage) {
+      try {
+        if (navigator.clipboard?.writeText) {
+          await navigator.clipboard.writeText(text);
+        } else {
+          throw new Error("Clipboard API unavailable");
+        }
+      } catch {
+        let copied = false;
+        const temporaryInput = document.createElement("textarea");
+        try {
+          temporaryInput.value = text;
+          temporaryInput.setAttribute("readonly", "");
+          temporaryInput.style.position = "fixed";
+          temporaryInput.style.opacity = "0";
+          document.body.appendChild(temporaryInput);
+          temporaryInput.select();
+          copied = document.execCommand("copy");
+        } catch {
+          copied = false;
+        } finally {
+          temporaryInput.remove();
+        }
+        if (!copied) {
+          setTargetStatus("Could not access the clipboard. Check browser permissions and try again.", "error");
+          return false;
+        }
+      }
+      setTargetStatus(successMessage, "success");
+      return true;
+    }
+
+    function targetDownloadFilename() {
+      const timestamp = new Date();
+      const pad = (value) => String(value).padStart(2, "0");
+      const date = `${timestamp.getFullYear()}${pad(timestamp.getMonth() + 1)}${pad(timestamp.getDate())}`;
+      const time = `${pad(timestamp.getHours())}${pad(timestamp.getMinutes())}${pad(timestamp.getSeconds())}`;
+      return `reservoir_targets_${targetUnitSelect.value}_${date}_${time}.json`;
+    }
+
+    function syncTargetCoordinateLabels() {
+      const geographic = targetCoordinateMode.value === "geographic";
+      document.getElementById("targetXUnitLabel").textContent = geographic ? "°" : targetUnitSelect.value;
+      document.getElementById("targetYUnitLabel").textContent = geographic ? "°" : targetUnitSelect.value;
+      document.querySelectorAll(".target-unit-label").forEach((label) => {
+        label.textContent = targetUnitSelect.value;
+      });
+      targetZoneControls.hidden = geographic;
+      targetUnitSelect.querySelectorAll("option").forEach((option) => {
+        option.textContent = geographic
+          ? `Output units: ${option.value}`
+          : `Coordinates: ${option.value}`;
+      });
+      [...targetsBody.rows].forEach((row) => {
+        const [xInput, yInput] = targetRowCells(row).slice(3, 5);
+        xInput.inputMode = geographic ? "text" : "decimal";
+        yInput.inputMode = geographic ? "text" : "decimal";
+        xInput.placeholder = geographic ? "Latitude (decimal or DMS)" : "Easting";
+        yInput.placeholder = geographic ? "Longitude (decimal or DMS)" : "Northing";
+        xInput.setAttribute("aria-label", geographic ? "Latitude" : "Target X easting");
+        yInput.setAttribute("aria-label", geographic ? "Longitude" : "Target Y northing");
+      });
+      document.getElementById("targetCoordinateHint").textContent = geographic
+        ? "Enter decimal degrees or DMS (for example 19°55′30″S). Values convert to WGS84 / UTM using the first complete target's zone; all targets must share one zone and hemisphere. The JSON schema stores unit IDs, not the CRS zone."
+        : "Enter UTM easting and northing. Select the correct zone and hemisphere before switching existing UTM values to latitude / longitude.";
+    }
+
+    function changeTargetCoordinateMode(nextMode) {
+      if (nextMode === targetCurrentCoordinateMode) return;
+      const rows = [...targetsBody.rows];
+      if (nextMode === "geographic") {
+        const zone = Number(targetZoneSelect.value);
+        const hemisphere = targetHemisphereSelect.value;
+        const conversions = [];
+        for (const [index, row] of rows.entries()) {
+          const [xInput, yInput] = targetRowCells(row).slice(3, 5);
+          const xText = xInput.value.trim();
+          const yText = yInput.value.trim();
+          if (!xText && !yText) continue;
+          if (!zone || !hemisphere) {
+            targetCoordinateMode.value = targetCurrentCoordinateMode;
+            setTargetStatus("Select the UTM zone and hemisphere before converting the table to latitude / longitude.", "error");
+            return;
+          }
+          const x = parseTargetNumber(xText);
+          const y = parseTargetNumber(yText);
+          if (x === null || y === null) {
+            targetCoordinateMode.value = targetCurrentCoordinateMode;
+            setTargetStatus(`Row ${index + 1}: enter valid easting and northing values before converting coordinates.`, "error");
+            return;
+          }
+          const unitFactor = targetUnitSelect.value === "ft" ? 0.3048 : 1;
+          const converted = utmToGeographic(
+            x * unitFactor,
+            y * unitFactor,
+            zone,
+            hemisphere
+          );
+          conversions.push({ row, latitude: converted.latitude, longitude: converted.longitude });
+        }
+        conversions.forEach(({ row, latitude, longitude }) => {
+          const [xInput, yInput] = targetRowCells(row).slice(3, 5);
+          xInput.value = formatGeographicCoordinate(latitude);
+          yInput.value = formatGeographicCoordinate(longitude);
+        });
+      } else {
+        const coordinates = [];
+        for (const [index, row] of rows.entries()) {
+          const [xInput, yInput] = targetRowCells(row).slice(3, 5);
+          const xText = xInput.value.trim();
+          const yText = yInput.value.trim();
+          if (!xText && !yText) continue;
+          const latitude = parseGeographicCoordinate(xText, "latitude");
+          const longitude = parseGeographicCoordinate(yText, "longitude");
+          if (latitude === null || longitude === null || latitude < -80 || latitude > 84) {
+            targetCoordinateMode.value = targetCurrentCoordinateMode;
+            setTargetStatus(`Row ${index + 1}: enter a valid latitude and longitude within UTM coverage before converting.`, "error");
+            return;
+          }
+          coordinates.push({ row, latitude, longitude });
+        }
+        const first = coordinates[0];
+        const zone = first ? utmZoneFor(first.longitude, first.latitude) : null;
+        const hemisphere = first ? utmHemisphereFor(first.latitude) : targetHemisphereSelect.value;
+        const outOfZone = coordinates.find(({ latitude, longitude }) =>
+          utmZoneFor(longitude, latitude) !== zone
+          || (latitude !== 0 && utmHemisphereFor(latitude) !== hemisphere)
+        );
+        if (outOfZone) {
+          targetCoordinateMode.value = targetCurrentCoordinateMode;
+          setTargetStatus(
+            "All targets must be in the same UTM zone and hemisphere to match the current JSON schema.",
+            "error"
+          );
+          return;
+        }
+        const unitFactor = targetUnitSelect.value === "ft" ? 3.28084 : 1;
+        coordinates.forEach(({ row, latitude, longitude }) => {
+          const converted = geographicToUtm(latitude, longitude, zone, hemisphere);
+          const [xInput, yInput] = targetRowCells(row).slice(3, 5);
+          xInput.value = String(Math.round(converted.x * unitFactor * 1000) / 1000);
+          yInput.value = String(Math.round(converted.y * unitFactor * 1000) / 1000);
+        });
+        if (zone) targetZoneSelect.value = String(zone);
+        targetHemisphereSelect.value = hemisphere;
+      }
+
+      targetCoordinateMode.value = nextMode;
+      targetCurrentCoordinateMode = nextMode;
+      syncTargetCoordinateLabels();
+      renderTargetData();
+      if (collectTargetRows().errors.length === 0) {
+        const hasCoordinates = rows.some((row) =>
+          targetRowCells(row).slice(3, 5).some((cell) => cell.value.trim() !== "")
+        );
+        setTargetStatus(
+          !hasCoordinates
+            ? `Coordinate format set to ${nextMode === "utm" ? "UTM" : "latitude / longitude"}.`
+            : nextMode === "utm"
+              ? `Latitude / longitude converted to WGS84 / UTM zone ${targetZoneSelect.value}${targetHemisphereSelect.value}.`
+              : `UTM coordinates converted to latitude / longitude using zone ${targetZoneSelect.value}${targetHemisphereSelect.value}.`,
+          "success"
+        );
+      }
+    }
+
+    function convertTargetCoordinates(nextUnit) {
+      if (targetCurrentUnit === nextUnit) return;
+      const currentUnit = targetCurrentUnit;
+      const factor = currentUnit === "m" ? 3.28084 : 0.3048;
+      [...targetsBody.rows].forEach((row) => {
+        const coordinateInputs = targetRowCells(row).slice(3, 6);
+        coordinateInputs.forEach((input, index) => {
+          if (targetCoordinateMode.value === "geographic" && index < 2) return;
+          const number = parseTargetNumber(input.value);
+          if (number === null) return;
+          const converted = number * factor;
+          input.value = String(Math.round((index === 2 ? -Math.abs(converted) : converted) * 1000) / 1000);
+        });
+      });
+      targetCurrentUnit = nextUnit;
+      syncTargetCoordinateLabels();
+      renderTargetData();
+      if (collectTargetRows().errors.length === 0) {
+        setTargetStatus(
+          targetCoordinateMode.value === "geographic"
+            ? `Depth and output coordinates set to ${nextUnit}; latitude / longitude remain in degrees.`
+            : `Coordinate values converted to ${nextUnit}.`,
+          "success"
+        );
+      }
+    }
+
     function filenameNumber(value, digits = 3) {
       return rounded(value, digits)
         .toFixed(digits)
@@ -1126,6 +3956,104 @@
       renderPreview();
     });
 
+    document.getElementById("addTargetRowBtn").addEventListener("click", () => {
+      addTargetRow();
+      renderTargetData();
+      targetsBody.lastElementChild?.querySelector("input, select")?.focus();
+    });
+    targetCoordinateMode.addEventListener("change", (event) => {
+      changeTargetCoordinateMode(event.currentTarget.value);
+    });
+    document.getElementById("targetUnitSelect").addEventListener("change", (event) => {
+      convertTargetCoordinates(event.currentTarget.value);
+    });
+    targetZoneSelect.addEventListener("change", updateTargetMapFromTable);
+    targetHemisphereSelect.addEventListener("change", updateTargetMapFromTable);
+    document.getElementById("targetMapZoomIn").addEventListener("click", () => zoomTargetMap(0.5));
+    document.getElementById("targetMapZoomOut").addEventListener("click", () => zoomTargetMap(2));
+    document.getElementById("targetMapFit").addEventListener("click", fitTargetMap);
+    document.getElementById("resetBathymetryBoundsBtn").addEventListener("click", () => {
+      const { mapTargets } = collectTargetRows();
+      if (mapTargets.length === 0) {
+        setTargetStatus("Enter at least one valid target coordinate before fitting the GEBCO area.", "error");
+        return;
+      }
+      updateBathymetryArea(identifyTargetBoundaries(mapTargets), true);
+      setTargetStatus("GEBCO area fitted to all valid target coordinates.", "success");
+    });
+    document.getElementById("generateBathymetryBtn").addEventListener("click", generateBathymetry);
+    document.getElementById("downloadBathymetryBtn").addEventListener("click", downloadBathymetryFile);
+    document.getElementById("bathymetryGridSpacing").addEventListener("input", updateBathymetryResultFreshness);
+    document.getElementById("copyBathymetryBoundsBtn").addEventListener("click", async () => {
+      const bounds = bathymetryBoundsObject();
+      if (!bounds) {
+        setTargetStatus("Enter at least one valid target coordinate before copying GEBCO bounds.", "error");
+        return;
+      }
+      await copyTargetText(JSON.stringify(bounds, null, 2), "Copied GEBCO WGS84 bounds as JSON.");
+    });
+    targetsBody.addEventListener("input", (event) => {
+      const row = event.target.closest("tr");
+      if (row) row.dataset.touched = "true";
+      renderTargetData();
+    });
+    targetsBody.addEventListener("change", (event) => {
+      const row = event.target.closest("tr");
+      if (row) row.dataset.touched = "true";
+      renderTargetData();
+    });
+    targetsBody.addEventListener("blur", (event) => {
+      if (!(event.target instanceof HTMLInputElement)) return;
+      const row = event.target.closest("tr");
+      if (!row || targetRowCells(row).indexOf(event.target) !== 5) return;
+      const depth = parseTargetNumber(event.target.value);
+      if (depth !== null) event.target.value = String(-Math.abs(depth));
+      renderTargetData();
+    }, true);
+    targetsBody.addEventListener("click", (event) => {
+      if (!event.target.closest(".sheet-remove")) return;
+      event.target.closest("tr")?.remove();
+      if (targetsBody.rows.length === 0) addTargetRow();
+      renderTargetData();
+    });
+    targetsBody.addEventListener("paste", (event) => {
+      const target = event.target;
+      if (!(target instanceof HTMLInputElement) && !(target instanceof HTMLSelectElement)) return;
+      const text = event.clipboardData?.getData("text/plain");
+      if (!text) return;
+      event.preventDefault();
+      pasteTargetMatrix(target, parseTargetClipboard(text));
+    });
+    document.getElementById("copyTargetsTableBtn").addEventListener("click", async () => {
+      const rowCount = [...targetsBody.rows].filter((row) =>
+        row.dataset.touched === "true" || targetRowCells(row).some((cell) => cell.value.trim() !== "")
+      ).length;
+      await copyTargetText(targetTableText(), `Copied table${rowCount ? ` with ${rowCount} row(s)` : ""} for Excel.`);
+    });
+    document.getElementById("downloadTargetsBtn").addEventListener("click", () => {
+      const { targets, errors } = collectTargetRows();
+      if (errors.length > 0) {
+        setTargetStatus(`Complete or correct the table before downloading JSON: ${errors.join("; ")}`, "error");
+        return;
+      }
+      if (targets.length === 0) {
+        setTargetStatus("Add at least one complete target before downloading JSON.", "error");
+        return;
+      }
+      const blob = new Blob([JSON.stringify(buildTargetsPayload(targets), null, 2)], {
+        type: "application/json"
+      });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = targetDownloadFilename();
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.setTimeout(() => URL.revokeObjectURL(url), 0);
+      setTargetStatus(`Generated JSON for ${targets.length} target(s).`, "success");
+    });
+
     downloadButton.addEventListener("click", () => {
       if (!validateVisibleInputs()) return;
       const blob = new Blob([JSON.stringify(buildPayload(), null, 2)], { type: "application/json" });
@@ -1139,7 +4067,17 @@
       URL.revokeObjectURL(url);
     });
 
+    for (let zone = 1; zone <= 60; zone += 1) {
+      const option = document.createElement("option");
+      option.value = String(zone);
+      option.textContent = `Zone ${zone}`;
+      targetZoneSelect.appendChild(option);
+    }
+    initializeTargetMapLayers();
+    syncTargetCoordinateLabels();
     syncInputValues();
+    loadDefaultTargetExample();
+    renderTargetData();
   </script>
 </body>
 </html>
