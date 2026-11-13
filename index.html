@@ -1,0 +1,1145 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#082f59">
+  <title>Well Design Inputs</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --navy: #082f59;
+      --blue: #1168b4;
+      --blue-dark: #084b88;
+      --blue-soft: #eaf4fd;
+      --ink: #17283b;
+      --muted: #64758a;
+      --line: #d7e3ef;
+      --surface: #fff;
+      --canvas: #f3f7fb;
+      --green: #16704a;
+      --red: #b42318;
+      --radius: 18px;
+      --shadow: 0 16px 40px rgb(10 42 74 / 9%);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-synthesis: none;
+      text-rendering: optimizeLegibility;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      min-width: 320px;
+      min-height: 100vh;
+      margin: 0;
+      color: var(--ink);
+      background:
+        radial-gradient(ellipse at 85% 0%, rgb(33 117 187 / 10%), transparent 34rem),
+        var(--canvas);
+    }
+
+    button, input, select { font: inherit; }
+    button { color: inherit; }
+
+    .hero {
+      padding: 34px 24px 38px;
+      color: #fff;
+      background: linear-gradient(118deg, #082f59 0%, #0c5798 72%, #1674b9 100%);
+    }
+
+    .hero-inner, main, .json-panel {
+      width: min(1440px, calc(100% - 40px));
+      margin-inline: auto;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin: 0 0 12px;
+      color: #d8eaff;
+      font-size: .76rem;
+      font-weight: 750;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
+    .eyebrow::before {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #61d6a5;
+      content: "";
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(1.8rem, 4vw, 2.65rem);
+      letter-spacing: -.035em;
+      line-height: 1.12;
+    }
+
+    .hero p:last-child {
+      max-width: 620px;
+      margin: 12px 0 0;
+      color: #d8eaff;
+      line-height: 1.55;
+    }
+
+    .hero-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 20px;
+      padding: 10px 15px;
+      border: 1px solid rgb(255 255 255 / 45%);
+      border-radius: 10px;
+      color: #fff;
+      font-size: .86rem;
+      font-weight: 750;
+      text-decoration: none;
+      transition: background .15s ease;
+    }
+
+    .hero-link:hover, .hero-link:focus-visible { background: rgb(255 255 255 / 12%); }
+
+    :focus-visible {
+      outline: 3px solid #68aef0;
+      outline-offset: 3px;
+    }
+
+    main { padding-block: 26px 14px; }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.08fr) minmax(0, .92fr);
+      align-items: stretch;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      background: var(--surface);
+      box-shadow: var(--shadow);
+    }
+
+    .visual-panel, .input-panel {
+      min-width: 0;
+    }
+
+    .visual-panel {
+      display: flex;
+      min-height: 100%;
+      flex-direction: column;
+      justify-content: flex-start;
+      padding: clamp(24px, 3.2vw, 48px);
+      background:
+        radial-gradient(ellipse at 50% 45%, #fff 0%, #f6faff 60%, #eef5fb 100%);
+    }
+
+    .input-panel {
+      padding: clamp(24px, 3.1vw, 44px);
+      border-left: 1px solid var(--line);
+    }
+
+    .panel-heading { margin-bottom: 24px; }
+
+    .panel-heading h2, .visual-heading h2 {
+      margin: 0;
+      font-size: clamp(1.3rem, 2vw, 1.65rem);
+      letter-spacing: -.025em;
+    }
+
+    .panel-heading p {
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: .9rem;
+      line-height: 1.5;
+    }
+
+    .visual-heading {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+
+    .visual-heading p {
+      margin: 5px 0 0;
+      color: var(--muted);
+      font-size: .83rem;
+      line-height: 1.45;
+    }
+
+    .visual-tag {
+      flex: 0 0 auto;
+      padding: 6px 9px;
+      border: 1px solid #cfe0ee;
+      border-radius: 999px;
+      background: #fff;
+      color: var(--blue-dark);
+      font-size: .7rem;
+      font-weight: 750;
+      letter-spacing: .03em;
+    }
+
+    fieldset {
+      min-width: 0;
+      margin: 0;
+      padding: 0;
+      border: 0;
+    }
+
+    legend {
+      margin-bottom: 10px;
+      color: var(--ink);
+      font-size: .9rem;
+      font-weight: 750;
+    }
+
+    .well-types {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .well-type {
+      position: relative;
+      display: flex;
+      min-height: 92px;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: #fff;
+      cursor: pointer;
+      transition: border-color .16s ease, box-shadow .16s ease, background .16s ease;
+    }
+
+    .well-type:hover { border-color: #9fc5e7; }
+    .well-type:has(input:checked) {
+      border-color: var(--blue);
+      background: #f4f9ff;
+      box-shadow: 0 0 0 3px rgb(17 104 180 / 10%);
+    }
+
+    .well-type input {
+      width: 17px;
+      height: 17px;
+      flex: 0 0 auto;
+      margin: 2px 0 0;
+      accent-color: var(--blue);
+    }
+
+    .well-type strong { display: block; font-size: .93rem; }
+    .well-type small {
+      display: block;
+      margin-top: 5px;
+      color: var(--muted);
+      font-size: .78rem;
+      line-height: 1.4;
+    }
+
+    .directional-settings[hidden], .directional-only[hidden] { display: none !important; }
+
+    .parameter-section { margin-bottom: 22px; }
+
+    .fields {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px 14px;
+    }
+
+    .field-group { min-width: 0; }
+
+    .field-label {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      margin-bottom: 8px;
+      font-size: .84rem;
+      font-weight: 750;
+    }
+
+    .info {
+      position: relative;
+      display: inline-grid;
+      width: 19px;
+      height: 19px;
+      flex: 0 0 auto;
+      place-items: center;
+      padding: 0;
+      border: 1px solid #9db5cc;
+      border-radius: 50%;
+      background: #fff;
+      color: #44617e;
+      cursor: help;
+      font-size: .72rem;
+      font-weight: 800;
+      line-height: 1;
+    }
+
+    .info:focus-visible {
+      outline: 3px solid rgb(17 104 180 / 30%);
+      outline-offset: 2px;
+    }
+
+    .tooltip {
+      position: absolute;
+      z-index: 4;
+      bottom: calc(100% + 10px);
+      left: 50%;
+      width: min(250px, calc(100vw - 56px));
+      padding: 10px 12px;
+      border: 1px solid #31536f;
+      border-radius: 10px;
+      background: #102b45;
+      box-shadow: 0 8px 22px rgb(7 31 51 / 22%);
+      color: #fff;
+      font-size: .76rem;
+      font-weight: 500;
+      line-height: 1.5;
+      text-align: left;
+      opacity: 0;
+      pointer-events: none;
+      transform: translate(-50%, 4px);
+      visibility: hidden;
+      transition: opacity .14s ease, transform .14s ease, visibility .14s ease;
+    }
+
+    .info:hover .tooltip, .info:focus-visible .tooltip, .info[aria-expanded="true"] .tooltip {
+      opacity: 1;
+      transform: translate(-50%, 0);
+      visibility: visible;
+    }
+
+    .control {
+      display: flex;
+      min-height: 48px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: #fff;
+      transition: border-color .15s ease, box-shadow .15s ease;
+    }
+
+    .control:focus-within {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3px rgb(17 104 180 / 12%);
+    }
+
+    .control input {
+      width: 0;
+      min-width: 0;
+      flex: 1 1 0;
+      border: 0;
+      outline: 0;
+      padding: 0 13px;
+      background: transparent;
+      color: var(--ink);
+      font-size: .98rem;
+      font-weight: 650;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .control select {
+      display: inline-flex;
+      max-width: 55%;
+      align-items: center;
+      justify-content: center;
+      flex: 0 0 auto;
+      padding: 0 6px;
+      border: 0;
+      border-left: 1px solid var(--line);
+      background: #f1f7fd;
+      color: var(--blue-dark);
+      font-size: .78rem;
+      font-weight: 750;
+      white-space: nowrap;
+      text-align: center;
+      text-align-last: center;
+    }
+
+    .control select { cursor: pointer; }
+
+    .unit-suffix {
+      display: inline-flex;
+      align-items: center;
+      padding-inline: 12px;
+      border-left: 1px solid var(--line);
+      background: #f1f7fd;
+      color: var(--blue-dark);
+      font-size: .78rem;
+      font-weight: 750;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 22px;
+      padding-top: 18px;
+      border-top: 1px solid var(--line);
+    }
+
+    .btn {
+      min-height: 42px;
+      padding: 0 16px;
+      border: 1px solid var(--blue);
+      border-radius: 10px;
+      background: var(--blue);
+      color: #fff;
+      cursor: pointer;
+      font-size: .84rem;
+      font-weight: 750;
+      transition: background .15s ease, transform .15s ease;
+    }
+
+    .btn:hover:not(:disabled) { background: var(--blue-dark); transform: translateY(-1px); }
+    .btn.secondary { background: #fff; color: var(--blue-dark); }
+    .btn.secondary:hover:not(:disabled) { background: var(--blue-soft); }
+    .btn:disabled { cursor: not-allowed; opacity: .48; }
+
+    .status {
+      min-height: 1.25em;
+      margin: 14px 0 0;
+      color: var(--red);
+      font-size: .82rem;
+      font-weight: 650;
+    }
+
+    .schematic-wrap { width: 100%; }
+
+    .schematic {
+      display: block;
+      width: 100%;
+      height: auto;
+      min-height: 0;
+      border: 1px solid #d5e1ec;
+      border-radius: 18px;
+      background: #f4f8fc;
+    }
+
+    .schematic-image {
+      max-width: 760px;
+      align-self: center;
+      background: transparent;
+      object-fit: contain;
+    }
+
+    .schematic-caption {
+      max-width: 650px;
+      margin: 16px 2px 0;
+      color: var(--muted);
+      font-size: .84rem;
+      line-height: 1.5;
+    }
+
+    .workflow {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px 24px;
+      margin: 0 0 15px;
+      padding: 0;
+      color: var(--muted);
+      font-size: .79rem;
+      font-weight: 650;
+      list-style: none;
+    }
+
+    .workflow li { display: inline-flex; align-items: center; gap: 8px; }
+
+    .workflow span {
+      display: inline-grid;
+      width: 22px;
+      height: 22px;
+      place-items: center;
+      border-radius: 50%;
+      background: var(--blue-soft);
+      color: var(--blue-dark);
+      font-size: .72rem;
+      font-weight: 800;
+    }
+
+    .section-heading {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
+      margin: 0 0 12px;
+    }
+
+    .section-heading h3 {
+      margin: 0;
+      font-size: .94rem;
+      letter-spacing: -.01em;
+    }
+
+    .section-heading p {
+      margin: 0;
+      color: var(--muted);
+      font-size: .75rem;
+    }
+
+    .json-panel { margin-block: 14px 30px; }
+
+    .additional-panel {
+      padding: clamp(20px, 3vw, 32px);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: #fff;
+      box-shadow: 0 8px 22px rgb(10 42 74 / 5%);
+    }
+
+    .additional-panel .panel-heading { margin-bottom: 18px; }
+
+    details {
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: #fff;
+      box-shadow: 0 8px 22px rgb(10 42 74 / 5%);
+    }
+
+    summary {
+      padding: 15px 18px;
+      color: var(--blue-dark);
+      cursor: pointer;
+      font-size: .88rem;
+      font-weight: 750;
+    }
+
+    .reference-list {
+      display: grid;
+      gap: 10px;
+      margin: 0;
+      padding: 0 18px 18px;
+      list-style: none;
+    }
+
+    .reference-list a {
+      color: var(--blue-dark);
+      font-size: .84rem;
+      font-weight: 700;
+      text-decoration-thickness: 1px;
+      text-underline-offset: 3px;
+    }
+
+    .reference-list a:hover { color: var(--blue); }
+
+    .reference-note {
+      margin: 0;
+      padding: 0 18px 18px;
+      color: var(--muted);
+      font-size: .77rem;
+      line-height: 1.5;
+    }
+
+    pre {
+      max-height: 360px;
+      overflow: auto;
+      margin: 0;
+      padding: 18px;
+      border-top: 1px solid var(--line);
+      background: #102033;
+      color: #e4f1ff;
+      font-size: .78rem;
+      line-height: 1.55;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+
+    @media (max-width: 980px) {
+      .layout { grid-template-columns: 1fr; }
+      .visual-panel { padding: 24px clamp(20px, 6vw, 48px); }
+      .schematic-image, .schematic { max-height: 540px; }
+      .input-panel {
+        padding: 28px clamp(20px, 6vw, 48px);
+        border-top: 1px solid var(--line);
+        border-left: 0;
+      }
+    }
+
+    @media (max-width: 520px) {
+      .hero { padding: 27px 20px 30px; }
+      .hero-inner, main, .json-panel { width: min(100% - 28px, 1440px); }
+      main { padding-top: 18px; }
+      .layout { border-radius: 18px; }
+      .visual-panel { padding: 19px 16px 22px; }
+      .input-panel { padding: 22px 16px; }
+      .panel-heading { margin-bottom: 20px; }
+      .well-types { gap: 8px; }
+      .well-type { min-height: 96px; gap: 8px; padding: 12px 10px; }
+      .fields { grid-template-columns: 1fr; gap: 15px; }
+      .actions { margin-top: 18px; padding-top: 14px; }
+      .actions .btn { flex: 1 1 140px; }
+      .workflow { gap: 8px 16px; }
+      .section-heading { align-items: flex-start; flex-direction: column; gap: 4px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <div class="hero-inner">
+      <p class="eyebrow">FDPlan · Field Layout Generator</p>
+      <h1>Well Design Inputs</h1>
+      <p>Start with a vertical well, or select a directional well and configure its trajectory parameters.</p>
+      <a class="hero-link" href="#well-inputs">Configure well inputs <span aria-hidden="true">↓</span></a>
+    </div>
+  </header>
+
+  <main>
+    <div class="layout" id="well-design">
+      <section class="visual-panel" aria-labelledby="schematic-heading">
+        <div class="visual-heading">
+          <div>
+            <h2 id="schematic-heading">Well schematic</h2>
+            <p id="schematicDescription">Illustrative directional well profile.</p>
+          </div>
+          <span class="visual-tag" id="visualTag">DIRECTIONAL</span>
+        </div>
+        <div class="schematic-wrap">
+          <img
+            class="schematic schematic-image"
+            id="directionalSchematic"
+            src="horizontal_well.png"
+            alt="Directional horizontal well diagram showing the seabed, kickoff point, dogleg severity, horizontal step-out, and target."
+          >
+          <img
+            class="schematic schematic-image"
+            id="verticalSchematic"
+            src="vertical_well.jpeg"
+            alt="Vertical well diagram showing the seabed, a straight wellbore, and tubing outside diameter."
+            style="display:none"
+          >
+          <p class="schematic-caption" id="schematicCaption">Illustration only; the inputs and JSON payload remain the source of truth.</p>
+        </div>
+      </section>
+
+      <section class="input-panel" id="well-inputs" aria-labelledby="inputs-heading">
+        <div class="panel-heading">
+          <h2 id="inputs-heading">Trajectory Configuration</h2>
+          <p id="inputDescription">Choose a well type, then enter the requested values. Unit changes convert the value automatically.</p>
+        </div>
+        <ol class="workflow" aria-label="Configuration steps">
+          <li><span>1</span>Choose well type</li>
+          <li><span>2</span>Set parameters</li>
+          <li><span>3</span>Download JSON</li>
+        </ol>
+        <div>
+          <fieldset>
+            <legend>Well type</legend>
+            <div class="well-types">
+              <label class="well-type">
+                <input type="radio" name="well_type" value="vertical" checked>
+                <span>
+                  <strong>Vertical</strong>
+                  <small>Uses default trajectory settings.</small>
+                </span>
+              </label>
+              <label class="well-type">
+                <input type="radio" name="well_type" value="directional">
+                <span>
+                  <strong>Directional</strong>
+                  <small>Configure required and optional trajectory parameters.</small>
+                </span>
+              </label>
+            </div>
+          </fieldset>
+
+          <div class="parameter-section directional-only" id="requiredDirectionalSection">
+            <div class="section-heading">
+              <h3>Required trajectory inputs</h3>
+              <p>4 required parameters</p>
+            </div>
+            <div class="fields">
+            <div class="field-group" id="costGroup">
+              <div class="field-label">
+                <label for="well_unit_cost">Well unit cost</label>
+                <button class="info" type="button" aria-label="Well unit cost description" aria-expanded="false" aria-describedby="tip-cost">i<span class="tooltip" id="tip-cost" role="tooltip">This value is not used for budgeting or estimating actual well cost. It is a relative optimization weight that helps steer the trade-off between well and subsea scope; it does not represent a budget or total cost. Use the project-defined relative value and selected currency per length.</span></button>
+              </div>
+              <div class="control">
+                <input id="well_unit_cost" type="number" min="0" step="0.01" value="15500" required>
+                <select id="costUnit" aria-label="Cost unit">
+                  <option value="USD/m">USD/m</option>
+                  <option value="USD/ft">USD/ft</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="field-group" id="stepOutGroup">
+              <div class="field-label">
+                <label for="horizontal_step_out">Max horizontal step-out</label>
+                <button class="info" type="button" aria-label="Max horizontal step-out description" aria-expanded="false" aria-describedby="tip-stepout">i<span class="tooltip" id="tip-stepout" role="tooltip">Maximum plan-view horizontal displacement from the surface wellhead to the target location. It is not the along-hole length or measured depth; use a consistent project coordinate reference.</span></button>
+              </div>
+              <div class="control">
+                <input id="horizontal_step_out" type="number" min="0" step="0.01" value="800" required>
+                <select id="stepOutUnitSelect" aria-label="Max horizontal step-out unit">
+                  <option value="m">m</option>
+                  <option value="ft">ft</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="field-group" id="kickoffGroup">
+              <div class="field-label">
+                <label for="kickoff_point">Kickoff point</label>
+                <button class="info" type="button" aria-label="Kickoff point description" aria-expanded="false" aria-describedby="tip-kop">i<span class="tooltip" id="tip-kop" role="tooltip">Depth at which the well path begins to deviate from vertical and build inclination (KOP). Confirm whether the consuming project expects measured depth (MD) or true vertical depth (TVD); this form does not select a depth datum.</span></button>
+              </div>
+              <div class="control">
+                <input id="kickoff_point" type="number" min="0" step="0.01" value="600" required>
+                <select id="kickoffUnitSelect" aria-label="Kickoff point unit">
+                  <option value="m">m</option>
+                  <option value="ft">ft</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="field-group" id="dlsGroup">
+              <div class="field-label">
+                <label for="dls_limit">DLS limit</label>
+                <button class="info" type="button" aria-label="DLS limit description" aria-expanded="false" aria-describedby="tip-dls">i<span class="tooltip" id="tip-dls" role="tooltip">Maximum rate of change in wellbore direction per selected reference length, combining inclination and azimuth changes. Higher DLS means a tighter curve; set the limit from the approved trajectory and equipment/completion constraints, not as a generic recommendation.</span></button>
+              </div>
+              <div class="control">
+                <input id="dls_limit" type="number" min="0" step="0.001" value="3" required>
+                <select id="dlsUnitSelect" aria-label="DLS limit unit">
+                  <option value="metric">°/30 m</option>
+                  <option value="imperial">°/100 ft</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          </div>
+
+          <div class="parameter-section directional-only" id="optionalDirectionalSection">
+            <div class="section-heading">
+              <h3>Optional trajectory inputs</h3>
+              <p>Leave blank if not specified</p>
+            </div>
+            <div class="fields">
+              <div class="field-group">
+                <div class="field-label">
+                  <label for="max_tangent_inclination">Max tangent inclination</label>
+                </div>
+                <div class="control">
+                  <input id="max_tangent_inclination" type="number" min="0" max="90" step="any" placeholder="Optional">
+                  <span class="unit-suffix">°</span>
+                </div>
+              </div>
+              <div class="field-group">
+                <div class="field-label">
+                  <label for="measured_depth_limit">Measured depth limit</label>
+                </div>
+                <div class="control">
+                  <input id="measured_depth_limit" type="number" min="0" step="any" placeholder="Optional">
+                  <select id="measuredDepthUnitSelect" aria-label="Measured depth limit unit">
+                    <option value="m">m</option>
+                    <option value="ft">ft</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <p class="status" id="status" role="alert" aria-live="polite"></p>
+          <div class="actions">
+            <button class="btn secondary" id="resetBtn" type="button">Reset to defaults</button>
+            <button class="btn" id="downloadBtn" type="button">Download JSON</button>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <section class="json-panel" aria-label="Generated configuration">
+    <details>
+      <summary>Live JSON preview</summary>
+      <pre id="jsonPreview" aria-live="polite"></pre>
+    </details>
+  </section>
+  <section class="json-panel additional-panel" aria-labelledby="additional-info-heading">
+    <div class="panel-heading">
+      <h2 id="additional-info-heading">Additional well information</h2>
+      <p>Provide the tubing size for both directional and vertical wells.</p>
+    </div>
+    <div class="fields">
+      <div class="field-group" id="tubingGroup">
+        <div class="field-label">
+          <label for="tubing_size">Tubing size</label>
+          <button class="info" type="button" aria-label="Tubing size description" aria-expanded="false" aria-describedby="tip-tubing">i<span class="tooltip" id="tip-tubing" role="tooltip">Nominal outside diameter (OD) of the production tubing. This is not the inside diameter, wall thickness, or tubing weight. Choose the unit expected by the receiving system.</span></button>
+        </div>
+        <div class="control">
+          <input id="tubing_size" type="number" min="0" step="any" value="6.625" required>
+          <select id="tubingUnitSelect" aria-label="Tubing size unit">
+            <option value="in">Inches (in)</option>
+            <option value="m">Meters (m)</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section class="json-panel" aria-label="Engineering references">
+    <details>
+      <summary>Parameter notes &amp; engineering references</summary>
+      <ul class="reference-list">
+        <li><a href="https://www.slb.com/resource-library/oilfield-review/defining-series/defining-directional-drilling" target="_blank" rel="noopener noreferrer">SLB — The Defining Series: Directional Drilling Practices</a></li>
+        <li><a href="https://www.gadrilling.com/glossary/dogleg-severity-dls" target="_blank" rel="noopener noreferrer">GA Drilling — Dogleg Severity (DLS)</a></li>
+        <li><a href="https://www.drillingmanual.com/directional-well-trajectory-calculation-profile-design-planning/" target="_blank" rel="noopener noreferrer">Drilling Manual — Directional well trajectory and profile design</a></li>
+      </ul>
+      <p class="reference-note">These references explain general terminology and planning considerations. They do not establish safe operating limits or replace the approved well design, completion requirements, or project-specific standards.</p>
+    </details>
+  </section>
+
+  <script>
+    "use strict";
+
+    const UOM = {
+      length: {
+        metric: "petrobras:reference-data--UnitOfMeasure:m:",
+        imperial: "petrobras:reference-data--UnitOfMeasure:ft:"
+      },
+      cost: {
+        metric: "petrobras:reference-data--UnitOfMeasure:USD%2Fm:",
+        imperial: "petrobras:reference-data--UnitOfMeasure:USD%2Fft:"
+      },
+      tubing: {
+        metric: "petrobras:reference-data--UnitOfMeasure:m:",
+        imperial: "petrobras:reference-data--UnitOfMeasure:in:"
+      },
+      dls: {
+        metric: "petrobras:reference-data--UnitOfMeasure:1%2F30%20dega%2Fm:",
+        imperial: "petrobras:reference-data--UnitOfMeasure:0.01%20dega%2Fft:"
+      },
+      inclination: "petrobras:reference-data--UnitOfMeasure:dega:"
+    };
+
+    const DEFAULTS = Object.freeze({
+      wellType: "vertical",
+      well_unit_cost: 15500,
+      costUnit: "USD/m",
+      tubing_size: 6.625,
+      tubingUnit: "in",
+      horizontal_step_out: 800,
+      stepOutUnit: "m",
+      kickoff_point: 600,
+      kickoffUnit: "m",
+      dls_limit: 3,
+      dlsUnit: "metric",
+      max_tangent_inclination: Number.NaN,
+      measured_depth_limit: Number.NaN,
+      measuredDepthUnit: "m"
+    });
+
+    const METERS_PER_FOOT = 0.3048;
+    const FEET_PER_METER = 1 / METERS_PER_FOOT;
+    const INCHES_PER_METER = 1 / 0.0254;
+    const DLS_METRIC_TO_IMPERIAL = 100 / (30 * FEET_PER_METER);
+    const DLS_IMPERIAL_TO_METRIC = 1 / DLS_METRIC_TO_IMPERIAL;
+    const state = { ...DEFAULTS };
+
+    const inputs = {
+      cost: document.getElementById("well_unit_cost"),
+      tubing: document.getElementById("tubing_size"),
+      stepOut: document.getElementById("horizontal_step_out"),
+      kickoff: document.getElementById("kickoff_point"),
+      dls: document.getElementById("dls_limit"),
+      maxTangentInclination: document.getElementById("max_tangent_inclination"),
+      measuredDepthLimit: document.getElementById("measured_depth_limit")
+    };
+    const groups = [...document.querySelectorAll(".directional-only")];
+    const status = document.getElementById("status");
+    const preview = document.getElementById("jsonPreview");
+    const downloadButton = document.getElementById("downloadBtn");
+    const unitSelects = {
+      cost: document.getElementById("costUnit"),
+      tubing: document.getElementById("tubingUnitSelect"),
+      stepOut: document.getElementById("stepOutUnitSelect"),
+      kickoff: document.getElementById("kickoffUnitSelect"),
+      dls: document.getElementById("dlsUnitSelect"),
+      measuredDepth: document.getElementById("measuredDepthUnitSelect")
+    };
+    function rounded(value, digits) {
+      if (!Number.isFinite(value)) return null;
+      const factor = 10 ** digits;
+      return Math.round(value * factor) / factor;
+    }
+
+    function buildPayload() {
+      const isVertical = state.wellType === "vertical";
+      const costSystem = isVertical || state.costUnit === "USD/m" ? "metric" : "imperial";
+      const stepOutSystem = isVertical ? "m" : state.stepOutUnit;
+      const kickoffSystem = isVertical ? "m" : state.kickoffUnit;
+      const dlsSystem = isVertical ? "metric" : state.dlsUnit;
+      const tubingSystem = state.tubingUnit === "m" ? "metric" : "imperial";
+      const payload = {
+        well_trajectory_modelling: !isVertical,
+        allow_incomplete_dev_concept: false,
+        well_unit_cost: rounded(isVertical ? DEFAULTS.well_unit_cost : state.well_unit_cost, 2),
+        well_unit_cost_measurement: UOM.cost[costSystem]
+      };
+      if (!isVertical) {
+        payload.horizontal_step_out = rounded(state.horizontal_step_out, 2);
+        payload.horizontal_step_out_measurement =
+          UOM.length[stepOutSystem === "m" ? "metric" : "imperial"];
+        if (Number.isFinite(state.max_tangent_inclination)) {
+          payload.tangent_inclination = rounded(state.max_tangent_inclination, 2);
+          payload.tangent_inclination_measurement = UOM.inclination;
+        }
+        payload.kickoff_point = rounded(state.kickoff_point, 2);
+        payload.kickoff_point_measurement =
+          UOM.length[kickoffSystem === "m" ? "metric" : "imperial"];
+        payload.dls_limit = rounded(state.dls_limit, 3);
+        payload.dls_limit_measurement = UOM.dls[dlsSystem];
+        if (Number.isFinite(state.measured_depth_limit)) {
+          payload.measured_depth_limit = rounded(state.measured_depth_limit, 2);
+          payload.measured_depth_limit_measurement =
+            UOM.length[state.measuredDepthUnit === "m" ? "metric" : "imperial"];
+        }
+        payload.allow_back_build = true;
+        payload.multilateral_well_modelling = { multilateral_well_design: false };
+        payload.selected_subset_targets = [];
+        return payload;
+      }
+
+      payload.tubing_size = rounded(state.tubing_size, state.tubingUnit === "m" ? 6 : 3);
+      payload.tubing_size_measurement = UOM.tubing[tubingSystem];
+      payload.horizontal_step_out = 0;
+      payload.horizontal_step_out_measurement = UOM.length.metric;
+      payload.kickoff_point = rounded(DEFAULTS.kickoff_point, 2);
+      payload.kickoff_point_measurement = UOM.length.metric;
+      payload.dls_limit = rounded(DEFAULTS.dls_limit, 3);
+      payload.dls_limit_measurement = UOM.dls.metric;
+      payload.allow_back_build = true;
+      payload.multilateral_well_modelling = { multilateral_well_design: false };
+      payload.selected_subset_targets = [];
+      return payload;
+    }
+
+    function renderPreview() {
+      preview.textContent = JSON.stringify(buildPayload(), null, 2);
+    }
+
+    function validateVisibleInputs() {
+      const requiredInputs = [
+        ["Tubing size", inputs.tubing],
+        ...(state.wellType === "directional"
+          ? [
+            ["Well unit cost", inputs.cost],
+            ["Max horizontal step-out", inputs.stepOut],
+            ["Kickoff point", inputs.kickoff],
+            ["DLS limit", inputs.dls]
+          ]
+          : [])
+      ];
+      const missing = requiredInputs
+        .filter(([, input]) => input.value.trim() === "")
+        .map(([label]) => label);
+      const invalid = requiredInputs
+        .filter(([, input]) => input.value.trim() !== "" && !input.checkValidity())
+        .map(([label]) => label);
+      const invalidOptional = state.wellType === "directional"
+        ? [
+            ["Max tangent inclination", inputs.maxTangentInclination],
+            ["Measured depth limit", inputs.measuredDepthLimit]
+          ]
+            .filter(([, input]) => input.value.trim() !== "" && !input.checkValidity())
+            .map(([label]) => label)
+        : [];
+      const hasIssues = missing.length > 0 || invalid.length > 0 || invalidOptional.length > 0;
+      const messages = [];
+      if (missing.length > 0) messages.push(`Required inputs still to be filled: ${missing.join(", ")}.`);
+      if (invalid.length > 0) messages.push(`Enter a valid non-negative value for: ${invalid.join(", ")}.`);
+      if (invalidOptional.length > 0) messages.push(`Enter a valid value for optional input: ${invalidOptional.join(", ")}.`);
+      status.textContent = messages.join(" ");
+      downloadButton.disabled = hasIssues;
+      return !hasIssues;
+    }
+
+    function syncInputValues() {
+      inputs.cost.value = Number.isFinite(state.well_unit_cost) ? state.well_unit_cost.toFixed(2) : "";
+      inputs.tubing.value = Number.isFinite(state.tubing_size)
+        ? state.tubing_size.toFixed(state.tubingUnit === "m" ? 6 : 3)
+        : "";
+      inputs.stepOut.value = Number.isFinite(state.horizontal_step_out) ? state.horizontal_step_out.toFixed(2) : "";
+      inputs.kickoff.value = Number.isFinite(state.kickoff_point) ? state.kickoff_point.toFixed(2) : "";
+      inputs.dls.value = Number.isFinite(state.dls_limit) ? state.dls_limit.toFixed(3) : "";
+      inputs.maxTangentInclination.value = Number.isFinite(state.max_tangent_inclination)
+        ? String(state.max_tangent_inclination)
+        : "";
+      inputs.measuredDepthLimit.value = Number.isFinite(state.measured_depth_limit)
+        ? String(state.measured_depth_limit)
+        : "";
+
+      unitSelects.cost.value = state.costUnit;
+      unitSelects.tubing.value = state.tubingUnit;
+      unitSelects.stepOut.value = state.stepOutUnit;
+      unitSelects.kickoff.value = state.kickoffUnit;
+      unitSelects.dls.value = state.dlsUnit;
+      unitSelects.measuredDepth.value = state.measuredDepthUnit;
+      updateWellType();
+    }
+
+    function updateWellType() {
+      const isVertical = state.wellType === "vertical";
+      inputs.tubing.required = true;
+      inputs.cost.required = !isVertical;
+      inputs.stepOut.required = !isVertical;
+      inputs.kickoff.required = !isVertical;
+      inputs.dls.required = !isVertical;
+      document.querySelectorAll(".well-type input").forEach((input) => {
+        input.checked = input.value === state.wellType;
+      });
+      groups.forEach((group) => { group.hidden = isVertical; });
+      document.getElementById("directionalSchematic").style.display = isVertical ? "none" : "";
+      document.getElementById("verticalSchematic").style.display = isVertical ? "" : "none";
+      document.getElementById("visualTag").textContent = isVertical ? "VERTICAL" : "DIRECTIONAL";
+      document.getElementById("schematicDescription").textContent = isVertical
+        ? "Illustrative vertical well profile."
+        : "Illustrative directional well profile.";
+      document.getElementById("inputDescription").textContent = isVertical
+        ? "Vertical mode uses the default trajectory settings. Enter the tubing size under Additional well information."
+        : "Enter the four required trajectory parameters. Tubing size is under Additional well information; unit changes convert values automatically.";
+      document.getElementById("schematicCaption").textContent = isVertical
+        ? "Vertical mode requests only tubing size. Backend defaults are retained; horizontal step-out is set to zero."
+        : "Illustration only; the inputs and JSON payload remain the source of truth.";
+      validateVisibleInputs();
+      renderPreview();
+    }
+
+    function changeUnit(unitKey, targetUnit, conversionFactor) {
+      if (state[unitKey] === targetUnit) return;
+      const valueKey = {
+        costUnit: "well_unit_cost",
+        tubingUnit: "tubing_size",
+        stepOutUnit: "horizontal_step_out",
+        kickoffUnit: "kickoff_point",
+        dlsUnit: "dls_limit",
+        measuredDepthUnit: "measured_depth_limit"
+      }[unitKey];
+      state[valueKey] = Number.isFinite(state[valueKey])
+        ? state[valueKey] * conversionFactor
+        : state[valueKey];
+      state[unitKey] = targetUnit;
+      syncInputValues();
+      renderPreview();
+    }
+
+    function updateNumber(key, input) {
+      state[key] = input.value === "" ? Number.NaN : input.valueAsNumber;
+      validateVisibleInputs();
+      renderPreview();
+    }
+
+    function filenameNumber(value, digits = 3) {
+      return rounded(value, digits)
+        .toFixed(digits)
+        .replace(/\.?0+$/, "")
+        .replace(".", "p");
+    }
+
+    function buildDownloadFilename() {
+      if (state.wellType === "vertical") {
+        return `WV-T${filenameNumber(state.tubing_size, state.tubingUnit === "m" ? 6 : 3)}${state.tubingUnit}.json`;
+      }
+
+      const parts = [
+        "WD",
+        `C${filenameNumber(state.well_unit_cost, 2)}${state.costUnit === "USD/m" ? "USDm" : "USDft"}`,
+        `S${filenameNumber(state.horizontal_step_out, 2)}${state.stepOutUnit}`,
+        `K${filenameNumber(state.kickoff_point, 2)}${state.kickoffUnit}`,
+        `D${filenameNumber(state.dls_limit, 3)}${state.dlsUnit === "metric" ? "D30" : "D100ft"}`
+      ];
+      if (Number.isFinite(state.max_tangent_inclination)) {
+        parts.push(`TI${filenameNumber(state.max_tangent_inclination, 2)}deg`);
+      }
+      if (Number.isFinite(state.measured_depth_limit)) {
+        parts.push(`MD${filenameNumber(state.measured_depth_limit, 2)}${state.measuredDepthUnit}`);
+      }
+      return `${parts.join("_")}.json`;
+    }
+
+    document.querySelectorAll(".well-type input").forEach((input) => {
+      input.addEventListener("change", () => {
+        state.wellType = input.value;
+        updateWellType();
+      });
+    });
+
+    unitSelects.cost.addEventListener("change", () => {
+      const toUsdPerFoot = unitSelects.cost.value === "USD/ft";
+      changeUnit("costUnit", unitSelects.cost.value, toUsdPerFoot ? METERS_PER_FOOT : FEET_PER_METER);
+    });
+    unitSelects.tubing.addEventListener("change", () => {
+      const toMeters = unitSelects.tubing.value === "m";
+      changeUnit("tubingUnit", unitSelects.tubing.value, toMeters ? 1 / INCHES_PER_METER : INCHES_PER_METER);
+    });
+    unitSelects.stepOut.addEventListener("change", () => {
+      const toFeet = unitSelects.stepOut.value === "ft";
+      changeUnit("stepOutUnit", unitSelects.stepOut.value, toFeet ? FEET_PER_METER : METERS_PER_FOOT);
+    });
+    unitSelects.kickoff.addEventListener("change", () => {
+      const toFeet = unitSelects.kickoff.value === "ft";
+      changeUnit("kickoffUnit", unitSelects.kickoff.value, toFeet ? FEET_PER_METER : METERS_PER_FOOT);
+    });
+    unitSelects.dls.addEventListener("change", () => {
+      const toImperial = unitSelects.dls.value === "imperial";
+      changeUnit("dlsUnit", unitSelects.dls.value, toImperial ? DLS_METRIC_TO_IMPERIAL : DLS_IMPERIAL_TO_METRIC);
+    });
+    inputs.cost.addEventListener("input", () => updateNumber("well_unit_cost", inputs.cost));
+    inputs.tubing.addEventListener("input", () => updateNumber("tubing_size", inputs.tubing));
+    inputs.stepOut.addEventListener("input", () => updateNumber("horizontal_step_out", inputs.stepOut));
+    inputs.kickoff.addEventListener("input", () => updateNumber("kickoff_point", inputs.kickoff));
+    inputs.dls.addEventListener("input", () => updateNumber("dls_limit", inputs.dls));
+    inputs.maxTangentInclination.addEventListener("input", () => updateNumber("max_tangent_inclination", inputs.maxTangentInclination));
+    inputs.measuredDepthLimit.addEventListener("input", () => updateNumber("measured_depth_limit", inputs.measuredDepthLimit));
+    unitSelects.measuredDepth.addEventListener("change", () => {
+      const toFeet = unitSelects.measuredDepth.value === "ft";
+      changeUnit(
+        "measuredDepthUnit",
+        unitSelects.measuredDepth.value,
+        toFeet ? FEET_PER_METER : METERS_PER_FOOT
+      );
+    });
+    document.querySelectorAll(".info").forEach((button) => {
+      button.addEventListener("click", (event) => {
+        event.stopPropagation();
+        const willOpen = button.getAttribute("aria-expanded") !== "true";
+        document.querySelectorAll(".info").forEach((item) => item.setAttribute("aria-expanded", "false"));
+        button.setAttribute("aria-expanded", String(willOpen));
+      });
+      button.addEventListener("keydown", (event) => {
+        if (event.key === "Escape") button.setAttribute("aria-expanded", "false");
+      });
+    });
+    document.addEventListener("click", () => {
+      document.querySelectorAll(".info").forEach((button) => button.setAttribute("aria-expanded", "false"));
+    });
+
+    document.getElementById("resetBtn").addEventListener("click", () => {
+      Object.assign(state, DEFAULTS);
+      syncInputValues();
+      renderPreview();
+    });
+
+    downloadButton.addEventListener("click", () => {
+      if (!validateVisibleInputs()) return;
+      const blob = new Blob([JSON.stringify(buildPayload(), null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = buildDownloadFilename();
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(url);
+    });
+
+    syncInputValues();
+  </script>
+</body>
+</html>
