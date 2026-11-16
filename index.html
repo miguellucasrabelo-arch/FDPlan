@@ -224,6 +224,157 @@
       box-shadow: 0 0 0 3px rgb(17 104 180 / 10%);
     }
 
+    .project-type-options {
+      display: grid;
+      gap: 12px;
+    }
+
+    .project-type-option {
+      position: relative;
+      display: flex;
+      min-height: 82px;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: #fff;
+      cursor: pointer;
+      transition: border-color .16s ease, box-shadow .16s ease, background .16s ease;
+    }
+
+    .project-type-option:hover { border-color: #9fc5e7; }
+    .project-type-option:has(input:checked) {
+      border-color: var(--blue);
+      background: #f4f9ff;
+      box-shadow: 0 0 0 3px rgb(17 104 180 / 10%);
+    }
+
+    .project-type-option input {
+      width: 17px;
+      height: 17px;
+      flex: 0 0 auto;
+      margin: 2px 0 0;
+      accent-color: var(--blue);
+    }
+
+    .project-type-option strong { display: block; font-size: .93rem; }
+    .project-type-option small {
+      display: block;
+      margin-top: 5px;
+      color: var(--muted);
+      font-size: .78rem;
+      line-height: 1.4;
+    }
+
+    .project-type-image {
+      max-width: 760px;
+      align-self: center;
+      background: #f4f8fc;
+    }
+    .project-type-image[hidden] { display: none; }
+
+    .fpso-parameters[hidden] { display: none; }
+    .fpso-parameters { margin: 22px 0 0; }
+
+    .fpso-position-control {
+      display: grid;
+      gap: 14px;
+      margin-top: 20px;
+      padding-top: 17px;
+      border-top: 1px solid var(--line);
+    }
+
+    .fpso-position-toggle {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      cursor: pointer;
+    }
+
+    .fpso-position-toggle input {
+      width: 17px;
+      height: 17px;
+      flex: 0 0 auto;
+      margin: 2px 0 0;
+      accent-color: var(--blue);
+    }
+
+    .fpso-position-toggle strong, .fpso-position-toggle small { display: block; }
+    .fpso-position-toggle strong { font-size: .86rem; }
+    .fpso-position-toggle small {
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: .77rem;
+      line-height: 1.4;
+    }
+
+    .fpso-position-inputs {
+      display: grid;
+      gap: 14px;
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: #fff;
+    }
+
+    .fpso-position-inputs[hidden], #fpsoUtmPositionFields[hidden],
+    #fpsoGeographicPositionFields[hidden] { display: none; }
+
+    .fpso-position-status {
+      min-height: 1.2em;
+      margin: 0;
+      color: var(--red);
+      font-size: .78rem;
+    }
+
+    .fpso-model-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 16px;
+      margin: 12px 0 0;
+      padding: 0;
+      color: var(--muted);
+      font-size: .73rem;
+      font-weight: 650;
+      list-style: none;
+    }
+
+    .fpso-model-legend[hidden] { display: none; }
+    .fpso-model-legend li { display: inline-flex; align-items: center; gap: 7px; }
+
+    .fpso-model-key {
+      width: 18px;
+      height: 3px;
+      border-radius: 2px;
+      background: var(--key-color);
+    }
+
+    .fpso-model-key.riser { height: 0; border-top: 2px dashed var(--key-color); background: transparent; }
+
+    .fpso-metric-output {
+      display: flex;
+      min-height: 48px;
+      align-items: center;
+      padding: 0 13px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: #f5f8fb;
+      color: var(--blue-dark);
+      font-size: .9rem;
+      font-variant-numeric: tabular-nums;
+      font-weight: 750;
+    }
+
+    .fpso-geometry-status {
+      margin: 14px 0 0;
+      color: var(--muted);
+      font-size: .78rem;
+      line-height: 1.5;
+    }
+
+    .fpso-geometry-status[data-error="true"] { color: var(--red); }
+
     .well-type input {
       width: 17px;
       height: 17px;
@@ -1213,6 +1364,7 @@
         </div>
       </section>
     </div>
+
   </main>
 
   <section class="json-panel" aria-label="Generated configuration">
@@ -1319,6 +1471,21 @@
         <strong class="target-metric-value" id="targetWagCount">0</strong>
       </div>
     </div>
+    <div class="sheet-footer">
+      <div class="actions">
+        <button class="btn" id="downloadTargetsBtn" type="button">Generate &amp; download JSON</button>
+      </div>
+    </div>
+    <details style="margin-top:16px">
+      <summary>Reservoir targets JSON preview</summary>
+      <pre id="targetsJsonPreview" aria-live="polite"></pre>
+    </details>
+  </section>
+  <section class="json-panel additional-panel" aria-labelledby="topology-heading">
+    <div class="panel-heading">
+      <h2 id="topology-heading">Topology map</h2>
+      <p>Review reservoir target locations, identified basins and nearby fields or contract blocks.</p>
+    </div>
     <div class="target-field-results" id="targetFieldResults" aria-label="Identified basins, fields and contract blocks"></div>
     <section class="target-map-panel" aria-labelledby="targetMapHeading">
       <div class="target-map-heading">
@@ -1399,16 +1566,245 @@
       </ul>
       <p class="bathymetry-result-note">Source: <a href="https://www.gebco.net/data_and_products/gridded_bathymetry_data/" target="_blank" rel="noopener noreferrer">GEBCO 2023 Grid</a> via the <a href="https://api.odb.ntu.edu.tw/gebco" target="_blank" rel="noopener noreferrer">Ocean Data Bank API</a>. Small colored cubes mark schematic wet XTrees above the seabed; smaller colored points and intervals show targets at their original subsurface Z positions. Hover for seabed depth, target Z and interval end. Vertical relief and XTree symbols are not to scale; elevations and target Z are in meters relative to sea level.</p>
     </section>
-    <div class="sheet-footer">
-      <div class="actions">
-        <button class="btn" id="downloadTargetsBtn" type="button">Generate &amp; download JSON</button>
-      </div>
-    </div>
-    <details style="margin-top:16px">
-      <summary>Reservoir targets JSON preview</summary>
-      <pre id="targetsJsonPreview" aria-live="polite"></pre>
-    </details>
   </section>
+    <section class="layout json-panel" id="field-layout-inputs" aria-labelledby="project-type-heading">
+      <section class="visual-panel" aria-labelledby="project-type-visual-heading">
+        <div class="visual-heading">
+          <div>
+            <h2 id="project-type-visual-heading">Project type schematic</h2>
+            <p id="projectTypeDescription">Floating production, storage and offloading vessel connected to subsea wells.</p>
+          </div>
+          <span class="visual-tag" id="projectTypeTag">FPSO</span>
+        </div>
+        <div class="schematic-wrap">
+          <svg class="schematic project-type-image" id="fpsoPlanView" data-project-image="fpso" viewBox="0 0 640 480" role="img" aria-label="Live top-view FPSO mooring and riser geometry">
+            <rect width="640" height="480" rx="18" fill="#f4f8fc"/>
+            <defs>
+              <marker id="fpsoArrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+                <path d="M0 0L10 5L0 10Z" fill="#35556c"/>
+              </marker>
+            </defs>
+            <text x="320" y="27" fill="#35556c" font-family="system-ui, sans-serif" font-size="13" font-weight="700" text-anchor="middle">FPSO · TOP VIEW · 300 m × 80 m HULL SCALE</text>
+            <g id="fpsoGeometry"></g>
+          </svg>
+          <ul class="fpso-model-legend" id="fpsoModelLegend" aria-label="FPSO geometry legend">
+            <li><span class="fpso-model-key" style="--key-color:#74808a"></span>Mooring lines · 4 corner clusters</li>
+            <li><span class="fpso-model-key riser" style="--key-color:#c0267a"></span>Riser touchdown</li>
+          </ul>
+          <svg class="schematic project-type-image" data-project-image="tie-in" viewBox="0 0 640 360" role="img" aria-label="Illustration of a new subsea well tied into existing subsea infrastructure" hidden>
+            <rect width="640" height="360" rx="18" fill="#f4f8fc"/>
+            <path d="M0 95H640" stroke="#7ab6d8" stroke-width="3"/>
+            <path d="M0 100H640V276H0Z" fill="#e7f3f9"/>
+            <path d="M0 281H640" stroke="#b7cbd8" stroke-width="4"/>
+            <path d="M0 286H640V360H0Z" fill="#e1eaf0"/>
+            <path d="M72 250H564" stroke="#485f70" stroke-width="12" stroke-linecap="round"/>
+            <path d="M72 250H564" stroke="#e5a84b" stroke-width="4" stroke-linecap="round"/>
+            <rect x="110" y="204" width="112" height="57" rx="8" fill="#8bb4c9" stroke="#35556c" stroke-width="4"/>
+            <rect x="133" y="188" width="66" height="16" rx="4" fill="#d6e5ec" stroke="#35556c" stroke-width="3"/>
+            <path d="M164 261V302" stroke="#1168b4" stroke-width="6"/>
+            <circle cx="164" cy="306" r="10" fill="#1168b4"/>
+            <rect x="378" y="203" width="118" height="58" rx="8" fill="#d8e6ed" stroke="#35556c" stroke-width="4"/>
+            <path d="M397 203V180H477V203M420 180V158H454V180" fill="#fff" stroke="#35556c" stroke-width="4"/>
+            <rect x="274" y="226" width="52" height="48" rx="5" fill="#fff4e5" stroke="#d08a2e" stroke-width="4"/>
+            <path d="M300 226V202M300 274V294" stroke="#d08a2e" stroke-width="5"/>
+            <circle cx="300" cy="202" r="7" fill="#d08a2e"/>
+            <path d="M240 250H274M326 250H378" stroke="#d08a2e" stroke-width="5" stroke-dasharray="7 6"/>
+            <text x="166" y="330" fill="#35556c" font-family="system-ui, sans-serif" font-size="13" font-weight="700" text-anchor="middle">Existing system</text>
+            <text x="300" y="188" fill="#965b0b" font-family="system-ui, sans-serif" font-size="13" font-weight="700" text-anchor="middle">Tie-in</text>
+            <text x="437" y="330" fill="#35556c" font-family="system-ui, sans-serif" font-size="13" font-weight="700" text-anchor="middle">New well connection</text>
+            <text x="320" y="42" fill="#35556c" font-family="system-ui, sans-serif" font-size="16" font-weight="700" text-anchor="middle">Connect new wells to existing infrastructure</text>
+          </svg>
+          <svg class="schematic project-type-image" data-project-image="subsea-to-shore" viewBox="0 0 640 360" role="img" aria-label="Illustration of subsea wells connected by pipeline to an onshore facility" hidden>
+            <rect width="640" height="360" rx="18" fill="#f4f8fc"/>
+            <path d="M0 104H640" stroke="#7ab6d8" stroke-width="3"/>
+            <path d="M0 109H470V276H0Z" fill="#e7f3f9"/>
+            <path d="M470 109L525 127V276H470Z" fill="#e8e1d3"/>
+            <path d="M525 127L640 154V276H525Z" fill="#e3dac7"/>
+            <path d="M0 281H640" stroke="#b7cbd8" stroke-width="4"/>
+            <path d="M0 286H640V360H0Z" fill="#e1eaf0"/>
+            <path d="M113 244H451C480 244 497 224 507 207L539 155" fill="none" stroke="#485f70" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M113 244H451C480 244 497 224 507 207L539 155" fill="none" stroke="#e5a84b" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+            <rect x="77" y="218" width="72" height="47" rx="7" fill="#8bb4c9" stroke="#35556c" stroke-width="4"/>
+            <path d="M91 218V201H135V218M113 265V298" fill="none" stroke="#35556c" stroke-width="4"/>
+            <circle cx="113" cy="303" r="9" fill="#1168b4"/>
+            <path d="M525 154H613V142H636V218H525Z" fill="#fff" stroke="#607f70" stroke-width="4"/>
+            <rect x="548" y="173" width="18" height="23" fill="#dcecf2" stroke="#607f70" stroke-width="2"/>
+            <rect x="578" y="173" width="18" height="23" fill="#dcecf2" stroke="#607f70" stroke-width="2"/>
+            <path d="M539 155V132H563V155M601 142V120H616V142" fill="none" stroke="#607f70" stroke-width="4"/>
+            <text x="290" y="57" fill="#35556c" font-family="system-ui, sans-serif" font-size="16" font-weight="700" text-anchor="middle">Subsea production pipeline to shore</text>
+            <text x="113" y="331" fill="#35556c" font-family="system-ui, sans-serif" font-size="13" font-weight="700" text-anchor="middle">Subsea wells</text>
+            <text x="574" y="244" fill="#35556c" font-family="system-ui, sans-serif" font-size="13" font-weight="700" text-anchor="middle">Onshore facility</text>
+          </svg>
+          <p class="schematic-caption" id="projectTypeCaption">Illustrative concept only; the selected project type is a planning input.</p>
+        </div>
+        <div class="parameter-section fpso-parameters" id="fpsoParameters">
+          <div class="section-heading">
+            <h3>FPSO geometry inputs</h3>
+            <p>Plan-view model updates as values change</p>
+          </div>
+          <div class="fields">
+            <div class="field-group">
+              <div class="field-label"><label for="fpsoHeading">Unit heading</label></div>
+              <div class="control">
+                <input id="fpsoHeading" type="number" min="0" max="359.9" step="0.1" value="195" required>
+                <span class="unit-suffix">°</span>
+              </div>
+            </div>
+            <div class="field-group">
+              <div class="field-label"><label for="fpsoMooringCount">Mooring lines per cluster</label></div>
+              <div class="control">
+                <input id="fpsoMooringCount" type="number" min="1" max="24" step="1" value="6" required>
+                <span class="unit-suffix">lines</span>
+              </div>
+            </div>
+            <div class="field-group">
+              <div class="field-label"><label for="fpsoMooringSpacing">Angle between mooring lines</label></div>
+              <div class="control">
+                <input id="fpsoMooringSpacing" type="number" min="0.1" max="30" step="0.1" value="2" required>
+                <span class="unit-suffix">°</span>
+              </div>
+            </div>
+            <div class="field-group">
+              <div class="field-label">
+                <label for="fpsoRiserBalconyAngle">Riser Balcony Angle</label>
+                <button class="info" type="button" aria-label="Riser Balcony Angle description" aria-expanded="false" aria-describedby="tip-fpso-riser-balcony">i<span class="tooltip" id="tip-fpso-riser-balcony" role="tooltip">The smaller angle between the port bow and port stern mooring-cluster axes. Each cluster axis is positioned symmetrically around the vessel beam; risers leave from port-side midship.</span></button>
+              </div>
+              <div class="control">
+                <input id="fpsoRiserBalconyAngle" type="number" min="1" max="179" step="0.1" value="130" required>
+                <span class="unit-suffix">°</span>
+              </div>
+            </div>
+            <div class="field-group">
+              <div class="field-label">
+                <label for="fpsoRiserSpacing">Minimum angle between risers</label>
+                <button class="info" type="button" aria-label="Riser spacing description" aria-expanded="false" aria-describedby="tip-fpso-riser-spacing">i<span class="tooltip" id="tip-fpso-riser-spacing" role="tooltip">The 15 risers are shown as a fixed schematic count, not a project quantity. Total spread is 14 times this angle and must fit within the clear port-side corridor between the mooring clusters.</span></button>
+              </div>
+              <div class="control">
+                <input id="fpsoRiserSpacing" type="number" min="0.000001" max="30" step="any" value="3" required>
+                <span class="unit-suffix">° min.</span>
+              </div>
+            </div>
+            <div class="field-group">
+              <div class="field-label">
+                <label for="fpsoAnchorRadius">Anchor radius</label>
+                <button class="info" type="button" aria-label="Anchor radius description" aria-expanded="false" aria-describedby="tip-fpso-anchor-radius">i<span class="tooltip" id="tip-fpso-anchor-radius" role="tooltip">Automatically populated as 1.3 times the mean water depth from the current GEBCO grid. It is drawn to the same scale as an illustrative 300 m × 80 m FPSO hull. You can edit the radius independently.</span></button>
+              </div>
+              <div class="control">
+                <input id="fpsoAnchorRadius" type="number" min="0.1" step="any" placeholder="Requires current GEBCO grid">
+                <span class="unit-suffix">m</span>
+              </div>
+            </div>
+            <div class="field-group">
+              <div class="field-label">
+                <label for="fpsoTouchdownRadius">Riser touchdown radius</label>
+                <button class="info" type="button" aria-label="Riser touchdown radius description" aria-expanded="false" aria-describedby="tip-fpso-touchdown-radius">i<span class="tooltip" id="tip-fpso-touchdown-radius" role="tooltip">Initially populated with the same 1.3-times-mean-depth estimate as the anchor radius, then editable independently. This value controls riser endpoints in the schematic.</span></button>
+              </div>
+              <div class="control">
+                <input id="fpsoTouchdownRadius" type="number" min="0.1" step="any" placeholder="Requires current GEBCO grid">
+                <span class="unit-suffix">m</span>
+              </div>
+            </div>
+          </div>
+          <div class="fpso-position-control">
+            <label class="fpso-position-toggle" for="fpsoPrescribePosition">
+              <input id="fpsoPrescribePosition" type="checkbox">
+              <span><strong>Prescribe FPSO position</strong><small>Leave unchecked to let the software optimize the unit location.</small></span>
+            </label>
+            <div id="fpsoPositionInputs" class="fpso-position-inputs" hidden>
+              <div class="field-group">
+                <div class="field-label"><label for="fpsoPositionCoordinateMode">Coordinate format</label></div>
+                <div class="control">
+                  <select id="fpsoPositionCoordinateMode" aria-label="FPSO position coordinate format">
+                    <option value="utm">UTM coordinates</option>
+                    <option value="geographic">Latitude / longitude</option>
+                  </select>
+                </div>
+              </div>
+              <div class="fields" id="fpsoUtmPositionFields">
+                <div class="field-group">
+                  <div class="field-label"><label for="fpsoPositionX">Easting (X)</label></div>
+                  <div class="control">
+                    <input id="fpsoPositionX" type="number" step="any" placeholder="UTM easting">
+                    <span class="unit-suffix">m</span>
+                  </div>
+                </div>
+                <div class="field-group">
+                  <div class="field-label"><label for="fpsoPositionY">Northing (Y)</label></div>
+                  <div class="control">
+                    <input id="fpsoPositionY" type="number" step="any" placeholder="UTM northing">
+                    <span class="unit-suffix">m</span>
+                  </div>
+                </div>
+                <div class="field-group">
+                  <div class="field-label"><label for="fpsoPositionZone">UTM zone</label></div>
+                  <div class="control"><select id="fpsoPositionZone" required><option value="">Zone</option></select></div>
+                </div>
+                <div class="field-group">
+                  <div class="field-label"><label for="fpsoPositionHemisphere">Hemisphere</label></div>
+                  <div class="control">
+                    <select id="fpsoPositionHemisphere" required>
+                      <option value="">Select</option>
+                      <option value="N">North</option>
+                      <option value="S">South</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+              <div class="fields" id="fpsoGeographicPositionFields" hidden>
+                <div class="field-group">
+                  <div class="field-label"><label for="fpsoPositionLatitude">Latitude</label></div>
+                  <div class="control">
+                    <input id="fpsoPositionLatitude" type="number" min="-90" max="90" step="any" placeholder="Latitude">
+                    <span class="unit-suffix">°</span>
+                  </div>
+                </div>
+                <div class="field-group">
+                  <div class="field-label"><label for="fpsoPositionLongitude">Longitude</label></div>
+                  <div class="control">
+                    <input id="fpsoPositionLongitude" type="number" min="-180" max="180" step="any" placeholder="Longitude">
+                    <span class="unit-suffix">°</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <p class="fpso-position-status" id="fpsoPositionStatus" role="status" aria-live="polite"></p>
+          <p class="fpso-geometry-status" id="fpsoGeometryStatus" role="status" aria-live="polite"></p>
+        </div>
+      </section>
+      <section class="input-panel" aria-labelledby="project-type-heading">
+        <div class="panel-heading">
+          <h2 id="project-type-heading">Project Type</h2>
+          <p>Choose the field development concept that best describes this project.</p>
+        </div>
+        <fieldset>
+          <legend>Field layout</legend>
+          <div class="project-type-options">
+            <label class="project-type-option">
+              <input type="radio" name="project_type" value="fpso" checked>
+              <span>
+                <strong>FPSO</strong>
+                <small>Floating production, storage and offloading vessel connected to subsea wells.</small>
+              </span>
+            </label>
+            <label class="project-type-option">
+              <input type="radio" name="project_type" value="tie-in">
+              <span>
+                <strong>Tie-in</strong>
+                <small>Connect new wells or subsea equipment to existing infrastructure.</small>
+              </span>
+            </label>
+            <label class="project-type-option">
+              <input type="radio" name="project_type" value="subsea-to-shore">
+              <span>
+                <strong>Subsea to shore</strong>
+                <small>Transport production from subsea wells to an onshore facility.</small>
+              </span>
+            </label>
+          </div>
+        </fieldset>
+      </section>
+    </section>
   <section class="json-panel" aria-label="Engineering references">
     <details>
       <summary>Parameter notes &amp; engineering references</summary>
@@ -1591,6 +1987,7 @@
     let bathymetryBoundsEdited = false;
     let bathymetryGenerationSignature = null;
     let generatedBathymetry = null;
+    let generatedBathymetryMeanWaterDepth = null;
     let plotlyLoadPromise = null;
     let bathymetryViewControlsBound = false;
     let activeBathymetryPlot = null;
@@ -2496,6 +2893,7 @@
       });
       marker.on("dragend", () => {
         if (bathymetryBounds) renderBathymetryHandles();
+        renderFpsoGeometry();
       });
     }
 
@@ -3384,12 +3782,14 @@
         );
         grid.fileText = buildBathymetryGridFile(grid);
         generatedBathymetry = grid;
+        generatedBathymetryMeanWaterDepth = meanBathymetryWaterDepth(grid);
         bathymetryGenerationSignature = currentBathymetrySignature();
         document.getElementById("bathymetryResult").hidden = false;
         document.getElementById("bathymetryResultMeta").textContent =
           `UTM ${grid.zone}${grid.hemisphere} · ${grid.spacing} m spacing · ${grid.sampleCount.toLocaleString()} source samples`;
         document.getElementById("downloadBathymetryBtn").hidden = false;
         updateBathymetryResultFreshness();
+        renderFpsoGeometry();
         downloadBathymetryFile();
         status.textContent = "Earth Vision Grid generated and downloaded. Loading the interactive 3D view…";
         status.dataset.success = "true";
@@ -3423,6 +3823,7 @@
       renderBoundaryResults(identifiedTargets);
       updateBathymetryArea(identifiedTargets);
       renderTargetMap(identifiedTargets, projectionZone, projectionHemisphere, targets.length > mapTargets.length);
+      renderFpsoGeometry();
       if (errors.length > 0) {
         setTargetStatus(`${errors.length} row(s) need attention: ${errors.join("; ")}`, "error");
       } else {
@@ -3900,6 +4301,396 @@
       });
     });
 
+    const projectTypeDetails = {
+      fpso: {
+        label: "FPSO",
+        description: "Floating production, storage and offloading vessel connected to subsea wells."
+      },
+      "tie-in": {
+        label: "TIE-IN",
+        description: "New wells or subsea equipment connected to existing infrastructure."
+      },
+      "subsea-to-shore": {
+        label: "SUBSEA TO SHORE",
+        description: "Subsea production transported by pipeline to an onshore facility."
+      }
+    };
+    const projectTypeTag = document.getElementById("projectTypeTag");
+    const projectTypeDescription = document.getElementById("projectTypeDescription");
+    const projectTypeImages = [...document.querySelectorAll("[data-project-image]")];
+    const fpsoModelLegend = document.getElementById("fpsoModelLegend");
+    const fpsoParameters = document.getElementById("fpsoParameters");
+    const fpsoGeometry = document.getElementById("fpsoGeometry");
+    const fpsoGeometryStatus = document.getElementById("fpsoGeometryStatus");
+    const fpsoPrescribePosition = document.getElementById("fpsoPrescribePosition");
+    const fpsoPositionInputsPanel = document.getElementById("fpsoPositionInputs");
+    const fpsoPositionCoordinateMode = document.getElementById("fpsoPositionCoordinateMode");
+    const fpsoPositionStatus = document.getElementById("fpsoPositionStatus");
+    const fpsoPositionFields = {
+      easting: document.getElementById("fpsoPositionX"),
+      northing: document.getElementById("fpsoPositionY"),
+      zone: document.getElementById("fpsoPositionZone"),
+      hemisphere: document.getElementById("fpsoPositionHemisphere"),
+      latitude: document.getElementById("fpsoPositionLatitude"),
+      longitude: document.getElementById("fpsoPositionLongitude")
+    };
+    const fpsoInputs = {
+      heading: document.getElementById("fpsoHeading"),
+      mooringCount: document.getElementById("fpsoMooringCount"),
+      mooringSpacing: document.getElementById("fpsoMooringSpacing"),
+      riserBalconyAngle: document.getElementById("fpsoRiserBalconyAngle"),
+      riserSpacing: document.getElementById("fpsoRiserSpacing"),
+      anchorRadius: document.getElementById("fpsoAnchorRadius"),
+      touchdownRadius: document.getElementById("fpsoTouchdownRadius")
+    };
+    const FPSO_RISER_COUNT = 15;
+    let fpsoAnchorRadiusEdited = false;
+    let fpsoTouchdownRadiusEdited = false;
+
+    function fpsoSvgElement(name, attributes = {}, text = "") {
+      const element = document.createElementNS("http://www.w3.org/2000/svg", name);
+      Object.entries(attributes).forEach(([key, value]) => element.setAttribute(key, String(value)));
+      if (text) element.textContent = text;
+      return element;
+    }
+
+    function currentGebcoMeanWaterDepth() {
+      if (!generatedBathymetry || !bathymetryGenerationSignature
+        || currentBathymetrySignature() !== bathymetryGenerationSignature) return null;
+      return generatedBathymetryMeanWaterDepth;
+    }
+
+    function meanBathymetryWaterDepth(grid) {
+      let totalDepth = 0;
+      let depthCount = 0;
+      for (const elevation of grid.values) {
+        if (!Number.isFinite(elevation) || elevation >= 0) continue;
+        totalDepth -= elevation;
+        depthCount += 1;
+      }
+      return depthCount === 0 ? null : totalDepth / depthCount;
+    }
+
+    function updateFpsoPositionControls() {
+      const prescribed = fpsoPrescribePosition.checked;
+      const geographic = fpsoPositionCoordinateMode.value === "geographic";
+      fpsoPositionInputsPanel.hidden = !prescribed;
+      document.getElementById("fpsoUtmPositionFields").hidden = geographic;
+      document.getElementById("fpsoGeographicPositionFields").hidden = !geographic;
+      Object.entries(fpsoPositionFields).forEach(([key, input]) => {
+        input.required = prescribed && (geographic
+          ? key === "latitude" || key === "longitude"
+          : key === "easting" || key === "northing" || key === "zone" || key === "hemisphere");
+      });
+
+      if (!prescribed) {
+        fpsoPositionStatus.textContent = "";
+        fpsoPositionStatus.dataset.error = "false";
+        return;
+      }
+
+      const activeFields = geographic
+        ? [fpsoPositionFields.latitude, fpsoPositionFields.longitude]
+        : [fpsoPositionFields.easting, fpsoPositionFields.northing, fpsoPositionFields.zone, fpsoPositionFields.hemisphere];
+      const invalid = activeFields.some((input) =>
+        !input.value.trim() || !input.validity.valid
+      );
+      fpsoPositionStatus.textContent = invalid
+        ? geographic
+          ? "Enter a valid latitude and longitude for the prescribed FPSO position."
+          : "Enter valid UTM easting, northing, zone, and hemisphere for the prescribed FPSO position."
+        : "";
+      fpsoPositionStatus.dataset.error = String(invalid);
+    }
+
+    function renderFpsoGeometry() {
+      if (!fpsoGeometry) return;
+      fpsoGeometry.replaceChildren();
+      fpsoGeometryStatus.dataset.error = "false";
+      fpsoGeometryStatus.textContent = "";
+      const requiredInputs = Object.values(fpsoInputs).filter((input) =>
+        input !== fpsoInputs.anchorRadius && input !== fpsoInputs.touchdownRadius
+      );
+      const invalidInput = requiredInputs.find((input) => !input.value || !input.validity.valid);
+      if (invalidInput) {
+        fpsoGeometryStatus.textContent = "Correct the highlighted values to update the geometry.";
+        fpsoGeometryStatus.dataset.error = "true";
+        return;
+      }
+
+      const heading = Number(fpsoInputs.heading.value);
+      const mooringCount = Number(fpsoInputs.mooringCount.value);
+      const mooringSpacing = Number(fpsoInputs.mooringSpacing.value);
+      const riserBalconyAngle = Number(fpsoInputs.riserBalconyAngle.value);
+      const riserCount = FPSO_RISER_COUNT;
+      const riserSpacing = Number(fpsoInputs.riserSpacing.value);
+      const clusterOpening = (mooringCount - 1) * mooringSpacing;
+      const minimumClusterSeparation = Math.min(riserBalconyAngle, 180 - riserBalconyAngle);
+      const riserOpening = Math.max(0, riserCount - 1) * riserSpacing;
+      const availableRiserCorridor = riserBalconyAngle - clusterOpening;
+      const geometryIssues = [];
+      if (clusterOpening >= minimumClusterSeparation) {
+        geometryIssues.push("Mooring cluster openings overlap; reduce line count or spacing, or increase the Riser Balcony Angle.");
+      }
+      if (riserCount > 1 && riserOpening >= availableRiserCorridor) {
+        geometryIssues.push("Riser spread exceeds the clear port-side corridor between the bow and stern mooring clusters.");
+      }
+      const gebcoDepth = currentGebcoMeanWaterDepth();
+      const waterDepth = gebcoDepth;
+      const defaultRadius = waterDepth === null ? null : waterDepth * 1.3;
+      if (defaultRadius !== null) {
+        const formattedRadius = String(Math.round(defaultRadius * 1000) / 1000);
+        if (!fpsoAnchorRadiusEdited) {
+          fpsoInputs.anchorRadius.value = formattedRadius;
+        }
+        if (!fpsoTouchdownRadiusEdited) {
+          fpsoInputs.touchdownRadius.value = formattedRadius;
+        }
+      } else {
+        if (!fpsoAnchorRadiusEdited) fpsoInputs.anchorRadius.value = "";
+        if (!fpsoTouchdownRadiusEdited) fpsoInputs.touchdownRadius.value = "";
+      }
+      const anchorRadius = fpsoInputs.anchorRadius.value === ""
+        ? null
+        : Number(fpsoInputs.anchorRadius.value);
+      const touchdownRadius = fpsoInputs.touchdownRadius.value === ""
+        ? null
+        : Number(fpsoInputs.touchdownRadius.value);
+      const invalidAnchorRadius = anchorRadius !== null && !fpsoInputs.anchorRadius.validity.valid;
+      const invalidTouchdownRadius = touchdownRadius !== null && !fpsoInputs.touchdownRadius.validity.valid;
+      if (invalidAnchorRadius || invalidTouchdownRadius) {
+        fpsoGeometryStatus.textContent = "Enter positive values for both radii to update the mooring and riser endpoints.";
+        fpsoGeometryStatus.dataset.error = "true";
+        return;
+      }
+      const numberFormat = new Intl.NumberFormat(undefined, { maximumFractionDigits: 1 });
+
+      const center = { x: 320, y: 220 };
+      const displayRadius = 150;
+      const maxPhysicalRadius = Math.max(anchorRadius ?? 0, touchdownRadius ?? 0);
+      const scaleReferenceRadius = maxPhysicalRadius || 1300;
+      const vesselScale = displayRadius * 300 / scaleReferenceRadius / 130;
+      const radiusToPixels = (radius) => maxPhysicalRadius > 0
+        ? displayRadius * radius / maxPhysicalRadius
+        : displayRadius;
+      const anchorDisplayRadius = anchorRadius === null ? displayRadius : radiusToPixels(anchorRadius);
+      const touchdownDisplayRadius = touchdownRadius === null
+        ? displayRadius
+        : radiusToPixels(touchdownRadius);
+      const radians = (bearing) => bearing * Math.PI / 180;
+      const pointAt = (bearing, radius) => ({
+        x: center.x + Math.sin(radians(bearing)) * radius,
+        y: center.y - Math.cos(radians(bearing)) * radius
+      });
+      const localToScreen = (x, y) => ({
+        x: center.x + x * vesselScale * Math.cos(radians(heading)) - y * vesselScale * Math.sin(radians(heading)),
+        y: center.y + x * vesselScale * Math.sin(radians(heading)) + y * vesselScale * Math.cos(radians(heading))
+      });
+      const addText = (x, y, text, attributes = {}) => {
+        fpsoGeometry.append(fpsoSvgElement("text", {
+          x, y, fill: "#516a7d", "font-family": "system-ui, sans-serif",
+          "font-size": 9, "text-anchor": "middle", ...attributes
+        }, text));
+      };
+
+      fpsoGeometry.append(fpsoSvgElement("circle", {
+        cx: center.x, cy: center.y, r: displayRadius, fill: "#fff",
+        stroke: "#c5d0d8", "stroke-width": 1.2, "stroke-dasharray": "4 5"
+      }));
+      [50, 100].forEach((radius) => {
+        fpsoGeometry.append(fpsoSvgElement("circle", {
+          cx: center.x, cy: center.y, r: radius, fill: "none",
+          stroke: "#dce6ed", "stroke-width": 1
+        }));
+      });
+      fpsoGeometry.append(fpsoSvgElement("path", {
+        d: `M${center.x - displayRadius - 10} ${center.y}H${center.x + displayRadius + 10} M${center.x} ${center.y - displayRadius - 10}V${center.y + displayRadius + 10}`,
+        stroke: "#dce6ed", "stroke-width": 1
+      }));
+
+      const mooringBearings = [];
+      const portClusterHalfAngle = riserBalconyAngle / 2;
+      const mooringClusters = [
+        { x: -15, y: -53, bearingOffset: -90 + portClusterHalfAngle },
+        { x: 15, y: -53, bearingOffset: 90 - portClusterHalfAngle },
+        { x: 15, y: 53, bearingOffset: 90 + portClusterHalfAngle },
+        { x: -15, y: 53, bearingOffset: -90 - portClusterHalfAngle }
+      ];
+      mooringClusters.forEach((cluster) => {
+        if (geometryIssues.some((issue) => issue.startsWith("Mooring cluster"))) return;
+        for (let line = 0; line < mooringCount; line += 1) {
+          const offset = (line - (mooringCount - 1) / 2) * mooringSpacing;
+          const bearing = heading + cluster.bearingOffset + offset;
+          mooringBearings.push(bearing);
+          const start = localToScreen(cluster.x, cluster.y);
+          const end = pointAt(bearing, anchorDisplayRadius);
+          fpsoGeometry.append(fpsoSvgElement("line", {
+            x1: start.x, y1: start.y, x2: end.x, y2: end.y,
+            stroke: "#74808a", "stroke-width": 1.5, "stroke-opacity": 0.72
+          }));
+          fpsoGeometry.append(fpsoSvgElement("circle", {
+            cx: end.x, cy: end.y, r: 2, fill: "#74808a", "fill-opacity": 0.82
+          }));
+        }
+        const fairlead = localToScreen(cluster.x, cluster.y);
+        fpsoGeometry.append(fpsoSvgElement("circle", {
+          cx: fairlead.x, cy: fairlead.y, r: 2.8, fill: "#4b5862", stroke: "#fff", "stroke-width": 1
+        }));
+      });
+      const firstClusterAxis = heading + mooringClusters[0].bearingOffset;
+      const portAftClusterAxis = heading + mooringClusters[3].bearingOffset;
+      const portBeamAxis = heading - 90;
+      const angleArcRadius = 77;
+      const angleArcGap = Math.min(7, riserOpening / 2 + 2);
+      const portBowArcEnd = pointAt(firstClusterAxis, angleArcRadius);
+      const portArcUpperGap = pointAt(portBeamAxis + angleArcGap, angleArcRadius);
+      const portArcLowerGap = pointAt(portBeamAxis - angleArcGap, angleArcRadius);
+      const portSternArcEnd = pointAt(portAftClusterAxis, angleArcRadius);
+      fpsoGeometry.append(fpsoSvgElement("path", {
+        d: `M${portBowArcEnd.x} ${portBowArcEnd.y} A${angleArcRadius} ${angleArcRadius} 0 0 0 ${portArcUpperGap.x} ${portArcUpperGap.y} M${portArcLowerGap.x} ${portArcLowerGap.y} A${angleArcRadius} ${angleArcRadius} 0 0 0 ${portSternArcEnd.x} ${portSternArcEnd.y}`,
+        fill: "none", stroke: "#9b6b28", "stroke-width": 1.4
+      }));
+      const portSideRiserAxis = portBeamAxis;
+      let riserMooringConflict = false;
+      for (let riser = 0; riser < riserCount
+        && !geometryIssues.some((issue) => issue.startsWith("Riser spread")); riser += 1) {
+        const offset = (riser - (riserCount - 1) / 2) * riserSpacing;
+        const bearing = portSideRiserAxis + offset;
+        const overlapsMooring = mooringBearings.some((mooringBearing) => {
+          const difference = ((bearing - mooringBearing + 180) % 360 + 360) % 360 - 180;
+          return Math.abs(difference) < 0.5;
+        });
+        riserMooringConflict ||= overlapsMooring;
+        const riserColor = overlapsMooring ? "#b42318" : "#c0267a";
+        const start = localToScreen(-19.5, -19.5 * Math.tan(radians(offset)));
+        const end = pointAt(bearing, touchdownDisplayRadius);
+        fpsoGeometry.append(fpsoSvgElement("line", {
+          x1: start.x, y1: start.y, x2: end.x, y2: end.y,
+          stroke: riserColor, "stroke-width": 2.6, "stroke-dasharray": "7 4"
+        }));
+        fpsoGeometry.append(fpsoSvgElement("circle", {
+          cx: end.x, cy: end.y, r: 4, fill: "#fff", stroke: riserColor, "stroke-width": 2
+        }));
+      }
+
+      fpsoGeometry.append(fpsoSvgElement("g", {
+        transform: `translate(${center.x} ${center.y}) rotate(${heading}) scale(${vesselScale})`
+      }));
+      const vessel = fpsoGeometry.lastElementChild;
+      vessel.append(
+        fpsoSvgElement("path", {
+          d: "M-12 65 Q-17.5 62 -17.5 52 L-17.5 -42 Q-17 -54 0 -65 Q17 -54 17.5 -42 L17.5 52 Q17.5 62 12 65 Z",
+          fill: "#174c78", stroke: "#0b3558", "stroke-width": 2.2
+        }),
+        fpsoSvgElement("path", {
+          d: "M-9 47 L-10 -41 Q-9 -49 0 -56 Q9 -49 10 -41 L9 47 Z",
+          fill: "#dbe8ef", stroke: "#8ba8ba", "stroke-width": 1.3
+        }),
+        fpsoSvgElement("rect", {
+          x: -6, y: -31, width: 12, height: 14, rx: 2,
+          fill: "#fff", stroke: "#8ba8ba", "stroke-width": 1
+        }),
+        fpsoSvgElement("rect", {
+          x: -7, y: -7, width: 14, height: 10, rx: 2,
+          fill: "#c1d5df", stroke: "#8ba8ba", "stroke-width": 1
+        }),
+        fpsoSvgElement("line", {
+          x1: -16, y1: 52, x2: 16, y2: 52,
+          stroke: "#e5a84b", "stroke-width": 3
+        }),
+        fpsoSvgElement("line", {
+          x1: -15, y1: -53, x2: -11, y2: -53,
+          stroke: "#4b5862", "stroke-width": 2.5
+        }),
+        fpsoSvgElement("line", {
+          x1: 11, y1: -53, x2: 15, y2: -53,
+          stroke: "#4b5862", "stroke-width": 2.5
+        }),
+        fpsoSvgElement("line", {
+          x1: -15, y1: 53, x2: -11, y2: 53,
+          stroke: "#4b5862", "stroke-width": 2.5
+        }),
+        fpsoSvgElement("line", {
+          x1: 11, y1: 53, x2: 15, y2: 53,
+          stroke: "#4b5862", "stroke-width": 2.5
+        })
+      );
+      const riserBalconyExit = localToScreen(-17.5, 0);
+      fpsoGeometry.append(fpsoSvgElement("circle", {
+        cx: riserBalconyExit.x, cy: riserBalconyExit.y, r: 5.2,
+        fill: "#fff", stroke: "#c0267a", "stroke-width": 2.2
+      }));
+      const north = pointAt(0, 180);
+      fpsoGeometry.append(fpsoSvgElement("path", {
+        d: `M${north.x} ${north.y + 13}V${north.y}`,
+        stroke: "#718392", "stroke-width": 1.4,
+        "marker-end": "url(#fpsoArrow)"
+      }));
+      addText(north.x, north.y - 5, "N", { "font-size": 10, "font-weight": 750 });
+
+      const headingArcRadius = 47;
+      const headingStart = pointAt(0, headingArcRadius);
+      const headingEnd = pointAt(heading, headingArcRadius);
+      fpsoGeometry.append(fpsoSvgElement("path", {
+        d: `M${headingStart.x} ${headingStart.y} A${headingArcRadius} ${headingArcRadius} 0 ${heading > 180 ? 1 : 0} 1 ${headingEnd.x} ${headingEnd.y}`,
+        fill: "none", stroke: "#8b99a5", "stroke-width": 1, "stroke-dasharray": "3 3"
+      }));
+      addText(center.x, 396, `Heading ${numberFormat.format(heading)}°  ·  Riser Balcony Angle ${numberFormat.format(riserBalconyAngle)}°`, {
+        "font-size": 10, "font-weight": 700
+      });
+      addText(center.x, 413, `Cluster opening ${numberFormat.format(clusterOpening)}°  ·  Port bow / stern to longitudinal axis: ${numberFormat.format(90 - riserBalconyAngle / 2)}° each`, {
+        "font-size": 9
+      });
+      addText(center.x, 430, `4 corner clusters × ${mooringCount} lines (${numberFormat.format(mooringSpacing)}° spacing)  ·  15 risers (${numberFormat.format(riserSpacing)}° min. spacing)`, {
+        "font-size": 9, "font-weight": 650
+      });
+      addText(center.x, 447, `Anchor radius ${anchorRadius === null ? "unavailable" : `${numberFormat.format(anchorRadius)} m`}  ·  Touchdown radius ${touchdownRadius === null ? "unavailable" : `${numberFormat.format(touchdownRadius)} m`}`, {
+        "font-size": 9, "font-weight": 650
+      });
+      if (waterDepth === null && anchorRadius === null && touchdownRadius === null) {
+        fpsoGeometryStatus.textContent = "Generate a current GEBCO grid in Topology map to populate the radii, or enter either radius manually.";
+      }
+      if (riserMooringConflict) {
+        fpsoGeometryStatus.textContent += " A riser bearing overlaps a mooring line; adjust the corridor or spacing.";
+        fpsoGeometryStatus.dataset.error = "true";
+      }
+      if (geometryIssues.length > 0) {
+        fpsoGeometryStatus.textContent += ` ${geometryIssues.join(" ")}`;
+        fpsoGeometryStatus.dataset.error = "true";
+      }
+    }
+
+    document.querySelectorAll('input[name="project_type"]').forEach((input) => {
+      input.addEventListener("change", () => {
+        if (!input.checked) return;
+        const projectType = projectTypeDetails[input.value];
+        projectTypeTag.textContent = projectType.label;
+        projectTypeDescription.textContent = projectType.description;
+        fpsoParameters.hidden = input.value !== "fpso";
+        fpsoModelLegend.hidden = input.value !== "fpso";
+        projectTypeImages.forEach((image) => {
+          image.toggleAttribute("hidden", image.dataset.projectImage !== input.value);
+        });
+        if (input.value === "fpso") renderFpsoGeometry();
+      });
+    });
+    fpsoPrescribePosition.addEventListener("change", updateFpsoPositionControls);
+    fpsoPositionCoordinateMode.addEventListener("change", updateFpsoPositionControls);
+    Object.values(fpsoPositionFields).forEach((input) => {
+      input.addEventListener("input", updateFpsoPositionControls);
+      input.addEventListener("change", updateFpsoPositionControls);
+    });
+    fpsoInputs.anchorRadius.addEventListener("input", () => {
+      fpsoAnchorRadiusEdited = fpsoInputs.anchorRadius.value.trim() !== "";
+    });
+    fpsoInputs.touchdownRadius.addEventListener("input", () => {
+      fpsoTouchdownRadiusEdited = fpsoInputs.touchdownRadius.value.trim() !== "";
+    });
+    Object.values(fpsoInputs).forEach((input) => {
+      input.addEventListener("input", renderFpsoGeometry);
+    });
+    renderFpsoGeometry();
+
     unitSelects.cost.addEventListener("change", () => {
       const toUsdPerFoot = unitSelects.cost.value === "USD/ft";
       changeUnit("costUnit", unitSelects.cost.value, toUsdPerFoot ? METERS_PER_FOOT : FEET_PER_METER);
@@ -3979,11 +4770,15 @@
         return;
       }
       updateBathymetryArea(identifyTargetBoundaries(mapTargets), true);
+      renderFpsoGeometry();
       setTargetStatus("GEBCO area fitted to all valid target coordinates.", "success");
     });
     document.getElementById("generateBathymetryBtn").addEventListener("click", generateBathymetry);
     document.getElementById("downloadBathymetryBtn").addEventListener("click", downloadBathymetryFile);
-    document.getElementById("bathymetryGridSpacing").addEventListener("input", updateBathymetryResultFreshness);
+    document.getElementById("bathymetryGridSpacing").addEventListener("input", () => {
+      updateBathymetryResultFreshness();
+      renderFpsoGeometry();
+    });
     document.getElementById("copyBathymetryBoundsBtn").addEventListener("click", async () => {
       const bounds = bathymetryBoundsObject();
       if (!bounds) {
@@ -4072,7 +4867,10 @@
       option.value = String(zone);
       option.textContent = `Zone ${zone}`;
       targetZoneSelect.appendChild(option);
+      const positionZoneOption = option.cloneNode(true);
+      document.getElementById("fpsoPositionZone").appendChild(positionZoneOption);
     }
+    updateFpsoPositionControls();
     initializeTargetMapLayers();
     syncTargetCoordinateLabels();
     syncInputValues();
