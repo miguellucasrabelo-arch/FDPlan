@@ -19,6 +19,7 @@
       --surface: #fff;
       --canvas: #f3f7fb;
       --green: #16704a;
+      --amber: #b45309;
       --red: #b42318;
       --radius: 18px;
       --shadow: 0 16px 40px rgb(10 42 74 / 9%);
@@ -513,6 +514,61 @@
     }
 
     .control select { cursor: pointer; }
+    .control select:only-child {
+      width: 100%;
+      max-width: 100%;
+      padding-inline: 12px;
+      border-left: 0;
+      background: #fff;
+      color: var(--ink);
+      font-size: .92rem;
+      font-weight: 650;
+      text-align: left;
+      text-align-last: left;
+    }
+
+    .coord-switch {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      padding: 3px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: #eef4fa;
+    }
+
+    .coord-switch-btn {
+      min-height: 32px;
+      padding: 4px 12px;
+      border: 0;
+      border-radius: 7px;
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: .78rem;
+      font-weight: 750;
+      white-space: nowrap;
+      transition: background .15s ease, color .15s ease, box-shadow .15s ease;
+    }
+
+    .coord-switch-btn:hover { color: var(--ink); }
+
+    .coord-switch-btn[aria-pressed="true"] {
+      background: var(--blue);
+      color: #fff;
+      box-shadow: 0 2px 5px rgb(17 104 180 / 22%);
+    }
+
+    .generator-card-header {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .generator-card-header h3 { margin: 0 !important; }
 
     .unit-suffix {
       display: inline-flex;
@@ -669,6 +725,94 @@
       background: #fff;
     }
 
+    .target-tabs {
+      display: inline-flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 18px;
+      padding: 5px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: #f3f7fb;
+    }
+
+    .target-tab {
+      min-height: 36px;
+      padding: 6px 14px;
+      border: 0;
+      border-radius: 8px;
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: .83rem;
+      font-weight: 700;
+      transition: background .15s ease, color .15s ease, box-shadow .15s ease;
+    }
+
+    .target-tab:hover { color: var(--ink); }
+
+    .target-tab[aria-selected="true"] {
+      background: #fff;
+      color: var(--blue-dark);
+      box-shadow: 0 2px 6px rgb(10 42 74 / 8%);
+    }
+
+    .target-generator-panel {
+      margin-bottom: 18px;
+      padding: 18px;
+      border: 1px solid #cfe0ee;
+      border-radius: 14px;
+      background: #f8fbff;
+    }
+
+    .target-generator-panel[hidden],
+    #genCenterUtmFields[hidden],
+    #genCenterGeographicFields[hidden] { display: none; }
+
+    .target-generator-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 18px;
+    }
+
+    .target-generator-card {
+      padding: 15px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: #fff;
+    }
+
+    .target-generator-card h3 {
+      margin: 0 0 6px;
+      color: var(--ink);
+      font-size: .92rem;
+    }
+
+    .target-generator-card > p {
+      margin: 0 0 14px;
+      color: var(--muted);
+      font-size: .78rem;
+      line-height: 1.45;
+    }
+
+    .target-generator-actions {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 16px;
+      padding-top: 14px;
+      border-top: 1px solid var(--line);
+    }
+
+    .target-generator-note {
+      margin: 0;
+      color: var(--muted);
+      font-size: .78rem;
+      line-height: 1.45;
+    }
+
     .target-toolbar {
       display: flex;
       flex-wrap: wrap;
@@ -700,7 +844,24 @@
 
     .sheet-status:empty { display: none; }
     .sheet-status[data-error="true"] { color: var(--red); }
+    .sheet-status[data-warning="true"] { color: var(--amber); font-weight: 650; }
     .sheet-status[data-success="true"] { color: var(--green); }
+    .spreadsheet input[data-warning="true"] {
+      border-color: #f59e0b;
+      background: #fffbeb;
+    }
+    .bathymetry-elevation-warning {
+      margin: 8px 0;
+      padding: 9px 12px;
+      border: 1px solid #fcd34d;
+      border-radius: 8px;
+      background: #fffbeb;
+      color: var(--amber);
+      font-size: .76rem;
+      font-weight: 650;
+      line-height: 1.45;
+    }
+    .bathymetry-elevation-warning[hidden] { display: none; }
 
     .spreadsheet-wrap {
       max-height: 58vh;
@@ -1397,15 +1558,162 @@
   <section class="json-panel additional-panel" aria-labelledby="targets-heading">
     <div class="panel-heading">
       <h2 id="targets-heading">Reservoir target table</h2>
-      <p>Paste or edit targets, review their distribution, then generate the reservoir targets JSON.</p>
+      <p>Edit targets manually or generate random targets around the FPSO center.</p>
     </div>
-    <div class="target-toolbar" aria-label="Reservoir target table settings">
-      <label class="control">
-        <select id="targetCoordinateMode" aria-label="Coordinate format">
-          <option value="utm">UTM coordinates</option>
-          <option value="geographic">Latitude / longitude</option>
-        </select>
-      </label>
+    <div class="target-tabs" role="tablist" aria-label="Reservoir target input mode">
+      <button class="target-tab" id="targetTabTableBtn" role="tab" type="button" aria-selected="true" aria-controls="targetManualToolbar">Target table</button>
+      <button class="target-tab" id="targetTabGeneratorBtn" role="tab" type="button" aria-selected="false" aria-controls="targetGeneratorPanel">Generate from FPSO</button>
+    </div>
+    <div class="target-generator-panel" id="targetGeneratorPanel" role="tabpanel" aria-labelledby="targetTabGeneratorBtn" hidden>
+      <div class="target-generator-grid">
+        <div class="target-generator-card">
+          <div class="generator-card-header">
+            <h3>FPSO Center &amp; Region</h3>
+            <div class="coord-switch" role="group" aria-label="FPSO coordinate format">
+              <button type="button" class="coord-switch-btn" data-coord-target="genCenterCoordinateMode" data-coord-value="geographic" aria-pressed="true">Lat / Lon</button>
+              <button type="button" class="coord-switch-btn" data-coord-target="genCenterCoordinateMode" data-coord-value="utm" aria-pressed="false">UTM</button>
+            </div>
+            <select id="genCenterCoordinateMode" hidden aria-hidden="true">
+              <option value="geographic" selected>Latitude / longitude</option>
+              <option value="utm">UTM coordinates</option>
+            </select>
+          </div>
+          <div class="fields" id="genCenterGeographicFields">
+            <div class="field-group">
+              <div class="field-label"><label for="genCenterLatitude">Latitude</label></div>
+              <div class="control">
+                <input id="genCenterLatitude" type="text" value="-24.6750" placeholder="-24.6750">
+                <span class="unit-suffix">°</span>
+              </div>
+            </div>
+            <div class="field-group">
+              <div class="field-label"><label for="genCenterLongitude">Longitude</label></div>
+              <div class="control">
+                <input id="genCenterLongitude" type="text" value="-42.5000" placeholder="-42.5000">
+                <span class="unit-suffix">°</span>
+              </div>
+            </div>
+          </div>
+          <div class="fields" id="genCenterUtmFields" hidden>
+            <div class="field-group">
+              <div class="field-label"><label for="genCenterX">Easting (X)</label></div>
+              <div class="control">
+                <input id="genCenterX" type="number" min="100000" max="900000" step="any" value="752915.79" placeholder="Easting">
+                <span class="unit-suffix">m</span>
+              </div>
+            </div>
+            <div class="field-group">
+              <div class="field-label"><label for="genCenterY">Northing (Y)</label></div>
+              <div class="control">
+                <input id="genCenterY" type="number" min="0" max="10000000" step="any" value="7268868.58" placeholder="Northing">
+                <span class="unit-suffix">m</span>
+              </div>
+            </div>
+            <div class="field-group">
+              <div class="field-label"><label for="genCenterZone">Zone</label></div>
+              <div class="control">
+                <select id="genCenterZone"><option value="">Zone</option></select>
+              </div>
+            </div>
+            <div class="field-group">
+              <div class="field-label"><label for="genCenterHemisphere">Hemisphere</label></div>
+              <div class="control">
+                <select id="genCenterHemisphere">
+                  <option value="S" selected>South</option>
+                  <option value="N">North</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div class="fields" style="margin-top:14px">
+            <div class="field-group">
+              <div class="field-label"><label for="genMinRadius">Min radius</label></div>
+              <div class="control">
+                <input id="genMinRadius" type="number" min="0" step="0.1" value="1" required>
+                <span class="unit-suffix gen-radius-unit-label">km</span>
+              </div>
+            </div>
+            <div class="field-group">
+              <div class="field-label"><label for="genReferenceDistance">Max radius</label></div>
+              <div class="control">
+                <input id="genReferenceDistance" type="number" min="0.1" step="0.1" value="5" required>
+                <select id="genReferenceDistanceUnit" aria-label="Radius unit">
+                  <option value="km" selected>km</option>
+                  <option value="m">m</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="target-generator-card">
+          <div class="generator-card-header">
+            <h3>Wells &amp; Depth</h3>
+          </div>
+          <div class="fields">
+            <div class="field-group">
+              <div class="field-label">
+                <span class="target-fluid-dot" style="--target-color:#16a34a"></span>
+                <label for="genCountOilProducer">Oil producer</label>
+              </div>
+              <div class="control">
+                <input id="genCountOilProducer" type="number" min="0" max="200" step="1" value="8" required>
+                <span class="unit-suffix">wells</span>
+              </div>
+            </div>
+            <div class="field-group">
+              <div class="field-label">
+                <span class="target-fluid-dot" style="--target-color:#dc2626"></span>
+                <label for="genCountGasProducer">Gas producer</label>
+              </div>
+              <div class="control">
+                <input id="genCountGasProducer" type="number" min="0" max="200" step="1" value="4" required>
+                <span class="unit-suffix">wells</span>
+              </div>
+            </div>
+            <div class="field-group">
+              <div class="field-label">
+                <span class="target-fluid-dot" style="--target-color:#2563eb"></span>
+                <label for="genCountWaterInjector">Water injector</label>
+              </div>
+              <div class="control">
+                <input id="genCountWaterInjector" type="number" min="0" max="200" step="1" value="4" required>
+                <span class="unit-suffix">wells</span>
+              </div>
+            </div>
+            <div class="field-group">
+              <div class="field-label">
+                <span class="target-fluid-dot" style="--target-color:#6b7280"></span>
+                <label for="genCountWagInjector">WAG injector</label>
+              </div>
+              <div class="control">
+                <input id="genCountWagInjector" type="number" min="0" max="200" step="1" value="4" required>
+                <span class="unit-suffix">wells</span>
+              </div>
+            </div>
+            <div class="field-group">
+              <div class="field-label"><label for="genTargetZStart">Depth (Z start)</label></div>
+              <div class="control">
+                <input id="genTargetZStart" type="number" step="any" value="-2600" required>
+                <span class="unit-suffix target-unit-label">m</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="target-generator-actions">
+        <p class="target-generator-note">Positions wells randomly between Min and Max radius around the FPSO.</p>
+        <button class="btn" id="generateRandomTargetsBtn" type="button">Generate targets</button>
+      </div>
+    </div>
+    <div class="target-toolbar" id="targetManualToolbar" aria-label="Reservoir target table settings">
+      <div class="coord-switch" role="group" aria-label="Table coordinate format">
+        <button type="button" class="coord-switch-btn" data-coord-target="targetCoordinateMode" data-coord-value="geographic" aria-pressed="true">Lat / Lon</button>
+        <button type="button" class="coord-switch-btn" data-coord-target="targetCoordinateMode" data-coord-value="utm" aria-pressed="false">UTM</button>
+      </div>
+      <select id="targetCoordinateMode" hidden aria-hidden="true">
+        <option value="utm">UTM coordinates</option>
+        <option value="geographic">Latitude / longitude</option>
+      </select>
       <label class="control" for="targetUnitSelect">
         <select id="targetUnitSelect" aria-label="Coordinate units">
           <option value="m">Coordinates: m</option>
@@ -1428,10 +1736,13 @@
       </div>
       <span class="target-toolbar-spacer"></span>
       <button class="btn secondary" id="addTargetRowBtn" type="button">Add row</button>
+      <button class="btn secondary" id="swapTargetXYBtn" type="button" title="Swap columns 4 and 5 (X/Latitude ↔ Y/Longitude)">Swap X ↔ Y</button>
+      <button class="btn secondary" id="clearTargetsTableBtn" type="button">Clear table</button>
+      <button class="btn secondary" id="loadExampleTargetsBtn" type="button">Load example</button>
       <button class="btn secondary" id="copyTargetsTableBtn" type="button">Copy table for Excel</button>
       <p class="sheet-hint target-coordinate-hint" id="targetCoordinateHint"></p>
     </div>
-    <p class="sheet-hint">A simulated Búzios development example is prefilled; its coordinates are illustrative, not actual well locations. Replace it with project data or paste from Excel. Column order: Well name, Type, Fluid, X / latitude, Y / longitude, Z start. The interval is fixed at 200 m.</p>
+    <p class="sheet-hint">A simulated Búzios development example is prefilled; its coordinates are illustrative, not actual well locations. Replace it with project data or paste from Excel. Column order: Well name, Type, Fluid, Coordinate 1 (UTM X Easting or Latitude), Coordinate 2 (UTM Y Northing or Longitude), Z start. The interval is fixed at 200 m.</p>
     <div class="spreadsheet-wrap" role="region" aria-label="Editable reservoir target table" tabindex="0">
       <table class="spreadsheet" id="targetsTable">
         <thead>
@@ -1439,8 +1750,8 @@
             <th scope="col">Well name</th>
             <th scope="col">Type</th>
             <th scope="col">Fluid</th>
-            <th scope="col">Target X (<span id="targetXUnitLabel">m</span>)</th>
-            <th scope="col">Target Y (<span id="targetYUnitLabel">m</span>)</th>
+            <th scope="col"><span id="targetXHeaderLabel">Target X · Easting</span> (<span id="targetXUnitLabel">m</span>)</th>
+            <th scope="col"><span id="targetYHeaderLabel">Target Y · Northing</span> (<span id="targetYUnitLabel">m</span>)</th>
             <th scope="col">Target Z start (<span class="target-unit-label">m</span>)</th>
             <th scope="col" aria-label="Row action"></th>
           </tr>
@@ -1505,6 +1816,7 @@
         <li><span class="target-fluid-dot" style="--target-color:#2563eb"></span>Water</li>
         <li><span class="target-fluid-dot" style="--target-color:#dc2626"></span>Gas</li>
         <li><span class="target-fluid-dot" style="--target-color:#6b7280"></span>WAG</li>
+        <li><span class="target-fluid-dot" style="--target-color:#f59e0b;border:2px solid #082f59"></span>FPSO center</li>
       </ul>
       <p class="target-map-attribution">Boundaries: ANP GeoANP WFS snapshot (13 Nov 2026). World outline: Natural Earth. All layers are local; target coordinates are not sent to ANP.</p>
     </section>
@@ -1539,6 +1851,7 @@
         <span class="bathymetry-result-meta" id="bathymetryResultMeta"></span>
       </div>
       <p class="bathymetry-result-status" id="bathymetryResultStatus" role="status" aria-live="polite"></p>
+      <p class="bathymetry-elevation-warning" id="bathymetryElevationWarning" role="alert" aria-live="polite" hidden></p>
       <div class="bathymetry-view-controls" aria-label="Bathymetry 3D view controls">
         <div class="bathymetry-view-presets" role="group" aria-label="Camera view">
           <button class="btn secondary" data-bathymetry-camera="3d" type="button">3D view</button>
@@ -1711,27 +2024,29 @@
               <span><strong>Prescribe FPSO position</strong><small>Leave unchecked to let the software optimize the unit location.</small></span>
             </label>
             <div id="fpsoPositionInputs" class="fpso-position-inputs" hidden>
-              <div class="field-group">
-                <div class="field-label"><label for="fpsoPositionCoordinateMode">Coordinate format</label></div>
-                <div class="control">
-                  <select id="fpsoPositionCoordinateMode" aria-label="FPSO position coordinate format">
-                    <option value="utm">UTM coordinates</option>
-                    <option value="geographic">Latitude / longitude</option>
-                  </select>
+              <div class="generator-card-header" style="margin-bottom:4px">
+                <span class="field-label" style="margin:0">Coordinates</span>
+                <div class="coord-switch" role="group" aria-label="FPSO position coordinate format">
+                  <button type="button" class="coord-switch-btn" data-coord-target="fpsoPositionCoordinateMode" data-coord-value="geographic" aria-pressed="false">Lat / Lon</button>
+                  <button type="button" class="coord-switch-btn" data-coord-target="fpsoPositionCoordinateMode" data-coord-value="utm" aria-pressed="true">UTM</button>
                 </div>
+                <select id="fpsoPositionCoordinateMode" hidden aria-hidden="true">
+                  <option value="utm">UTM coordinates</option>
+                  <option value="geographic">Latitude / longitude</option>
+                </select>
               </div>
               <div class="fields" id="fpsoUtmPositionFields">
                 <div class="field-group">
                   <div class="field-label"><label for="fpsoPositionX">Easting (X)</label></div>
                   <div class="control">
-                    <input id="fpsoPositionX" type="number" step="any" placeholder="UTM easting">
+                    <input id="fpsoPositionX" type="number" min="100000" max="900000" step="any" placeholder="UTM easting (100k–900k)">
                     <span class="unit-suffix">m</span>
                   </div>
                 </div>
                 <div class="field-group">
                   <div class="field-label"><label for="fpsoPositionY">Northing (Y)</label></div>
                   <div class="control">
-                    <input id="fpsoPositionY" type="number" step="any" placeholder="UTM northing">
+                    <input id="fpsoPositionY" type="number" min="0" max="10000000" step="any" placeholder="UTM northing (0–10M)">
                     <span class="unit-suffix">m</span>
                   </div>
                 </div>
@@ -1803,6 +2118,13 @@
             </label>
           </div>
         </fieldset>
+        <div class="actions">
+          <button class="btn" id="downloadProjectTypeBtn" type="button">Download Field Layout JSON</button>
+        </div>
+        <details style="margin-top:16px">
+          <summary>Field layout JSON preview</summary>
+          <pre id="projectTypeJsonPreview" aria-live="polite"></pre>
+        </details>
       </section>
     </section>
   <section class="json-panel" aria-label="Engineering references">
@@ -1999,6 +2321,7 @@
     let targetMapUserAdjusted = false;
     let targetMapFitting = false;
     let targetWellLabelCount = 0;
+    let generatedFpsoCenter = null;
 
     function rounded(value, digits) {
       if (!Number.isFinite(value)) return null;
@@ -2017,7 +2340,9 @@
         well_trajectory_modelling: !isVertical,
         allow_incomplete_dev_concept: false,
         well_unit_cost: rounded(isVertical ? DEFAULTS.well_unit_cost : state.well_unit_cost, 2),
-        well_unit_cost_measurement: UOM.cost[costSystem]
+        well_unit_cost_measurement: UOM.cost[costSystem],
+        tubing_size: rounded(state.tubing_size, state.tubingUnit === "m" ? 6 : 3),
+        tubing_size_measurement: UOM.tubing[tubingSystem]
       };
       if (!isVertical) {
         payload.horizontal_step_out = rounded(state.horizontal_step_out, 2);
@@ -2043,9 +2368,7 @@
         return payload;
       }
 
-      payload.tubing_size = rounded(state.tubing_size, state.tubingUnit === "m" ? 6 : 3);
-      payload.tubing_size_measurement = UOM.tubing[tubingSystem];
-      payload.horizontal_step_out = 0;
+      payload.horizontal_step_out = 200;
       payload.horizontal_step_out_measurement = UOM.length.metric;
       payload.kickoff_point = rounded(DEFAULTS.kickoff_point, 2);
       payload.kickoff_point_measurement = UOM.length.metric;
@@ -2106,10 +2429,10 @@
       inputs.kickoff.value = Number.isFinite(state.kickoff_point) ? state.kickoff_point.toFixed(2) : "";
       inputs.dls.value = Number.isFinite(state.dls_limit) ? state.dls_limit.toFixed(3) : "";
       inputs.maxTangentInclination.value = Number.isFinite(state.max_tangent_inclination)
-        ? String(state.max_tangent_inclination)
+        ? String(rounded(state.max_tangent_inclination, 2))
         : "";
       inputs.measuredDepthLimit.value = Number.isFinite(state.measured_depth_limit)
-        ? String(state.measured_depth_limit)
+        ? String(rounded(state.measured_depth_limit, 2))
         : "";
 
       unitSelects.cost.value = state.costUnit;
@@ -2142,7 +2465,7 @@
         ? "Vertical mode uses the default trajectory settings. Enter the tubing size under Additional well information."
         : "Enter the four required trajectory parameters. Tubing size is under Additional well information; unit changes convert values automatically.";
       document.getElementById("schematicCaption").textContent = isVertical
-        ? "Vertical mode requests only tubing size. Backend defaults are retained; horizontal step-out is set to zero."
+        ? "Vertical mode requests only tubing size. Backend defaults are retained; horizontal step-out is set to 200 m."
         : "Illustration only; the inputs and JSON payload remain the source of truth.";
       validateVisibleInputs();
       renderPreview();
@@ -2338,8 +2661,11 @@
     }
 
     function loadDefaultTargetExample() {
+      targetsBody.replaceChildren();
       targetCoordinateMode.value = "geographic";
       targetCurrentCoordinateMode = "geographic";
+      targetZoneSelect.value = "23";
+      targetHemisphereSelect.value = "S";
       syncTargetCoordinateLabels();
 
       DEFAULT_TARGET_EXAMPLE.forEach((values, index) => {
@@ -2458,15 +2784,32 @@
       }
     }
 
+    const WELL_NAME_SPECIAL_CHAR_REGEX = /[^A-Za-z0-9_-]/g;
+
+    function validateWellNameWarning(name) {
+      if (!name) return null;
+      const matches = name.match(WELL_NAME_SPECIAL_CHAR_REGEX);
+      if (!matches) return null;
+      const uniqueChars = [...new Set(matches)].map((char) => (char === " " ? "space" : `"${char}"`)).join(", ");
+      return `contains special character(s) (${uniqueChars}); prefer only letters, numbers, "-" and "_"`;
+    }
+
     function collectTargetRows() {
       const targets = [];
       const errors = [];
+      const warnings = [];
       const mapTargets = [];
       const seenNames = new Set();
       const coordinateMode = targetCoordinateMode.value;
       const rows = [...targetsBody.rows];
       let projectionZone = coordinateMode === "utm" ? Number(targetZoneSelect.value) || null : null;
-      let projectionHemisphere = coordinateMode === "utm" ? targetHemisphereSelect.value : "N";
+      let projectionHemisphere = coordinateMode === "utm"
+        ? (targetHemisphereSelect.value || (projectionZone ? "S" : ""))
+        : "N";
+
+      if (coordinateMode === "utm" && projectionZone && !targetHemisphereSelect.value) {
+        targetHemisphereSelect.value = projectionHemisphere;
+      }
 
       if (coordinateMode === "geographic") {
         for (const row of rows) {
@@ -2476,6 +2819,8 @@
           if (latitude !== null && latitude >= -80 && latitude <= 84 && longitude !== null) {
             projectionZone = utmZoneFor(longitude, latitude);
             projectionHemisphere = utmHemisphereFor(latitude);
+            if (!targetZoneSelect.value) targetZoneSelect.value = String(projectionZone);
+            if (!targetHemisphereSelect.value) targetHemisphereSelect.value = projectionHemisphere;
             break;
           }
         }
@@ -2483,6 +2828,10 @@
 
       rows.forEach((row, index) => {
         const [nameInput, typeSelect, fluidSelect, xInput, yInput, zInput] = targetRowCells(row);
+        nameInput.dataset.warning = "false";
+        xInput.dataset.warning = "false";
+        yInput.dataset.warning = "false";
+        zInput.dataset.warning = "false";
         const name = nameInput.value.trim();
         const rawValues = [name, typeSelect.value, fluidSelect.value, xInput.value, yInput.value, zInput.value];
         if (row.dataset.touched !== "true" && rawValues.every((value) => value.trim() === "")) return;
@@ -2490,8 +2839,8 @@
 
         const rowNumber = index + 1;
         const rowErrors = [];
-        const xLabel = coordinateMode === "geographic" ? "Latitude" : "Target X";
-        const yLabel = coordinateMode === "geographic" ? "Longitude" : "Target Y";
+        const xLabel = coordinateMode === "geographic" ? "Latitude" : "Target X (Easting)";
+        const yLabel = coordinateMode === "geographic" ? "Longitude" : "Target Y (Northing)";
         if (!name) rowErrors.push("Well name");
         if (!typeSelect.value) rowErrors.push("Type");
         if (!fluidSelect.value) rowErrors.push("Fluid");
@@ -2509,6 +2858,11 @@
           const normalizedName = name.toLowerCase();
           if (seenNames.has(normalizedName)) rowErrors.push("Duplicate well name");
           seenNames.add(normalizedName);
+          const nameWarning = validateWellNameWarning(name);
+          if (nameWarning) {
+            nameInput.dataset.warning = "true";
+            warnings.push(`Row ${rowNumber} (${name}): Well name ${nameWarning}.`);
+          }
         }
         if (rowErrors.length > 0) {
           errors.push(`Row ${rowNumber}: ${rowErrors.join(", ")}`);
@@ -2531,15 +2885,32 @@
             return;
           }
           const utm = geographicToUtm(x, y, projectionZone, projectionHemisphere);
-          const unitFactor = targetUnitSelect.value === "ft" ? 3.28084 : 1;
+          const unitFactor = targetUnitSelect.value === "ft" ? FEET_PER_METER : 1;
           targetX = utm.x * unitFactor;
           targetY = utm.y * unitFactor;
+        } else {
+          const toMeters = targetUnitSelect.value === "ft" ? METERS_PER_FOOT : 1;
+          const xMeters = targetX * toMeters;
+          const yMeters = targetY * toMeters;
+          if (xMeters > 1000000 && yMeters >= 100000 && yMeters <= 900000) {
+            xInput.dataset.warning = "true";
+            yInput.dataset.warning = "true";
+            warnings.push(
+              `Row ${rowNumber} (${name}): Target X (${Math.round(xMeters)} m) looks like a Northing (Y) value and Target Y (${Math.round(yMeters)} m) looks like an Easting (X) value. Check if X and Y are swapped.`
+            );
+          } else if (xMeters < 100000 || xMeters > 900000 || yMeters < 0 || yMeters > 10000000) {
+            xInput.dataset.warning = "true";
+            yInput.dataset.warning = "true";
+            warnings.push(
+              `Row ${rowNumber} (${name}): UTM coordinates are outside standard UTM ranges (Easting X: 100,000–900,000 m, Northing Y: 0–10,000,000 m).`
+            );
+          }
         }
 
         const zStart = -Math.abs(z);
         const interval = targetUnitSelect.value === "m"
           ? TARGET_INTERVAL_METERS
-          : TARGET_INTERVAL_METERS * 3.28084;
+          : TARGET_INTERVAL_METERS * FEET_PER_METER;
         const start = { x: targetX, y: targetY, z: zStart };
         const end = { x: targetX, y: targetY, z: zStart - interval };
         targets.push({
@@ -2551,12 +2922,16 @@
         });
         let latitude;
         let longitude;
+        const toMeters = targetUnitSelect.value === "ft" ? METERS_PER_FOOT : 1;
+        const eastingMeters = targetX * toMeters;
+        const northingMeters = targetY * toMeters;
         if (coordinateMode === "geographic") {
           latitude = x;
           longitude = y;
-        } else if (projectionZone && projectionHemisphere) {
-          const unitFactor = targetUnitSelect.value === "ft" ? METERS_PER_FOOT : 1;
-          const geographic = utmToGeographic(targetX * unitFactor, targetY * unitFactor, projectionZone, projectionHemisphere);
+        } else if (projectionZone && projectionHemisphere
+          && eastingMeters >= 100000 && eastingMeters <= 900000
+          && northingMeters >= 0 && northingMeters <= 10000000) {
+          const geographic = utmToGeographic(eastingMeters, northingMeters, projectionZone, projectionHemisphere);
           latitude = geographic.latitude;
           longitude = geographic.longitude;
         }
@@ -2567,14 +2942,50 @@
             fluid: fluidSelect.value,
             latitude,
             longitude,
-            eastingMeters: targetX * (targetUnitSelect.value === "ft" ? METERS_PER_FOOT : 1),
-            northingMeters: targetY * (targetUnitSelect.value === "ft" ? METERS_PER_FOOT : 1),
-            zStartMeters: start.z * (targetUnitSelect.value === "ft" ? METERS_PER_FOOT : 1),
-            zEndMeters: end.z * (targetUnitSelect.value === "ft" ? METERS_PER_FOOT : 1)
+            eastingMeters,
+            northingMeters,
+            zStartMeters: start.z * toMeters,
+            zEndMeters: end.z * toMeters,
+            rowIndex: index
           });
         }
       });
-      return { targets, errors, mapTargets, projectionZone, projectionHemisphere };
+      if (coordinateMode === "utm" && targets.length > 0 && !projectionZone) {
+        warnings.push("Select a UTM zone in the toolbar above to position the UTM targets on the GIS map.");
+      }
+      return { targets, errors, warnings, mapTargets, projectionZone, projectionHemisphere };
+    }
+
+    function checkTargetsAboveBathymetry(grid, mapTargets) {
+      if (!grid || !Array.isArray(mapTargets) || mapTargets.length === 0) return [];
+      const issues = [];
+      mapTargets.forEach((target) => {
+        const seafloor = interpolateBathymetryAt(grid, target.eastingMeters, target.northingMeters);
+        if (!Number.isFinite(seafloor)) return;
+        if (target.zStartMeters >= seafloor) {
+          const row = Number.isInteger(target.rowIndex) ? targetsBody.rows[target.rowIndex] : null;
+          if (row) {
+            const zInput = targetRowCells(row)[5];
+            if (zInput) zInput.dataset.warning = "true";
+          }
+          issues.push(`${target.name} (Target Z: ${target.zStartMeters.toFixed(1)} m ≥ Seabed: ${seafloor.toFixed(1)} m)`);
+        }
+      });
+      return issues;
+    }
+
+    function updateBathymetryElevationWarning(grid = generatedBathymetry, mapTargets = collectTargetRows().mapTargets) {
+      const warningEl = document.getElementById("bathymetryElevationWarning");
+      if (!warningEl) return [];
+      const issues = checkTargetsAboveBathymetry(grid, mapTargets);
+      if (issues.length > 0) {
+        warningEl.hidden = false;
+        warningEl.textContent = `Warning: ${issues.length} target(s) have a Z elevation above or at the seabed bathymetry: ${issues.join("; ")}.`;
+      } else {
+        warningEl.hidden = true;
+        warningEl.textContent = "";
+      }
+      return issues;
     }
 
     function buildTargetsPayload(targets) {
@@ -2592,6 +3003,7 @@
     function setTargetStatus(message, kind = "") {
       targetStatus.textContent = message;
       targetStatus.dataset.error = String(kind === "error");
+      targetStatus.dataset.warning = String(kind === "warning");
       targetStatus.dataset.success = String(kind === "success");
     }
 
@@ -2789,6 +3201,7 @@
       status.textContent = isStale
         ? "The area or target inputs changed after this grid was generated. Generate again to update the file and 3D view."
         : `${generatedBathymetry.sampleCount.toLocaleString()} GEBCO samples · ${generatedBathymetry.columns} × ${generatedBathymetry.rows} UTM grid cells.`;
+      updateBathymetryElevationWarning();
     }
 
     function bathymetryHandleIcon(action) {
@@ -2826,7 +3239,7 @@
       }
       if (east - west < minimumSpan) {
         if (action.includes("w")) west = east - minimumSpan;
-        else west = east - minimumSpan;
+        else east = west + minimumSpan;
       }
       if (targetExtent) {
         south = Math.min(south, targetExtent.south);
@@ -3372,14 +3785,9 @@
             }
           });
         });
-        flatSurfaceToggle.addEventListener("change", () => {
-          const seabedTraceIndex = currentSeabedTraceIndex();
-          if (seabedTraceIndex < 0 || !activeBathymetryPlot?.data) return;
-          window.Plotly.restyle(
-            activeBathymetryPlot,
-            { z: [flatSurfaceToggle.checked ? currentLevelSurface() : currentRelief()] },
-            [seabedTraceIndex]
-          );
+        flatSurfaceToggle.addEventListener("change", async () => {
+          if (!activeBathymetryPlot?.data || activeBathymetryView === "contour") return;
+          await renderBathymetry3D(activeBathymetryGrid, activeBathymetryTargets, activeBathymetryView);
         });
         axesToggle.addEventListener("change", syncAxes);
         scaleToggle.addEventListener("change", syncScale);
@@ -3394,10 +3802,6 @@
         "target-intervals",
         document.querySelector('[data-bathymetry-layer="targets"]').checked
       );
-      const seabedTraceIndex = currentSeabedTraceIndex();
-      if (view !== "contour" && flatSurfaceToggle.checked && seabedTraceIndex >= 0) {
-        window.Plotly.restyle(activeBathymetryPlot, { z: [currentLevelSurface()] }, [seabedTraceIndex]);
-      }
       syncAxes();
       syncScale();
       updateBathymetryViewControls(view);
@@ -3411,8 +3815,12 @@
       const fluidNames = { oil: "Oil", water: "Water", gas: "Gas", wag: "WAG" };
       const colors = { ...TARGET_FLUID_COLORS };
       const showWellLabels = targets.length <= 8;
+      const isFlatSeabed = document.getElementById("bathymetryFlatSurface")?.checked ?? false;
+      const meanElevation = grid.values.reduce((sum, elevation) => sum + elevation, 0) / grid.values.length;
       const zMatrix = Array.from({ length: grid.rows }, (_, row) => (
-        Array.from(grid.values.slice(row * grid.columns, (row + 1) * grid.columns))
+        isFlatSeabed
+          ? Array(grid.columns).fill(meanElevation)
+          : Array.from(grid.values.slice(row * grid.columns, (row + 1) * grid.columns))
       ));
       const waterMatrix = Array.from({ length: grid.rows }, () => Array(grid.columns).fill(0));
       const traces = [{
@@ -3467,8 +3875,9 @@
           [2, 6, 7], [2, 7, 3], [3, 7, 4], [3, 4, 0]
         ];
         matchingTargets.forEach((target) => {
-          const seafloor = interpolateBathymetryAt(grid, target.eastingMeters, target.northingMeters);
-          seabedElevations.push(seafloor);
+          const rawSeafloor = interpolateBathymetryAt(grid, target.eastingMeters, target.northingMeters);
+          const seafloor = isFlatSeabed ? meanElevation : rawSeafloor;
+          seabedElevations.push(rawSeafloor);
           stemX.push(target.eastingMeters, target.eastingMeters, null);
           stemY.push(target.northingMeters, target.northingMeters, null);
           stemZ.push(seafloor, target.zStartMeters, null);
@@ -3769,7 +4178,11 @@
         apiUrl.searchParams.set("mode", "Polygon");
         apiUrl.searchParams.set("sample", "1");
         apiUrl.searchParams.set("jsonsrc", JSON.stringify({ type: "Polygon", coordinates: [ring] }));
-        const response = await fetch(apiUrl, { headers: { Accept: "application/json" } });
+        const fetchOptions = { headers: { Accept: "application/json" } };
+        if (typeof AbortSignal !== "undefined" && typeof AbortSignal.timeout === "function") {
+          fetchOptions.signal = AbortSignal.timeout(30000);
+        }
+        const response = await fetch(apiUrl, fetchOptions);
         if (!response.ok) throw new Error(`GEBCO API returned HTTP ${response.status} ${response.statusText}.`);
         const apiData = await response.json();
         status.textContent = "Projecting samples and interpolating the UTM grid…";
@@ -3789,7 +4202,7 @@
           `UTM ${grid.zone}${grid.hemisphere} · ${grid.spacing} m spacing · ${grid.sampleCount.toLocaleString()} source samples`;
         document.getElementById("downloadBathymetryBtn").hidden = false;
         updateBathymetryResultFreshness();
-        renderFpsoGeometry();
+        renderTargetData();
         downloadBathymetryFile();
         status.textContent = "Earth Vision Grid generated and downloaded. Loading the interactive 3D view…";
         status.dataset.success = "true";
@@ -3810,7 +4223,7 @@
     }
 
     function renderTargetData() {
-      const { targets, errors, mapTargets, projectionZone, projectionHemisphere } = collectTargetRows();
+      const { targets, errors, warnings, mapTargets, projectionZone, projectionHemisphere } = collectTargetRows();
       const fluidCounts = { oil: 0, water: 0, gas: 0, wag: 0 };
       targets.forEach((target) => { fluidCounts[target.fluid_type] += 1; });
       document.getElementById("targetTotalCount").textContent = String(targets.length);
@@ -3819,6 +4232,13 @@
       document.getElementById("targetGasCount").textContent = String(fluidCounts.gas);
       document.getElementById("targetWagCount").textContent = String(fluidCounts.wag);
       targetPreview.textContent = JSON.stringify(buildTargetsPayload(targets), null, 2);
+      const bathymetryIssues = updateBathymetryElevationWarning(generatedBathymetry, mapTargets);
+      const allWarnings = [
+        ...warnings,
+        ...(bathymetryIssues.length > 0
+          ? [`${bathymetryIssues.length} target(s) have Z start above seabed bathymetry: ${bathymetryIssues.join(", ")}.`]
+          : [])
+      ];
       const identifiedTargets = identifyTargetBoundaries(mapTargets);
       renderBoundaryResults(identifiedTargets);
       updateBathymetryArea(identifiedTargets);
@@ -3826,6 +4246,8 @@
       renderFpsoGeometry();
       if (errors.length > 0) {
         setTargetStatus(`${errors.length} row(s) need attention: ${errors.join("; ")}`, "error");
+      } else if (allWarnings.length > 0) {
+        setTargetStatus(`Warning: ${allWarnings.join(" ")}`, "warning");
       } else {
         setTargetStatus("");
       }
@@ -3883,11 +4305,11 @@
       const fieldsLayer = L.geoJSON(targetBoundaryData.collections.fields, {
         style: { color: "#d97706", weight: 1, opacity: 0.82, fillOpacity: 0.04 },
         onEachFeature(feature, layer) { layer.bindPopup(boundaryPopup(feature, "field")); }
-      });
+      }).addTo(targetMap);
       const blocksLayer = L.geoJSON(targetBoundaryData.collections.blocks, {
         style: { color: "#2563eb", weight: 1, opacity: 0.82, fillOpacity: 0.04, dashArray: "4 3" },
         onEachFeature(feature, layer) { layer.bindPopup(boundaryPopup(feature, "block")); }
-      });
+      }).addTo(targetMap);
       L.control.layers(null, {
         "Basin boundaries": basinsLayer,
         "Oil and gas fields": fieldsLayer,
@@ -3999,6 +4421,54 @@
         }
       });
       matchedBoundaryLayer.addLayer(highlighted);
+
+      if (generatedFpsoCenter && Number.isFinite(generatedFpsoCenter.latitude) && Number.isFinite(generatedFpsoCenter.longitude)) {
+        const drawUtmCircle = (radiusMeters, fillOpacity) => {
+          if (typeof L.polygon !== "function" || !Number.isFinite(radiusMeters) || radiusMeters <= 0 || !generatedFpsoCenter.zone || !generatedFpsoCenter.hemisphere) return;
+          const ringLatLngs = [];
+          const segments = 64;
+          for (let i = 0; i < segments; i += 1) {
+            const angle = (i / segments) * 2 * Math.PI;
+            const px = generatedFpsoCenter.eastingMeters + radiusMeters * Math.cos(angle);
+            const py = generatedFpsoCenter.northingMeters + radiusMeters * Math.sin(angle);
+            const geo = utmToGeographic(px, py, generatedFpsoCenter.zone, generatedFpsoCenter.hemisphere);
+            ringLatLngs.push([geo.latitude, geo.longitude]);
+          }
+          L.polygon(ringLatLngs, {
+            color: "#082f59",
+            weight: 1.5,
+            opacity: 0.65,
+            dashArray: "5 5",
+            fillColor: "#1168b4",
+            fillOpacity,
+            interactive: false
+          }).addTo(targetMarkerLayer);
+        };
+        drawUtmCircle(generatedFpsoCenter.referenceRadiusMeters, 0.04);
+        if (generatedFpsoCenter.minRadiusMeters > 0 && generatedFpsoCenter.minRadiusMeters < generatedFpsoCenter.referenceRadiusMeters) {
+          drawUtmCircle(generatedFpsoCenter.minRadiusMeters, 0);
+        }
+        const fpsoMarker = L.circleMarker([generatedFpsoCenter.latitude, generatedFpsoCenter.longitude], {
+          radius: 6.5,
+          color: "#082f59",
+          weight: 2,
+          fillColor: "#f59e0b",
+          fillOpacity: 1
+        });
+        fpsoMarker.bindTooltip(safeMapLabel("FPSO"), {
+          permanent: false,
+          direction: "top",
+          offset: [0, -6],
+          className: "well-label",
+          interactive: false
+        });
+        const minKm = ((generatedFpsoCenter.minRadiusMeters || 0) / 1000).toFixed(2);
+        const maxKm = (generatedFpsoCenter.referenceRadiusMeters / 1000).toFixed(2);
+        fpsoMarker.bindPopup(safeMapLabel(
+          `FPSO central position · Radius: ${minKm}–${maxKm} km`
+        ));
+        fpsoMarker.addTo(targetMarkerLayer);
+      }
 
       points.forEach((point) => {
         const color = TARGET_FLUID_COLORS[point.fluid] ?? TARGET_FLUID_COLORS.wag;
@@ -4113,8 +4583,19 @@
       return `reservoir_targets_${targetUnitSelect.value}_${date}_${time}.json`;
     }
 
+    function syncCoordSwitchButtons(targetId, value) {
+      document.querySelectorAll(`[data-coord-target="${targetId}"]`).forEach((btn) => {
+        btn.setAttribute("aria-pressed", String(btn.dataset.coordValue === value));
+      });
+    }
+
     function syncTargetCoordinateLabels() {
       const geographic = targetCoordinateMode.value === "geographic";
+      syncCoordSwitchButtons("targetCoordinateMode", targetCoordinateMode.value);
+      const xHeaderLabel = document.getElementById("targetXHeaderLabel");
+      const yHeaderLabel = document.getElementById("targetYHeaderLabel");
+      if (xHeaderLabel) xHeaderLabel.textContent = geographic ? "Latitude · Y" : "Target X · Easting";
+      if (yHeaderLabel) yHeaderLabel.textContent = geographic ? "Longitude · X" : "Target Y · Northing";
       document.getElementById("targetXUnitLabel").textContent = geographic ? "°" : targetUnitSelect.value;
       document.getElementById("targetYUnitLabel").textContent = geographic ? "°" : targetUnitSelect.value;
       document.querySelectorAll(".target-unit-label").forEach((label) => {
@@ -4130,14 +4611,14 @@
         const [xInput, yInput] = targetRowCells(row).slice(3, 5);
         xInput.inputMode = geographic ? "text" : "decimal";
         yInput.inputMode = geographic ? "text" : "decimal";
-        xInput.placeholder = geographic ? "Latitude (decimal or DMS)" : "Easting";
-        yInput.placeholder = geographic ? "Longitude (decimal or DMS)" : "Northing";
+        xInput.placeholder = geographic ? "Latitude N/S (decimal or DMS)" : "Easting (X)";
+        yInput.placeholder = geographic ? "Longitude E/W (decimal or DMS)" : "Northing (Y)";
         xInput.setAttribute("aria-label", geographic ? "Latitude" : "Target X easting");
         yInput.setAttribute("aria-label", geographic ? "Longitude" : "Target Y northing");
       });
       document.getElementById("targetCoordinateHint").textContent = geographic
-        ? "Enter decimal degrees or DMS (for example 19°55′30″S). Values convert to WGS84 / UTM using the first complete target's zone; all targets must share one zone and hemisphere. The JSON schema stores unit IDs, not the CRS zone."
-        : "Enter UTM easting and northing. Select the correct zone and hemisphere before switching existing UTM values to latitude / longitude.";
+        ? "Enter decimal degrees or DMS (e.g. 24°50′39.8″S). Latitude (N/S) converts to UTM Northing (y) and Longitude (E/W) converts to UTM Easting (x) in the JSON output."
+        : "Enter UTM Easting (X: 100,000–900,000 m) and Northing (Y: 0–10,000,000 m). Select the UTM zone (and hemisphere, defaulting to South) to position targets on the GIS map.";
     }
 
     function changeTargetCoordinateMode(nextMode) {
@@ -4145,6 +4626,9 @@
       const rows = [...targetsBody.rows];
       if (nextMode === "geographic") {
         const zone = Number(targetZoneSelect.value);
+        if (zone && !targetHemisphereSelect.value) {
+          targetHemisphereSelect.value = "S";
+        }
         const hemisphere = targetHemisphereSelect.value;
         const conversions = [];
         for (const [index, row] of rows.entries()) {
@@ -4164,7 +4648,7 @@
             setTargetStatus(`Row ${index + 1}: enter valid easting and northing values before converting coordinates.`, "error");
             return;
           }
-          const unitFactor = targetUnitSelect.value === "ft" ? 0.3048 : 1;
+          const unitFactor = targetUnitSelect.value === "ft" ? METERS_PER_FOOT : 1;
           const converted = utmToGeographic(
             x * unitFactor,
             y * unitFactor,
@@ -4196,7 +4680,7 @@
         }
         const first = coordinates[0];
         const zone = first ? utmZoneFor(first.longitude, first.latitude) : null;
-        const hemisphere = first ? utmHemisphereFor(first.latitude) : targetHemisphereSelect.value;
+        const hemisphere = first ? utmHemisphereFor(first.latitude) : (targetHemisphereSelect.value || "S");
         const outOfZone = coordinates.find(({ latitude, longitude }) =>
           utmZoneFor(longitude, latitude) !== zone
           || (latitude !== 0 && utmHemisphereFor(latitude) !== hemisphere)
@@ -4209,15 +4693,16 @@
           );
           return;
         }
-        const unitFactor = targetUnitSelect.value === "ft" ? 3.28084 : 1;
+        const unitFactor = targetUnitSelect.value === "ft" ? FEET_PER_METER : 1;
+        const precision = targetUnitSelect.value === "ft" ? 1e4 : 1e3;
         coordinates.forEach(({ row, latitude, longitude }) => {
           const converted = geographicToUtm(latitude, longitude, zone, hemisphere);
           const [xInput, yInput] = targetRowCells(row).slice(3, 5);
-          xInput.value = String(Math.round(converted.x * unitFactor * 1000) / 1000);
-          yInput.value = String(Math.round(converted.y * unitFactor * 1000) / 1000);
+          xInput.value = String(Math.round(converted.x * unitFactor * precision) / precision);
+          yInput.value = String(Math.round(converted.y * unitFactor * precision) / precision);
         });
         if (zone) targetZoneSelect.value = String(zone);
-        targetHemisphereSelect.value = hemisphere;
+        if (hemisphere) targetHemisphereSelect.value = hemisphere;
       }
 
       targetCoordinateMode.value = nextMode;
@@ -4232,7 +4717,7 @@
           !hasCoordinates
             ? `Coordinate format set to ${nextMode === "utm" ? "UTM" : "latitude / longitude"}.`
             : nextMode === "utm"
-              ? `Latitude / longitude converted to WGS84 / UTM zone ${targetZoneSelect.value}${targetHemisphereSelect.value}.`
+              ? `Latitude / longitude converted to WGS84 / UTM zone ${targetZoneSelect.value}${targetHemisphereSelect.value} (X = Easting, Y = Northing).`
               : `UTM coordinates converted to latitude / longitude using zone ${targetZoneSelect.value}${targetHemisphereSelect.value}.`,
           "success"
         );
@@ -4242,7 +4727,8 @@
     function convertTargetCoordinates(nextUnit) {
       if (targetCurrentUnit === nextUnit) return;
       const currentUnit = targetCurrentUnit;
-      const factor = currentUnit === "m" ? 3.28084 : 0.3048;
+      const factor = currentUnit === "m" ? FEET_PER_METER : METERS_PER_FOOT;
+      const precision = nextUnit === "ft" ? 1e4 : 1e3;
       [...targetsBody.rows].forEach((row) => {
         const coordinateInputs = targetRowCells(row).slice(3, 6);
         coordinateInputs.forEach((input, index) => {
@@ -4250,7 +4736,7 @@
           const number = parseTargetNumber(input.value);
           if (number === null) return;
           const converted = number * factor;
-          input.value = String(Math.round((index === 2 ? -Math.abs(converted) : converted) * 1000) / 1000);
+          input.value = String(Math.round((index === 2 ? -Math.abs(converted) : converted) * precision) / precision);
         });
       });
       targetCurrentUnit = nextUnit;
@@ -4274,12 +4760,14 @@
     }
 
     function buildDownloadFilename() {
+      const tubingPart = `T${filenameNumber(state.tubing_size, state.tubingUnit === "m" ? 6 : 3)}${state.tubingUnit}`;
       if (state.wellType === "vertical") {
-        return `WV-T${filenameNumber(state.tubing_size, state.tubingUnit === "m" ? 6 : 3)}${state.tubingUnit}.json`;
+        return `WV-${tubingPart}.json`;
       }
 
       const parts = [
         "WD",
+        tubingPart,
         `C${filenameNumber(state.well_unit_cost, 2)}${state.costUnit === "USD/m" ? "USDm" : "USDft"}`,
         `S${filenameNumber(state.horizontal_step_out, 2)}${state.stepOutUnit}`,
         `K${filenameNumber(state.kickoff_point, 2)}${state.kickoffUnit}`,
@@ -4371,12 +4859,81 @@
       return depthCount === 0 ? null : totalDepth / depthCount;
     }
 
+    function buildProjectTypePayload() {
+      const selectedInput = document.querySelector('input[name="project_type"]:checked');
+      const projectType = selectedInput ? selectedInput.value : "fpso";
+      const payload = { project_type: projectType };
+      if (projectType === "fpso") {
+        payload.fpso_geometry = {
+          unit_heading_deg: rounded(Number(fpsoInputs.heading.value), 2),
+          mooring_lines_per_cluster: rounded(Number(fpsoInputs.mooringCount.value), 0),
+          mooring_line_spacing_deg: rounded(Number(fpsoInputs.mooringSpacing.value), 2),
+          riser_balcony_angle_deg: rounded(Number(fpsoInputs.riserBalconyAngle.value), 2),
+          minimum_riser_spacing_deg: rounded(Number(fpsoInputs.riserSpacing.value), 4),
+          anchor_radius_m: fpsoInputs.anchorRadius.value !== "" ? rounded(Number(fpsoInputs.anchorRadius.value), 2) : null,
+          riser_touchdown_radius_m: fpsoInputs.touchdownRadius.value !== "" ? rounded(Number(fpsoInputs.touchdownRadius.value), 2) : null
+        };
+        if (fpsoPrescribePosition.checked) {
+          const mode = fpsoPositionCoordinateMode.value;
+          if (mode === "geographic") {
+            const lat = parseGeographicCoordinate(fpsoPositionFields.latitude.value, "latitude");
+            const lon = parseGeographicCoordinate(fpsoPositionFields.longitude.value, "longitude");
+            if (lat !== null && lon !== null) {
+              const zone = utmZoneFor(lon, lat);
+              const hemisphere = utmHemisphereFor(lat);
+              const utm = geographicToUtm(lat, lon, zone, hemisphere);
+              payload.prescribed_position = {
+                coordinate_mode: "geographic",
+                latitude: rounded(lat, 7),
+                longitude: rounded(lon, 7),
+                easting_m: rounded(utm.x, 3),
+                northing_m: rounded(utm.y, 3),
+                utm_zone: zone,
+                utm_hemisphere: hemisphere
+              };
+            }
+          } else {
+            const x = parseTargetNumber(fpsoPositionFields.easting.value);
+            const y = parseTargetNumber(fpsoPositionFields.northing.value);
+            const zone = Number(fpsoPositionFields.zone.value) || null;
+            const hemisphere = fpsoPositionFields.hemisphere.value || null;
+            payload.prescribed_position = {
+              coordinate_mode: "utm",
+              easting_m: x !== null ? rounded(x, 3) : null,
+              northing_m: y !== null ? rounded(y, 3) : null,
+              utm_zone: zone,
+              utm_hemisphere: hemisphere
+            };
+          }
+        } else {
+          payload.prescribed_position = null;
+        }
+      }
+      return payload;
+    }
+
+    function renderProjectTypePreview() {
+      const previewEl = document.getElementById("projectTypeJsonPreview");
+      if (previewEl) {
+        previewEl.textContent = JSON.stringify(buildProjectTypePayload(), null, 2);
+      }
+    }
+
     function updateFpsoPositionControls() {
       const prescribed = fpsoPrescribePosition.checked;
       const geographic = fpsoPositionCoordinateMode.value === "geographic";
+      syncCoordSwitchButtons("fpsoPositionCoordinateMode", fpsoPositionCoordinateMode.value);
       fpsoPositionInputsPanel.hidden = !prescribed;
       document.getElementById("fpsoUtmPositionFields").hidden = geographic;
       document.getElementById("fpsoGeographicPositionFields").hidden = !geographic;
+      if (prescribed && !geographic) {
+        if (!fpsoPositionFields.zone.value && targetZoneSelect.value) {
+          fpsoPositionFields.zone.value = targetZoneSelect.value;
+        }
+        if (!fpsoPositionFields.hemisphere.value && targetHemisphereSelect.value) {
+          fpsoPositionFields.hemisphere.value = targetHemisphereSelect.value;
+        }
+      }
       Object.entries(fpsoPositionFields).forEach(([key, input]) => {
         input.required = prescribed && (geographic
           ? key === "latitude" || key === "longitude"
@@ -4386,6 +4943,7 @@
       if (!prescribed) {
         fpsoPositionStatus.textContent = "";
         fpsoPositionStatus.dataset.error = "false";
+        renderProjectTypePreview();
         return;
       }
 
@@ -4393,14 +4951,58 @@
         ? [fpsoPositionFields.latitude, fpsoPositionFields.longitude]
         : [fpsoPositionFields.easting, fpsoPositionFields.northing, fpsoPositionFields.zone, fpsoPositionFields.hemisphere];
       const invalid = activeFields.some((input) =>
-        !input.value.trim() || !input.validity.valid
+        !input.value.trim() || !input.checkValidity()
       );
       fpsoPositionStatus.textContent = invalid
         ? geographic
-          ? "Enter a valid latitude and longitude for the prescribed FPSO position."
-          : "Enter valid UTM easting, northing, zone, and hemisphere for the prescribed FPSO position."
+          ? "Enter a valid latitude (-90° to 90°) and longitude (-180° to 180°) for the prescribed FPSO position."
+          : "Enter valid UTM easting (100,000–900,000 m), northing (0–10,000,000 m), zone, and hemisphere for the prescribed FPSO position."
         : "";
       fpsoPositionStatus.dataset.error = String(invalid);
+      if (!invalid) {
+        if (geographic) {
+          const lat = parseGeographicCoordinate(fpsoPositionFields.latitude.value, "latitude");
+          const lon = parseGeographicCoordinate(fpsoPositionFields.longitude.value, "longitude");
+          if (lat !== null && lon !== null && lat >= -80 && lat <= 84) {
+            const zone = utmZoneFor(lon, lat);
+            const hemisphere = utmHemisphereFor(lat);
+            const utm = geographicToUtm(lat, lon, zone, hemisphere);
+            const genLat = document.getElementById("genCenterLatitude");
+            const genLon = document.getElementById("genCenterLongitude");
+            const genX = document.getElementById("genCenterX");
+            const genY = document.getElementById("genCenterY");
+            const genZone = document.getElementById("genCenterZone");
+            const genHemi = document.getElementById("genCenterHemisphere");
+            if (genLat) genLat.value = formatGeographicCoordinate(lat);
+            if (genLon) genLon.value = formatGeographicCoordinate(lon);
+            if (genX) genX.value = String(Math.round(utm.x * 100) / 100);
+            if (genY) genY.value = String(Math.round(utm.y * 100) / 100);
+            if (genZone) genZone.value = String(zone);
+            if (genHemi) genHemi.value = hemisphere;
+          }
+        } else {
+          const x = parseTargetNumber(fpsoPositionFields.easting.value);
+          const y = parseTargetNumber(fpsoPositionFields.northing.value);
+          const zone = Number(fpsoPositionFields.zone.value);
+          const hemisphere = fpsoPositionFields.hemisphere.value;
+          if (x !== null && y !== null && zone && hemisphere) {
+            const geo = utmToGeographic(x, y, zone, hemisphere);
+            const genLat = document.getElementById("genCenterLatitude");
+            const genLon = document.getElementById("genCenterLongitude");
+            const genX = document.getElementById("genCenterX");
+            const genY = document.getElementById("genCenterY");
+            const genZone = document.getElementById("genCenterZone");
+            const genHemi = document.getElementById("genCenterHemisphere");
+            if (genLat) genLat.value = formatGeographicCoordinate(geo.latitude);
+            if (genLon) genLon.value = formatGeographicCoordinate(geo.longitude);
+            if (genX) genX.value = String(Math.round(x * 100) / 100);
+            if (genY) genY.value = String(Math.round(y * 100) / 100);
+            if (genZone) genZone.value = String(zone);
+            if (genHemi) genHemi.value = hemisphere;
+          }
+        }
+      }
+      renderProjectTypePreview();
     }
 
     function renderFpsoGeometry() {
@@ -4658,6 +5260,7 @@
         fpsoGeometryStatus.textContent += ` ${geometryIssues.join(" ")}`;
         fpsoGeometryStatus.dataset.error = "true";
       }
+      renderProjectTypePreview();
     }
 
     document.querySelectorAll('input[name="project_type"]').forEach((input) => {
@@ -4672,10 +5275,49 @@
           image.toggleAttribute("hidden", image.dataset.projectImage !== input.value);
         });
         if (input.value === "fpso") renderFpsoGeometry();
+        else renderProjectTypePreview();
       });
     });
     fpsoPrescribePosition.addEventListener("change", updateFpsoPositionControls);
-    fpsoPositionCoordinateMode.addEventListener("change", updateFpsoPositionControls);
+    fpsoPositionCoordinateMode.addEventListener("change", () => {
+      const nextMode = fpsoPositionCoordinateMode.value;
+      if (nextMode === "geographic") {
+        const x = parseTargetNumber(fpsoPositionFields.easting.value);
+        const y = parseTargetNumber(fpsoPositionFields.northing.value);
+        const zone = Number(fpsoPositionFields.zone.value);
+        const hemisphere = fpsoPositionFields.hemisphere.value || "S";
+        if (x !== null && y !== null && zone && x >= 100000 && x <= 900000 && y >= 0 && y <= 10000000) {
+          const geo = utmToGeographic(x, y, zone, hemisphere);
+          fpsoPositionFields.latitude.value = formatGeographicCoordinate(geo.latitude);
+          fpsoPositionFields.longitude.value = formatGeographicCoordinate(geo.longitude);
+        }
+      } else {
+        const lat = parseGeographicCoordinate(fpsoPositionFields.latitude.value, "latitude");
+        const lon = parseGeographicCoordinate(fpsoPositionFields.longitude.value, "longitude");
+        if (lat !== null && lon !== null && lat >= -80 && lat <= 84) {
+          const zone = utmZoneFor(lon, lat);
+          const hemisphere = utmHemisphereFor(lat);
+          const utm = geographicToUtm(lat, lon, zone, hemisphere);
+          fpsoPositionFields.easting.value = String(Math.round(utm.x * 1000) / 1000);
+          fpsoPositionFields.northing.value = String(Math.round(utm.y * 1000) / 1000);
+          fpsoPositionFields.zone.value = String(zone);
+          fpsoPositionFields.hemisphere.value = hemisphere;
+        }
+      }
+      updateFpsoPositionControls();
+    });
+    document.getElementById("downloadProjectTypeBtn")?.addEventListener("click", () => {
+      const payload = buildProjectTypePayload();
+      const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `field_layout_${payload.project_type}.json`;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.setTimeout(() => URL.revokeObjectURL(url), 0);
+    });
     Object.values(fpsoPositionFields).forEach((input) => {
       input.addEventListener("input", updateFpsoPositionControls);
       input.addEventListener("change", updateFpsoPositionControls);
@@ -4747,10 +5389,323 @@
       renderPreview();
     });
 
+    const targetTabTableBtn = document.getElementById("targetTabTableBtn");
+    const targetTabGeneratorBtn = document.getElementById("targetTabGeneratorBtn");
+    const targetGeneratorPanel = document.getElementById("targetGeneratorPanel");
+    const genCenterCoordinateMode = document.getElementById("genCenterCoordinateMode");
+
+    function switchTargetTab(mode) {
+      const isGenerator = mode === "generator";
+      targetTabTableBtn.setAttribute("aria-selected", String(!isGenerator));
+      targetTabGeneratorBtn.setAttribute("aria-selected", String(isGenerator));
+      targetGeneratorPanel.hidden = !isGenerator;
+    }
+
+    targetTabTableBtn?.addEventListener("click", () => switchTargetTab("table"));
+    targetTabGeneratorBtn?.addEventListener("click", () => switchTargetTab("generator"));
+
+    function updateGeneratorCenterCoordinateMode() {
+      const geographic = genCenterCoordinateMode.value === "geographic";
+      syncCoordSwitchButtons("genCenterCoordinateMode", genCenterCoordinateMode.value);
+      document.getElementById("genCenterGeographicFields").hidden = !geographic;
+      document.getElementById("genCenterUtmFields").hidden = geographic;
+      if (geographic) {
+        const x = parseTargetNumber(document.getElementById("genCenterX").value);
+        const y = parseTargetNumber(document.getElementById("genCenterY").value);
+        const zone = Number(document.getElementById("genCenterZone").value);
+        const hemisphere = document.getElementById("genCenterHemisphere").value || "S";
+        if (x !== null && y !== null && zone && x >= 100000 && x <= 900000 && y >= 0 && y <= 10000000) {
+          const geo = utmToGeographic(x, y, zone, hemisphere);
+          document.getElementById("genCenterLatitude").value = formatGeographicCoordinate(geo.latitude);
+          document.getElementById("genCenterLongitude").value = formatGeographicCoordinate(geo.longitude);
+        }
+      } else {
+        const lat = parseGeographicCoordinate(document.getElementById("genCenterLatitude").value, "latitude");
+        const lon = parseGeographicCoordinate(document.getElementById("genCenterLongitude").value, "longitude");
+        if (lat !== null && lon !== null && lat >= -80 && lat <= 84) {
+          const zone = utmZoneFor(lon, lat);
+          const hemisphere = utmHemisphereFor(lat);
+          const utm = geographicToUtm(lat, lon, zone, hemisphere);
+          document.getElementById("genCenterX").value = String(Math.round(utm.x * 100) / 100);
+          document.getElementById("genCenterY").value = String(Math.round(utm.y * 100) / 100);
+          document.getElementById("genCenterZone").value = String(zone);
+          document.getElementById("genCenterHemisphere").value = hemisphere;
+        }
+      }
+    }
+
+    genCenterCoordinateMode?.addEventListener("change", updateGeneratorCenterCoordinateMode);
+
+    let genCurrentRadiusUnit = document.getElementById("genReferenceDistanceUnit")?.value ?? "km";
+    document.getElementById("genReferenceDistanceUnit")?.addEventListener("change", (event) => {
+      const nextUnit = event.currentTarget.value;
+      if (nextUnit === genCurrentRadiusUnit) return;
+      const factor = nextUnit === "m" ? 1000 : 0.001;
+      const minInput = document.getElementById("genMinRadius");
+      const maxInput = document.getElementById("genReferenceDistance");
+      const minVal = parseTargetNumber(minInput?.value);
+      const maxVal = parseTargetNumber(maxInput?.value);
+      if (minInput && minVal !== null) minInput.value = String(Math.round(minVal * factor * 1000) / 1000);
+      if (maxInput && maxVal !== null) maxInput.value = String(Math.round(maxVal * factor * 1000) / 1000);
+      document.querySelectorAll(".gen-radius-unit-label").forEach((el) => { el.textContent = nextUnit; });
+      genCurrentRadiusUnit = nextUnit;
+    });
+
+    document.querySelectorAll(".coord-switch-btn").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const targetId = btn.dataset.coordTarget;
+        const nextValue = btn.dataset.coordValue;
+        const selectEl = document.getElementById(targetId);
+        if (!selectEl || selectEl.value === nextValue) return;
+        if (targetId === "targetCoordinateMode") {
+          changeTargetCoordinateMode(nextValue);
+          syncCoordSwitchButtons(targetId, selectEl.value);
+        } else if (targetId === "genCenterCoordinateMode") {
+          selectEl.value = nextValue;
+          updateGeneratorCenterCoordinateMode();
+        } else if (targetId === "fpsoPositionCoordinateMode") {
+          selectEl.value = nextValue;
+          selectEl.dispatchEvent(new Event("change"));
+        }
+      });
+    });
+
+    function generateRandomTargetsFromFpsoCenter() {
+      const mode = genCenterCoordinateMode.value;
+      let centerLatitude = null;
+      let centerLongitude = null;
+      let centerEasting = null;
+      let centerNorthing = null;
+      let zone = null;
+      let hemisphere = null;
+
+      if (mode === "geographic") {
+        centerLatitude = parseGeographicCoordinate(document.getElementById("genCenterLatitude").value, "latitude");
+        centerLongitude = parseGeographicCoordinate(document.getElementById("genCenterLongitude").value, "longitude");
+        if (centerLatitude === null || centerLongitude === null || centerLatitude < -80 || centerLatitude > 84) {
+          setTargetStatus("Enter a valid FPSO latitude (80°S to 84°N) and longitude (-180° to 180°).", "error");
+          return;
+        }
+        zone = utmZoneFor(centerLongitude, centerLatitude);
+        hemisphere = utmHemisphereFor(centerLatitude);
+        const utm = geographicToUtm(centerLatitude, centerLongitude, zone, hemisphere);
+        centerEasting = utm.x;
+        centerNorthing = utm.y;
+        document.getElementById("genCenterX").value = String(Math.round(centerEasting * 100) / 100);
+        document.getElementById("genCenterY").value = String(Math.round(centerNorthing * 100) / 100);
+        document.getElementById("genCenterZone").value = String(zone);
+        document.getElementById("genCenterHemisphere").value = hemisphere;
+      } else {
+        centerEasting = parseTargetNumber(document.getElementById("genCenterX").value);
+        centerNorthing = parseTargetNumber(document.getElementById("genCenterY").value);
+        zone = Number(document.getElementById("genCenterZone").value) || null;
+        hemisphere = document.getElementById("genCenterHemisphere").value || "S";
+        if (centerEasting === null || centerEasting < 100000 || centerEasting > 900000
+          || centerNorthing === null || centerNorthing < 0 || centerNorthing > 10000000 || !zone) {
+          setTargetStatus("Enter valid FPSO UTM Easting (100,000–900,000 m), Northing (0–10,000,000 m), and Zone.", "error");
+          return;
+        }
+        const geo = utmToGeographic(centerEasting, centerNorthing, zone, hemisphere);
+        centerLatitude = geo.latitude;
+        centerLongitude = geo.longitude;
+        document.getElementById("genCenterLatitude").value = formatGeographicCoordinate(centerLatitude);
+        document.getElementById("genCenterLongitude").value = formatGeographicCoordinate(centerLongitude);
+      }
+
+      const rawMinDistance = parseTargetNumber(document.getElementById("genMinRadius")?.value ?? "0");
+      const rawMaxDistance = parseTargetNumber(document.getElementById("genReferenceDistance").value);
+      const distanceUnit = document.getElementById("genReferenceDistanceUnit").value;
+      const toMeters = distanceUnit === "km" ? 1000 : 1;
+      const minRadiusMeters = rawMinDistance !== null ? rawMinDistance * toMeters : Number.NaN;
+      const referenceRadiusMeters = rawMaxDistance !== null ? rawMaxDistance * toMeters : Number.NaN;
+      if (!Number.isFinite(minRadiusMeters) || minRadiusMeters < 0
+        || !Number.isFinite(referenceRadiusMeters) || referenceRadiusMeters <= 0
+        || minRadiusMeters > referenceRadiusMeters || referenceRadiusMeters > 100000) {
+        setTargetStatus("Enter valid Min and Max radii (0 ≤ Min ≤ Max ≤ 100 km, Max > 0).", "error");
+        return;
+      }
+
+      const counts = [
+        { count: Number(document.getElementById("genCountOilProducer").value), prefix: "PRD-OIL", type: "producer", fluid: "oil" },
+        { count: Number(document.getElementById("genCountGasProducer").value), prefix: "PRD-GAS", type: "producer", fluid: "gas" },
+        { count: Number(document.getElementById("genCountWaterInjector").value), prefix: "INJ-WAT", type: "injector", fluid: "water" },
+        { count: Number(document.getElementById("genCountWagInjector").value), prefix: "INJ-WAG", type: "injector", fluid: "wag" }
+      ];
+      if (counts.some(({ count }) => !Number.isFinite(count) || count < 0 || !Number.isInteger(count))) {
+        setTargetStatus("Enter non-negative integer well counts for each well type.", "error");
+        return;
+      }
+      const totalWells = counts.reduce((sum, item) => sum + item.count, 0);
+      if (totalWells === 0) {
+        setTargetStatus("Specify at least 1 well to generate.", "error");
+        return;
+      }
+      if (totalWells > 500) {
+        setTargetStatus("Total generated wells cannot exceed 500.", "error");
+        return;
+      }
+
+      const rawZ = parseTargetNumber(document.getElementById("genTargetZStart").value);
+      if (rawZ === null || rawZ === 0) {
+        setTargetStatus("Enter a valid non-zero Depth (Z start).", "error");
+        return;
+      }
+      const zStart = -Math.abs(rawZ);
+
+      const wellSpecs = [];
+      counts.forEach(({ count, prefix, type, fluid }) => {
+        for (let i = 1; i <= count; i += 1) {
+          wellSpecs.push({
+            name: `${prefix}-${String(i).padStart(2, "0")}`,
+            type,
+            fluid
+          });
+        }
+      });
+
+      const minInterWellDistance = Math.min(
+        350,
+        (referenceRadiusMeters * 0.55) / Math.sqrt(Math.max(1, totalWells))
+      );
+      const placedPositions = [];
+
+      wellSpecs.forEach((spec) => {
+        let bestCandidate = null;
+        let bestMinDistSquared = -1;
+        for (let attempt = 0; attempt < 80; attempt += 1) {
+          const u = Math.random();
+          const radius = Math.sqrt(
+            minRadiusMeters ** 2 + u * (referenceRadiusMeters ** 2 - minRadiusMeters ** 2)
+          );
+          const angle = Math.random() * 2 * Math.PI;
+          const x = centerEasting + radius * Math.cos(angle);
+          const y = centerNorthing + radius * Math.sin(angle);
+          if (placedPositions.length === 0) {
+            bestCandidate = { x, y, radius };
+            break;
+          }
+          let nearestSquared = Infinity;
+          for (const prev of placedPositions) {
+            const distSq = (prev.x - x) ** 2 + (prev.y - y) ** 2;
+            if (distSq < nearestSquared) nearestSquared = distSq;
+          }
+          if (nearestSquared >= minInterWellDistance ** 2) {
+            bestCandidate = { x, y, radius };
+            break;
+          }
+          if (nearestSquared > bestMinDistSquared) {
+            bestMinDistSquared = nearestSquared;
+            bestCandidate = { x, y, radius };
+          }
+        }
+        placedPositions.push(bestCandidate);
+        spec.eastingMeters = bestCandidate.x;
+        spec.northingMeters = bestCandidate.y;
+        spec.distanceFromFpsoMeters = bestCandidate.radius;
+      });
+
+      targetZoneSelect.value = String(zone);
+      targetHemisphereSelect.value = hemisphere;
+      targetsBody.replaceChildren();
+
+      const geographicOutput = targetCoordinateMode.value === "geographic";
+      const unitFactor = targetUnitSelect.value === "ft" ? FEET_PER_METER : 1;
+      const precision = targetUnitSelect.value === "ft" ? 1e4 : 1e3;
+
+      wellSpecs.forEach((spec) => {
+        addTargetRow();
+        const row = targetsBody.lastElementChild;
+        const [nameInput, typeSelect, fluidSelect, xInput, yInput, zInput] = targetRowCells(row);
+        nameInput.value = spec.name;
+        typeSelect.value = spec.type;
+        fluidSelect.value = spec.fluid;
+        if (geographicOutput) {
+          const geo = utmToGeographic(spec.eastingMeters, spec.northingMeters, zone, hemisphere);
+          xInput.value = formatGeographicCoordinate(geo.latitude);
+          yInput.value = formatGeographicCoordinate(geo.longitude);
+        } else {
+          xInput.value = String(Math.round(spec.eastingMeters * unitFactor * precision) / precision);
+          yInput.value = String(Math.round(spec.northingMeters * unitFactor * precision) / precision);
+        }
+        zInput.value = String(zStart);
+        row.dataset.touched = "true";
+      });
+
+      generatedFpsoCenter = {
+        latitude: centerLatitude,
+        longitude: centerLongitude,
+        eastingMeters: centerEasting,
+        northingMeters: centerNorthing,
+        zone,
+        hemisphere,
+        minRadiusMeters,
+        referenceRadiusMeters
+      };
+
+      // Sync with prescribed FPSO position in Project Type section
+      fpsoPrescribePosition.checked = true;
+      fpsoPositionFields.easting.value = String(Math.round(centerEasting * 1000) / 1000);
+      fpsoPositionFields.northing.value = String(Math.round(centerNorthing * 1000) / 1000);
+      fpsoPositionFields.zone.value = String(zone);
+      fpsoPositionFields.hemisphere.value = hemisphere;
+      fpsoPositionFields.latitude.value = formatGeographicCoordinate(centerLatitude);
+      fpsoPositionFields.longitude.value = formatGeographicCoordinate(centerLongitude);
+      updateFpsoPositionControls();
+
+      targetMapUserAdjusted = false;
+      renderTargetData();
+      const { mapTargets, errors, warnings } = collectTargetRows();
+      if (mapTargets.length > 0) {
+        updateBathymetryArea(identifyTargetBoundaries(mapTargets), true);
+      }
+      if (errors.length === 0 && warnings.length === 0) {
+        setTargetStatus(
+          `Generated ${totalWells} random target(s) around FPSO center (UTM ${zone}${hemisphere}, radius ${rawMinDistance}–${rawMaxDistance} ${distanceUnit}).`,
+          "success"
+        );
+      }
+    }
+
+    document.getElementById("generateRandomTargetsBtn")?.addEventListener("click", generateRandomTargetsFromFpsoCenter);
+
     document.getElementById("addTargetRowBtn").addEventListener("click", () => {
       addTargetRow();
       renderTargetData();
       targetsBody.lastElementChild?.querySelector("input, select")?.focus();
+    });
+    document.getElementById("swapTargetXYBtn").addEventListener("click", () => {
+      let swappedCount = 0;
+      [...targetsBody.rows].forEach((row) => {
+        const cells = targetRowCells(row);
+        const xVal = cells[3].value;
+        const yVal = cells[4].value;
+        if (xVal.trim() !== "" || yVal.trim() !== "") {
+          cells[3].value = yVal;
+          cells[4].value = xVal;
+          row.dataset.touched = "true";
+          swappedCount += 1;
+        }
+      });
+      targetMapUserAdjusted = false;
+      renderTargetData();
+      if (swappedCount > 0 && collectTargetRows().errors.length === 0 && collectTargetRows().warnings.length === 0) {
+        setTargetStatus(`Swapped coordinate columns for ${swappedCount} row(s).`, "success");
+      }
+    });
+    document.getElementById("clearTargetsTableBtn").addEventListener("click", () => {
+      targetsBody.replaceChildren();
+      addTargetRow();
+      generatedFpsoCenter = null;
+      targetMapUserAdjusted = false;
+      renderTargetData();
+      setTargetStatus("Cleared reservoir target table.", "success");
+    });
+    document.getElementById("loadExampleTargetsBtn").addEventListener("click", () => {
+      generatedFpsoCenter = null;
+      loadDefaultTargetExample();
+      targetMapUserAdjusted = false;
+      renderTargetData();
+      setTargetStatus("Loaded default Búzios reservoir target example.", "success");
     });
     targetCoordinateMode.addEventListener("change", (event) => {
       changeTargetCoordinateMode(event.currentTarget.value);
@@ -4758,8 +5713,19 @@
     document.getElementById("targetUnitSelect").addEventListener("change", (event) => {
       convertTargetCoordinates(event.currentTarget.value);
     });
-    targetZoneSelect.addEventListener("change", updateTargetMapFromTable);
-    targetHemisphereSelect.addEventListener("change", updateTargetMapFromTable);
+    const handleTargetZoneOrHemisphereChange = () => {
+      if (targetZoneSelect.value && !targetHemisphereSelect.value) {
+        targetHemisphereSelect.value = "S";
+      }
+      targetMapUserAdjusted = false;
+      renderTargetData();
+      const { mapTargets } = collectTargetRows();
+      if (mapTargets.length > 0) {
+        updateBathymetryArea(identifyTargetBoundaries(mapTargets), true);
+      }
+    };
+    targetZoneSelect.addEventListener("change", handleTargetZoneOrHemisphereChange);
+    targetHemisphereSelect.addEventListener("change", handleTargetZoneOrHemisphereChange);
     document.getElementById("targetMapZoomIn").addEventListener("click", () => zoomTargetMap(0.5));
     document.getElementById("targetMapZoomOut").addEventListener("click", () => zoomTargetMap(2));
     document.getElementById("targetMapFit").addEventListener("click", fitTargetMap);
@@ -4869,7 +5835,11 @@
       targetZoneSelect.appendChild(option);
       const positionZoneOption = option.cloneNode(true);
       document.getElementById("fpsoPositionZone").appendChild(positionZoneOption);
+      const genZoneOption = option.cloneNode(true);
+      document.getElementById("genCenterZone")?.appendChild(genZoneOption);
     }
+    const genZoneSelect = document.getElementById("genCenterZone");
+    if (genZoneSelect) genZoneSelect.value = "23";
     updateFpsoPositionControls();
     initializeTargetMapLayers();
     syncTargetCoordinateLabels();
