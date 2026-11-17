@@ -1897,7 +1897,7 @@
                 <path d="M0 0L10 5L0 10Z" fill="#35556c"/>
               </marker>
             </defs>
-            <text x="320" y="27" fill="#35556c" font-family="system-ui, sans-serif" font-size="13" font-weight="700" text-anchor="middle">FPSO · TOP VIEW · 300 m × 80 m HULL SCALE</text>
+            <text x="320" y="27" fill="#35556c" font-family="system-ui, sans-serif" font-size="13" font-weight="700" text-anchor="middle">FPSO · TOP VIEW</text>
             <g id="fpsoGeometry"></g>
           </svg>
           <ul class="fpso-model-legend" id="fpsoModelLegend" aria-label="FPSO geometry legend">
@@ -1983,7 +1983,7 @@
                 <button class="info" type="button" aria-label="Riser Balcony Angle description" aria-expanded="false" aria-describedby="tip-fpso-riser-balcony">i<span class="tooltip" id="tip-fpso-riser-balcony" role="tooltip">The smaller angle between the port bow and port stern mooring-cluster axes. Each cluster axis is positioned symmetrically around the vessel beam; risers leave from port-side midship.</span></button>
               </div>
               <div class="control">
-                <input id="fpsoRiserBalconyAngle" type="number" min="1" max="179" step="0.1" value="130" required>
+                <input id="fpsoRiserBalconyAngle" type="number" min="1" max="179" step="0.1" value="90" required>
                 <span class="unit-suffix">°</span>
               </div>
             </div>
@@ -2000,20 +2000,20 @@
             <div class="field-group">
               <div class="field-label">
                 <label for="fpsoAnchorRadius">Anchor radius</label>
-                <button class="info" type="button" aria-label="Anchor radius description" aria-expanded="false" aria-describedby="tip-fpso-anchor-radius">i<span class="tooltip" id="tip-fpso-anchor-radius" role="tooltip">Automatically populated as 1.3 times the mean water depth from the current GEBCO grid. It is drawn to the same scale as an illustrative 300 m × 80 m FPSO hull. You can edit the radius independently.</span></button>
+                <button class="info" type="button" aria-label="Anchor radius description" aria-expanded="false" aria-describedby="tip-fpso-anchor-radius">i<span class="tooltip" id="tip-fpso-anchor-radius" role="tooltip">Defaults to 2,600 m and automatically updates to 1.3 times the mean water depth when a GEBCO grid is generated. You can edit the radius independently.</span></button>
               </div>
               <div class="control">
-                <input id="fpsoAnchorRadius" type="number" min="0.1" step="any" placeholder="Requires current GEBCO grid">
+                <input id="fpsoAnchorRadius" type="number" min="0.1" step="any" value="2600" placeholder="2600">
                 <span class="unit-suffix">m</span>
               </div>
             </div>
             <div class="field-group">
               <div class="field-label">
                 <label for="fpsoTouchdownRadius">Riser touchdown radius</label>
-                <button class="info" type="button" aria-label="Riser touchdown radius description" aria-expanded="false" aria-describedby="tip-fpso-touchdown-radius">i<span class="tooltip" id="tip-fpso-touchdown-radius" role="tooltip">Initially populated with the same 1.3-times-mean-depth estimate as the anchor radius, then editable independently. This value controls riser endpoints in the schematic.</span></button>
+                <button class="info" type="button" aria-label="Riser touchdown radius description" aria-expanded="false" aria-describedby="tip-fpso-touchdown-radius">i<span class="tooltip" id="tip-fpso-touchdown-radius" role="tooltip">Defaults to 2,600 m and updates to 1.3 times the mean water depth when a GEBCO grid is generated, then editable independently. This value controls riser endpoints in the schematic.</span></button>
               </div>
               <div class="control">
-                <input id="fpsoTouchdownRadius" type="number" min="0.1" step="any" placeholder="Requires current GEBCO grid">
+                <input id="fpsoTouchdownRadius" type="number" min="0.1" step="any" value="2600" placeholder="2600">
                 <span class="unit-suffix">m</span>
               </div>
             </div>
@@ -5039,18 +5039,13 @@
       }
       const gebcoDepth = currentGebcoMeanWaterDepth();
       const waterDepth = gebcoDepth;
-      const defaultRadius = waterDepth === null ? null : waterDepth * 1.3;
-      if (defaultRadius !== null) {
-        const formattedRadius = String(Math.round(defaultRadius * 1000) / 1000);
-        if (!fpsoAnchorRadiusEdited) {
-          fpsoInputs.anchorRadius.value = formattedRadius;
-        }
-        if (!fpsoTouchdownRadiusEdited) {
-          fpsoInputs.touchdownRadius.value = formattedRadius;
-        }
-      } else {
-        if (!fpsoAnchorRadiusEdited) fpsoInputs.anchorRadius.value = "";
-        if (!fpsoTouchdownRadiusEdited) fpsoInputs.touchdownRadius.value = "";
+      const defaultRadius = waterDepth === null ? 2600 : waterDepth * 1.3;
+      const formattedRadius = String(Math.round(defaultRadius * 1000) / 1000);
+      if (!fpsoAnchorRadiusEdited) {
+        fpsoInputs.anchorRadius.value = formattedRadius;
+      }
+      if (!fpsoTouchdownRadiusEdited) {
+        fpsoInputs.touchdownRadius.value = formattedRadius;
       }
       const anchorRadius = fpsoInputs.anchorRadius.value === ""
         ? null
@@ -5164,14 +5159,14 @@
         });
         riserMooringConflict ||= overlapsMooring;
         const riserColor = overlapsMooring ? "#b42318" : "#c0267a";
-        const start = localToScreen(-19.5, -19.5 * Math.tan(radians(offset)));
+        const start = localToScreen(-17.5, -17.5 * Math.tan(radians(offset)));
         const end = pointAt(bearing, touchdownDisplayRadius);
         fpsoGeometry.append(fpsoSvgElement("line", {
           x1: start.x, y1: start.y, x2: end.x, y2: end.y,
-          stroke: riserColor, "stroke-width": 2.6, "stroke-dasharray": "7 4"
+          stroke: riserColor, "stroke-width": 1.5, "stroke-dasharray": "5 3"
         }));
         fpsoGeometry.append(fpsoSvgElement("circle", {
-          cx: end.x, cy: end.y, r: 4, fill: "#fff", stroke: riserColor, "stroke-width": 2
+          cx: end.x, cy: end.y, r: 2, fill: "#fff", stroke: riserColor, "stroke-width": 1.3
         }));
       }
 
@@ -5217,11 +5212,6 @@
           stroke: "#4b5862", "stroke-width": 2.5
         })
       );
-      const riserBalconyExit = localToScreen(-17.5, 0);
-      fpsoGeometry.append(fpsoSvgElement("circle", {
-        cx: riserBalconyExit.x, cy: riserBalconyExit.y, r: 5.2,
-        fill: "#fff", stroke: "#c0267a", "stroke-width": 2.2
-      }));
       const north = pointAt(0, 180);
       fpsoGeometry.append(fpsoSvgElement("path", {
         d: `M${north.x} ${north.y + 13}V${north.y}`,
